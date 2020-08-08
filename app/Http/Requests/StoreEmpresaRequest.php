@@ -13,7 +13,7 @@ class StoreEmpresaRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -37,11 +37,13 @@ class StoreEmpresaRequest extends FormRequest
         ];
     }
     public function messages(){
-        /*
+        
         return [
-        'empresa_nome.required' => 'Obrigatorio preencher o nome da Empresa',
-        'empresa_telefone.required' => 'Obrigatorio preecher o telefone da Empresa'
+                /*
+            'empresa_nome.required' => 'Obrigatorio preencher o nome da Empresa',
+            'empresa_telefone.required' => 'Obrigatorio preecher o telefone da Empresa'
+            */    
         ];
-        */
+        
     }
 }

@@ -37,4 +37,4 @@ Route::put('Admin/{id}', 'Empresa\EmpresaController@update')->name('gravar_actua
 Route::delete('Admin/{id}', 'Empresa\EmpresaController@destroy')->name('remover_empresa')->middleware('auth');
 
 //Route Test
-Route::get('Teste', 'Empresa\EmpresaController@new_empresa_id')->name('criar_empresa');
+Route::get('Teste', 'Empresa\EmpresaController@new_empresa_id')->name('teste');

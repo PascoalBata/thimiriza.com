@@ -30,7 +30,7 @@ class CreateEmpresasTable extends Migration
             $table->string('empresa_estado')->default('OFF');
             $table->unsignedBigInteger('id_pacote');
             $table->foreign('id_pacote')->references('pacote_id')->on('pacotes');
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->useCurrent();
             $table->rememberToken();
             $table->timestamps();
         });

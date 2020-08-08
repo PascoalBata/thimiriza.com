@@ -53,7 +53,7 @@ class EmpresaController extends Controller
     {
         //
         //$empresa_dados = $request->all();
-        $pacote_id = '3'; 
+        $pacote_id = '1'; 
         $empresa_estado = "ON";
         $empresa_id = $this->new_empresa_id(); 
         $empresa_nome = $request->input('empresa_nome');
@@ -74,6 +74,7 @@ class EmpresaController extends Controller
         $empresa->empresa_email  = $empresa_email;
         $empresa->empresa_estado  = $empresa_estado;
         $empresa->id_pacote = $pacote_id;
+        $empresa->save();
         //$empresa->empresa_  = $empresa_;
         return view('pt.Login.pages.login');
     }
