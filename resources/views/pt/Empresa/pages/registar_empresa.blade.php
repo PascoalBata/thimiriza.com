@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('pt.layouts.app')
 @section ('title', 'Nova conta Thimiriza')
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; transform: translateY(2%);">
@@ -9,13 +9,13 @@
     </div>
     <div class="container row">
         <div class="col s12 m12 l12">
-            @include('Empresa.includes.alerts.alert')
+            @include('pt.Empresa.includes.alerts.alert')
             <form name="registarEmpresaForm" method="POST" onsubmit="return submeter()"
                   action="{{route('gravar_criar_empresa')}}">
                   @csrf
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
-                        <input type="text" class="black-text" id="empresa_nome" name="empresa_nome"
+                        <input type="text" class="black-text validate" data-length="255" id="empresa_nome" name="empresa_nome"
                                required>
                         <label for="empresa_nome" class="black-text">Nome da empresa</label>
                     </div>
@@ -84,15 +84,18 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
+    $(document).ready(function() {
+    $('input#empresa_nome, input#empresa_endereco').characterCounter();
+  });
 
     function submeter() {
         if (!(document.getElementById('empresa_tipo').value === "ISPC" ||
             document.getElementById('empresa_tipo').value === "NORMAL")) {
-            window.alert('Escolha o tipo de empresa.')
+                M.toast({html: 'Escolha o tipo de Empresa.', classes: 'rounded', displayLength: 1000});
             return false;
         }
         if(document.getElementById('senha_confirmacao').value !== document.getElementById('empresa_senha').value){
-            window.alert('As senhas sao diferentes');
+            M.toast({html: 'As senhas devem ser as mesmas.', classes: 'rounded', displayLength: 1000});
             return false;
         }
         return true;

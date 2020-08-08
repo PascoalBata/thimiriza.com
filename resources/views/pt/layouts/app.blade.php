@@ -53,7 +53,7 @@
     @yield('content')
 </main>
 <footer class="page-footer grey lighten-2" style="padding-top: 0%;">
-    @include('Footer.footer')
+    @include('pt.Footer.footer')
 </footer>
 <!--JavaScript at end of body for optimized loading-->
 <script type="text/javascript" src="{{asset ('assets/js/jquery/dist/jquery.min.js')}}"></script>

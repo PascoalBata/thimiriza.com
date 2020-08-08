@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('pt.layouts.app')
 @section ('title', 'Login Thimiriza')
 @section('content')
 <div class="row">

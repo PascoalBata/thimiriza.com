@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateEmpresasTable extends Migration
@@ -24,7 +25,6 @@ class CreateEmpresasTable extends Migration
             $table->string('empresa_titular_conta')->nullable();
             $table->string('empresa_nib')->nullable();
             $table->string('empresa_nome_banco')->nullable();
-            $table->date('empresa_inscricao');
             $table->string('empresa_email')->unique();
             $table->string('empresa_logo')->nullable();
             $table->string('empresa_estado')->default('OFF');
