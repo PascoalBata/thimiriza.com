@@ -26,7 +26,7 @@ Route::get('/', function () {
     return view('pt.Login.pages.login');
 })->name('raiz');
 
-
+//EMPRESA
 Route::get('Conta', 'Empresa\EmpresaController@create')->name('criar_empresa');
 Route::post('Conta', 'Empresa\EmpresaController@store')->name('gravar_criar_empresa');
 //Aplicar um Middware de Authentication
@@ -35,6 +35,9 @@ Route::get('Admin/Empresas', 'Empresa\EmpresaController@index')->name('listar_em
 Route::get('Admin/{id}', 'Empresa\EmpresaController@show')->name('ver_empresa')->middleware('auth');
 Route::put('Admin/{id}', 'Empresa\EmpresaController@update')->name('gravar_actualizar_empresa')->middleware('auth');
 Route::delete('Admin/{id}', 'Empresa\EmpresaController@destroy')->name('remover_empresa')->middleware('auth');
+
+//UTILIZADOR
+//Route::post('')
 
 //Route Test
 Route::get('Teste', 'Empresa\EmpresaController@new_empresa_id')->name('teste');

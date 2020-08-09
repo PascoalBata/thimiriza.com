@@ -9,14 +9,18 @@
     </div>
     <div class="container row">
         <div class="col s12 m12 l12">
-            @include('pt.Empresa.includes.alerts.alert')
+            @if (session('status'))
+                <div class="alert alert-success red-text">
+                    {{ session('status') }}
+                </div>
+            @endif
             <form name="registarEmpresaForm" method="POST" onsubmit="return submeter()"
                   action="{{route('gravar_criar_empresa')}}">
                   @csrf
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <input type="text" class="black-text validate" data-length="255" id="empresa_nome" name="empresa_nome"
-                               required>
+                               required value="{{old('empresa_nome')}}">
                         <label for="empresa_nome" class="black-text">Nome da empresa</label>
                     </div>
                     <div class="input-field col s12 m6 l6">
@@ -30,42 +34,43 @@
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <input type="email" class="black-text" id="empresa_email" name="empresa_email"
-                               required>
+                               required value="{{old('empresa_email')}}">
                         <label for="empresa_email" class="black-text">Email</label>
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <input type="tel" class="black-text" id="empresa_telefone" name="empresa_telefone"
-                               required>
+                               required value="{{old('empresa_telefone')}}">
                         <label for="empresa_telefone" class="black-text">Telefone</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <input type="text" class="black-text" id="empresa_nuit" name="empresa_nuit"
-                               required>
+                               required value="{{old('empresa_nuit')}}">
                         <label for="empresa_nuit" class="black-text">NUIT</label>
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <input type="text" class="black-text" id="empresa_endereco" name="empresa_endereco"
-                               required>
+                               required value="{{old('empresa_endereco')}}">
                         <label for="empresa_endereco" class="black-text">Endereço</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <input type="password" class="black-text" id="empresa_senha" name="empresa_senha"
-                               required>
+                               required value="{{old('empresa_senha')}}">
                         <label for="empresa_senha" class="black-text">Senha</label>
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <input type="password" class="black-text" id="senha_confirmacao"
-                               name="senha_confirmacao" required>
+                               name="senha_confirmacao" required value="{{old('senha_confirmacao')}}">
                         <label for="senha_confirmacao" class="black-text">Confirme a senha</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <a href="{{route('raiz')}}">Já possuo uma conta (Login)</a>
+                        <div class="red-text"> @include('pt.Empresa.includes.alerts.alert')</div>
                     </div>
                 </div>
                 <div class="row">
@@ -84,9 +89,17 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
-    $(document).ready(function() {
-    $('input#empresa_nome, input#empresa_endereco').characterCounter();
-  });
+        $(document).ready(function() {
+        $('input#empresa_nome, input#empresa_endereco').characterCounter();
+    });
+
+    @if (session('status'))
+    <div class="alert alert-success">
+        <script>
+            M.toast({html: '{{ session('status') }}', classes: 'rounded', displayLength: 1000});
+        </script>
+    </div>
+    @endif
 
     function submeter() {
         if (!(document.getElementById('empresa_tipo').value === "ISPC" ||

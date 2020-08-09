@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Empresa;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Utilizador\UtilizadorController;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
@@ -74,9 +75,13 @@ class EmpresaController extends Controller
         $empresa->empresa_email  = $empresa_email;
         $empresa->empresa_estado  = $empresa_estado;
         $empresa->id_pacote = $pacote_id;
-        $empresa->save();
-        //$empresa->empresa_  = $empresa_;
-        return view('pt.Login.pages.login');
+        if(!$empresa->save()){
+            return redirect()->route('raiz')->with('status', 'O registo falhou! Por favor, tente novamente.');
+        }else{
+            $utilizadorController = new UtilizadorController($request);
+            $utilizadorController->storeAdmin($empresa_id, $empresa_nome, $empresa_email, $empresa_telefone, $empresa_endereco, $empresa_senha);
+            return redirect()->route('raiz')->with('status', 'Registo efectuado com sucesso.');
+        }
     }
 
     /**
@@ -127,7 +132,7 @@ class EmpresaController extends Controller
 
     public function new_empresa_id()
     {
-        $empresas_id = DB::table('empresas')->orderByRaw('updated_at - created_at DESC')->first();
+        $empresas_id = DB::table('empresas')->orderByRaw('created_at DESC')->first();
         if (DB::table('empresas')->count() == 0) {
             return $this->next_id('');
         }

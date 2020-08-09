@@ -41,3 +41,12 @@
     </div>
 </div>
 @endsection
+@section('script')
+    @if (session('status'))
+    <div class="alert alert-success">
+        <script>
+            M.toast({html: '{{ session('status') }}', classes: 'rounded', displayLength: 1000});
+        </script>
+    </div>
+    @endif
+@endsection
