@@ -36,9 +36,9 @@
                         </div>
                         <div class="row">
                             <div class="col s12 m12 l12">
-                                <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
+                                <label class="black-text" for="remember">
+                                    <input input type="checkbox" class="filled-in" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                        <span>{{ __('Remember Me') }}</span>
                                 </label>
                             </div>
                         </div>

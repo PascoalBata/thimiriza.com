@@ -17,32 +17,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 */
-//thimiriza.com (login) -> raiz
-//thimiriza.com/Conta -> criar_empresa (formulario)
-//thimiriza.com/Admin/{id}/Dados -> ver_empresa
-//thimiriza.com/Admin/{id}/Actualizar -> editar_empresa (formulario)
-//thimiriza.com/Admin/Empresas -> listar_empresas
-//
+
 Route::get('/', function () {
     //return view('pt.Login.pages.login');
     return view('auth.login');
-})->name('raiz');
+})->name('root');
 
 //EMPRESA
-Route::get('Conta', 'Empresa\EmpresaController@create')->name('criar_empresa');
-Route::post('Conta', 'Empresa\EmpresaController@store')->name('gravar_criar_empresa');
+Route::get('Conta', 'Company\CompanyController@create')->name('new_company');
+Route::post('Conta', 'Company\CompanyController@store')->name('save_new_company');
 //Aplicar um Middware de Authentication
-Route::get('Admin/{id}/Actualizar', 'Empresa\EmpresaController@edit')->name('editar_empresa')->middleware('auth');
-Route::get('Admin/Empresas', 'Empresa\EmpresaController@index')->name('listar_empresas');
-Route::get('Admin/{id}', 'Empresa\EmpresaController@show')->name('ver_empresa')->middleware('auth');
-Route::put('Admin/{id}', 'Empresa\EmpresaController@update')->name('gravar_actualizar_empresa')->middleware('auth');
-Route::delete('Admin/{id}', 'Empresa\EmpresaController@destroy')->name('remover_empresa')->middleware('auth');
+Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
+Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
+Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
+Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
+Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
 
 //UTILIZADOR
 //Route::post('')
 
 //Route Test
-Route::get('Teste', 'Empresa\EmpresaController@new_empresa_id')->name('teste');
+Route::get('Test', 'Company\CompanyController@new_company_id')->name('test');
 
 //Authentication
 Auth::routes();

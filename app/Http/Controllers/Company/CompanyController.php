@@ -56,7 +56,7 @@ class EmpresaController extends Controller
         //$empresa_dados = $request->all();
         $package_id = '1'; 
         $company_status = "ON";
-        $company_id = $this->new_empresa_id(); 
+        $company_id = $this->company_id(); 
         $company_name = $request->input('company_name');
         $company_email = $request->input('company_email');
         $company_phone = $request->input('company_phone');
@@ -78,8 +78,8 @@ class EmpresaController extends Controller
         if(!$company->save()){
             return redirect()->route('raiz')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
-            $utilizadorController = new UtilizadorController($request);
-            $utilizadorController->storeAdmin($empresa_id, $empresa_nome, $empresa_email, $empresa_telefone, $empresa_endereco, $empresa_senha);
+            //$utilizadorController = new UtilizadorController($request);
+            //$utilizadorController->storeAdmin($empresa_id, $empresa_nome, $empresa_email, $empresa_telefone, $empresa_endereco, $empresa_senha);
             return redirect()->route('raiz')->with('status', 'Registo efectuado com sucesso.');
         }
     }
@@ -130,14 +130,14 @@ class EmpresaController extends Controller
         //
     }
 
-    public function new_empresa_id()
+    public function company_id()
     {
-        $empresas_id = DB::table('empresas')->orderByRaw('created_at DESC')->first();
-        if (DB::table('empresas')->count() == 0) {
+        $companies_id = DB::table('companies')->orderByRaw('created_at DESC')->first();
+        if (DB::table('companies')->count() == 0) {
             return $this->next_id('');
         }
-        $empresa_id = $empresas_id->empresa_id;
-        return $this->next_id($empresa_id);
+        $company_id = $companies_id->id;
+        return $this->next_id($company_id);
         //return view('pt.Admin.pages.teste', ['empresas' => $empresa_id]);
     }
 
