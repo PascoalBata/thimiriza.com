@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,7 +24,8 @@ Route::get('/', function () {
 //thimiriza.com/Admin/Empresas -> listar_empresas
 //
 Route::get('/', function () {
-    return view('pt.Login.pages.login');
+    //return view('pt.Login.pages.login');
+    return view('auth.login');
 })->name('raiz');
 
 //EMPRESA
@@ -41,3 +43,8 @@ Route::delete('Admin/{id}', 'Empresa\EmpresaController@destroy')->name('remover_
 
 //Route Test
 Route::get('Teste', 'Empresa\EmpresaController@new_empresa_id')->name('teste');
+
+//Authentication
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
