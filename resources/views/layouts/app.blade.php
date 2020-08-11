@@ -48,9 +48,8 @@
     <footer class="page-footer grey lighten-2" style="padding-top: 0%;">
         @include('pt.Footer.footer')
     </footer>
+
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="{{asset ('assets/js/jquery/dist/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{asset ('assets/js/materialize-css/materialize.min.js')}}"></script>
     @yield('script')
