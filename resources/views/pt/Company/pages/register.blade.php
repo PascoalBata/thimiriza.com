@@ -7,11 +7,11 @@
             <h4 class="center-align">{{ __('Registo de Empresa') }}</h4>
             <div class="container row">
                 <div class="col s12 m12 l12">
-                    <form method="POST" action="{{ route('register') }}" onsubmit="return submeter()">
+                    <form method="POST" action="{{ route('save_new_company') }}">
                         @csrf
                         <div class="row">
                             <div class="input-field col s12 m6 l6">
-                                <input id="name" type="text" class="black-text validate @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name">
+                                <input id="name" type="text" class="black-text validate" name="name" value="{{ old('name') }}" required autocomplete="name">
                                 <label for="name" class="black-text">{{ __('Nome da empresa') }}</label>
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -30,7 +30,7 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12 m6 l6">
-                                <input id="email" type="email" class="black-text validate @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" type="email" class="black-text validate" name="email" value="{{ old('email') }}" required autocomplete="email">
                                 <label for="email" class="black-text">{{ __('E-Mail') }}</label>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
@@ -62,7 +62,7 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12 m6 l6">
-                                <input id="password" type="password" class="black-text validate @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                                <input id="password" type="password" class="black-text validate" name="password" required autocomplete="new-password">
                                 <label for="password" class="black-text">{{ __('Senha') }}</label>
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -71,7 +71,7 @@
                                 @enderror
                             </div>
                             <div class="input-field col s12 m6 l6">
-                                <input id="password-confirm" type="password" class="black-text validate" name="password_confirmation" required autocomplete="new-password">
+                                <input id="password-confirm" type="password" class="black-text validate" name="password_confirm" required autocomplete="new-password">
                                 <label for="password-confirm" class="black-text">{{ __('Confirme a senha') }}</label>
                             </div>
                         </div>
@@ -111,14 +111,9 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
-    
-    function submeter() {
-        if(document.getElementById('senha_confirmacao').value !== document.getElementById('empresa_senha').value){
-            M.toast({html: 'As senhas devem ser as mesmas.', classes: 'rounded', displayLength: 1000});
-            return false;
-        }
-        return true;
-    }
+    $(document).ready(function() {
+        $('input#name, input#address').characterCounter();
+    });
 </script>
 @if (session('status'))
     <div class="alert alert-success">

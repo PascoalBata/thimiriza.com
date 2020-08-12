@@ -45,7 +45,7 @@
             @yield('content')
         </div>
     </main>
-    <footer class="page-footer grey lighten-2" style="padding-top: 0%;">
+    <footer class="page-footer grey lighten-2" style="padding-top: 0%; transform: translateY(0%);">
         @include('pt.Footer.footer')
     </footer>
 

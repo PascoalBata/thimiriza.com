@@ -9,12 +9,12 @@
         </div>
         <div class="row" style="margin-left: 15%; margin-right: 15%; padding-bottom: 5%">
             <div class="col s12 m12 l12">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login_user') }}">
                         @csrf
                         <div class="row">
                             <div class="input-field col s12 m12 l12">
                                 <label for="email" class="black-text">{{ __('Utilizador ID ou E-mail') }}</label>
-                                <input id="email" type="email" class="@error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="email" type="text" class="@error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 @error('email')
                                     <span class="red-text" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -38,7 +38,7 @@
                             <div class="col s12 m12 l12">
                                 <label class="black-text" for="remember">
                                     <input input type="checkbox" class="filled-in" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                        <span>{{ __('Remember Me') }}</span>
+                                        <span>{{ __('Remember me') }}</span>
                                 </label>
                             </div>
                         </div>
@@ -50,16 +50,16 @@
                             </div>
                         </div>
                         <div>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}">
-                                    {{ __('Register') }}
+                            @if (Route::has('new_company'))
+                                <a href="{{ route('new_company') }}">
+                                    {{ __('Criar conta') }}
                                 </a>
                             @endif
                         </div>
                         <div>
                             @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}">
-                                    {{ __('Forgot Your Password?') }}
+                                    {{ __('Esqueceu a senha?') }}
                                 </a>
                             @endif
                         </div>

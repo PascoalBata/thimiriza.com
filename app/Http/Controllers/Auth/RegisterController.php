@@ -65,9 +65,42 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
+            'id' => $data['id'],
             'name' => $data['name'],
+            'surname' => $data['surname'],
+            'gender' => $data['gender'],
+            'birthdate' => $data['birthdate'],
+            'privilege' => $data['privilege'],
             'email' => $data['email'],
+            'phone' => $data['phone'],
+            'nuit' => $data['nuit'],
+            'address' => $data['address'],
+            'type' => $data['type'],
             'password' => Hash::make($data['password']),
+        ]);
+    }
+
+    /**
+     * Create a new Administrator user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\User
+     */
+    public function create_admin(array $data)
+    {
+        return User::create([
+            'id' => $data['id'] . '/Admin',
+            'name' => $data['name'],
+            'surname' => $data['surname'],
+            'gender' => $data['gender'],
+            'birthdate' => $data['birthdate'],
+            'privilege' => $data['privilege'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'nuit' => $data['nuit'],
+            'address' => $data['address'],
+            'id_company' => $data['id'],
+            'password' => Hash::make($data['password'])
         ]);
     }
 }

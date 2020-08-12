@@ -32,8 +32,8 @@ class StoreCompanyRequest extends FormRequest
             'empresa_senha' => 'required',
             'senha_confirmacao' => 'required'
             */
-            'empresa_email' => 'required|unique:empresas,empresa_email',
-            'empresa_nuit' => 'required|unique:empresas,empresa_nuit'
+            'email' => 'required|unique:companies,email',
+            'nuit' => 'required|unique:companies,nuit'
         ];
     }
     public function messages(){
@@ -43,8 +43,8 @@ class StoreCompanyRequest extends FormRequest
             'empresa_nome.required' => 'Obrigatorio preencher o nome da Empresa',
             'empresa_telefone.required' => 'Obrigatorio preecher o telefone da Empresa'
             */    
-            'empresa_email.unique' => 'Já existe uma conta registada com esse email!',
-            'empresa_nuit.unique' => 'Já existe uma conta registada com esse nuit!' 
+            'email.unique' => 'Já existe uma conta registada com esse email!',
+            'nuit.unique' => 'Já existe uma conta registada com esse nuit!' 
         ];
         
     }

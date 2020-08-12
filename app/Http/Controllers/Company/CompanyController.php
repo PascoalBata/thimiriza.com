@@ -8,8 +8,9 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
-class EmpresaController extends Controller
+class CompanyController extends Controller
 {
     private $request;
 
@@ -40,14 +41,14 @@ class EmpresaController extends Controller
      */
     public function create()
     {
-        //
-        return view('pt.Empresa.pages.registar_empresa');
+        //returns a create company view
+        return view('pt.Company.pages.register');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\StoreEmpresaRequest $request
+     * @param \App\Http\Requests\StoreCompanyRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreCompanyRequest $request)
@@ -57,30 +58,43 @@ class EmpresaController extends Controller
         $package_id = '1'; 
         $company_status = "ON";
         $company_id = $this->company_id(); 
-        $company_name = $request->input('company_name');
-        $company_email = $request->input('company_email');
-        $company_phone = $request->input('company_phone');
-        $company_address = $request->input('company_address');
-        $company_type = $request->input('company_type');
-        $company_password = $request->input('company_password');
-        $company_nuit = $request->input('company_nuit');
+        $company_name = $request->input('name');
+        $company_email = $request->input('email');
+        $company_phone = $request->input('phone');
+        $company_address = $request->input('address');
+        $company_type = $request->input('type');
+        $company_password = $request->input('password');
+        $company_nuit = $request->input('nuit');
 
         $company = new Company;
-        $company->company_id = $company_id;
-        $company->company_name  = $company_name;
-        $company->company_type  = $company_type;
-        $company->company_nuit  = $company_nuit;
-        $company->company_phone  = $company_phone;
-        $company->company_address  = $company_address;
-        $company->company_email  = $company_email;
-        $company->company_status  = $company_status;
+        $company->id = $company_id;
+        $company->name  = $company_name;
+        $company->type  = $company_type;
+        $company->nuit  = $company_nuit;
+        $company->phone  = $company_phone;
+        $company->address  = $company_address;
+        $company->email  = $company_email;
+        $company->status  = $company_status;
         $company->id_package = $package_id;
         if(!$company->save()){
-            return redirect()->route('raiz')->with('status', 'O registo falhou! Por favor, tente novamente.');
+            return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
             //$utilizadorController = new UtilizadorController($request);
             //$utilizadorController->storeAdmin($empresa_id, $empresa_nome, $empresa_email, $empresa_telefone, $empresa_endereco, $empresa_senha);
-            return redirect()->route('raiz')->with('status', 'Registo efectuado com sucesso.');
+            $userController = new RegisterController;
+            $userController->create_admin([
+            'id'=>$company_id, 
+            'name'=> $company_name, 
+            'surname' => 'N/A',
+            'gender' => 'N/A',
+            'privilege' => 'TOTAL',
+            'birthdate' => now(),
+            'email'=> $company_email, 
+            'phone'=> $company_phone, 
+            'nuit'=> $company_nuit, 
+            'address'=> $company_address, 
+            'password'=> $company_password]);
+            return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
         }
     }
 

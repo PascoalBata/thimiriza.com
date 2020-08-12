@@ -24,17 +24,14 @@ Route::get('/', function () {
 })->name('root');
 
 //EMPRESA
-Route::get('Conta', 'Company\CompanyController@create')->name('new_company');
-Route::post('Conta', 'Company\CompanyController@store')->name('save_new_company');
+Route::get('registo', 'Company\CompanyController@create')->name('new_company');
+Route::post('registo', 'Company\CompanyController@store')->name('save_new_company');
 //Aplicar um Middware de Authentication
 Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
 Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
 Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
 Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
 Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
-
-//UTILIZADOR
-//Route::post('')
 
 //Route Test
 Route::get('Test', 'Company\CompanyController@new_company_id')->name('test');
