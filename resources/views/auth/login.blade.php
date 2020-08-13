@@ -9,7 +9,7 @@
         </div>
         <div class="row" style="margin-left: 15%; margin-right: 15%; padding-bottom: 5%">
             <div class="col s12 m12 l12">
-                    <form method="POST" action="{{ route('login_user') }}">
+                    <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="row">
                             <div class="input-field col s12 m12 l12">

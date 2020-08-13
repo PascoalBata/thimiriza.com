@@ -19,13 +19,14 @@ Route::get('/', function () {
 */
 
 Route::get('/', function () {
-    //return view('pt.Login.pages.login');
     return view('auth.login');
 })->name('root');
+
 
 //EMPRESA
 Route::get('registo', 'Company\CompanyController@create')->name('new_company');
 Route::post('registo', 'Company\CompanyController@store')->name('save_new_company');
+
 //Aplicar um Middware de Authentication
 Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
 Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
@@ -33,10 +34,22 @@ Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')-
 Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
 Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
 
-//Route Test
-Route::get('Test', 'Company\CompanyController@new_company_id')->name('test');
 
 //Authentication
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('home/', 'HomeController@index')->name('home');
+
+//Admin
+Route::get('Admin/{name}/sells', 'HomeController@sell')->name('admin_sells');
+
+
+/*
+Route::get('home/{id}/sells', 'HomeController@sell')->name('sells');
+Route::get('home/{id}/singular_clients', 'HomeController@about')->name('client_singular');
+Route::get('home/{id}/enterprise_clients', 'HomeController@about')->name('client_enterprise');
+Route::get('home/{id}/products', 'HomeController@about')->name('products');
+Route::get('home/{id}/services', 'HomeController@about')->name('services');
+Route::get('home/{id}/company', 'HomeController@about')->name('company');
+Route::get('home/{id}/update_company', 'HomeController@about')->name('company_update');
+*/
