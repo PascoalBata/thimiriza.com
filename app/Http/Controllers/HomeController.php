@@ -29,51 +29,30 @@ class HomeController extends Controller
         $surname = $user['surname'];
         $email = $user['email'];
         if($surname == 'N/A'){
-            $surname = '';
-            return redirect()->route('admin_sells', ['name' => $name]);
+            return redirect()->route('view_product', ['name' => $name]);
         }
-        //return view('home.pages.about.about');
-        return redirect()->route('admin_sells', ['name' => $name]);
-    }
-
-    public function about($id)
-    {
+        return redirect()->route('view_product', ['name' => $name . $surname]);
         
-        return view('home.pages.about.about');
     }
 
-    public function product($id)
-    {
-        return view('home.pages.about.about');
-    }
 
-    public function service($id)
-    {
-        return view('home.pages.about.about');
-    }
-
-    public function user($id)
-    {
-        return view('home.pages.about.about');
-    }
-
-    public function company($id)
-    {
-        return view('home.pages.about.about');
-    }
-
-    public function sell($name)
+    public function view_sell($name)
     {
         $user = Auth::user();
-        //$name = $user['name'];
+        $name = $user['name'];
         $surname = $user['surname'];
         $email = $user['email'];
-        return 'Nome ' . $name;
+        return view ('home.pages.sell.sell');
     }
 
-
-
-
+    public function view_product($name)
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = $user['surname'];
+        $email = $user['email'];
+        return view ('home.pages.product.product', $user);
+    }
 
     /**
      * Update the user's profile.

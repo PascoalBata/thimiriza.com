@@ -23,7 +23,7 @@ Route::get('/', function () {
 })->name('root');
 
 
-//EMPRESA
+//Company
 Route::get('registo', 'Company\CompanyController@create')->name('new_company');
 Route::post('registo', 'Company\CompanyController@store')->name('save_new_company');
 
@@ -38,18 +38,18 @@ Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_c
 //Authentication
 Auth::routes();
 
-Route::get('home/', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home');
 
-//Admin
-Route::get('Admin/{name}/sells', 'HomeController@sell')->name('admin_sells');
+//home_views
+Route::get('{name}/sells', 'HomeController@view_sell')->name('view_sell');
+Route::get('{name}/products', 'HomeController@view_product')->name('view_product');
+Route::get('{name}/services', 'HomeController@view_service')->name('view_service');
+Route::get('{name}/singular_clients', 'HomeController@view_client_singular')->name('view_client_singular');
+Route::get('{name}/enterprise_clients', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
 
-
-/*
-Route::get('home/{id}/sells', 'HomeController@sell')->name('sells');
-Route::get('home/{id}/singular_clients', 'HomeController@about')->name('client_singular');
-Route::get('home/{id}/enterprise_clients', 'HomeController@about')->name('client_enterprise');
-Route::get('home/{id}/products', 'HomeController@about')->name('products');
-Route::get('home/{id}/services', 'HomeController@about')->name('services');
-Route::get('home/{id}/company', 'HomeController@about')->name('company');
-Route::get('home/{id}/update_company', 'HomeController@about')->name('company_update');
-*/
+//create
+Route::post('{name}/sells', 'HomeController@view_sell')->name('create_sell');
+Route::post('{name}/products', 'HomeController@view_product')->name('create_product');
+Route::post('{name}/services', 'HomeController@view_service')->name('create_service');
+Route::post('{name}/singular_clients', 'HomeController@view_client_singular')->name('create_client_singular');
+Route::post('{name}/enterprise_clients', 'HomeController@view_client_enterprise')->name('create_client_enterprise');
