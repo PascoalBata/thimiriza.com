@@ -6,7 +6,7 @@
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
     <div class="row center-align">
         <div class="col s12 m12 l12">
-            <h1 class="display-4 black-text"><strong>{{ __('serviços') }}</strong></h1>
+            <h1 class="display-4 black-text"><strong>{{ __('Serviços') }}</strong></h1>
         </div>
     </div>
     <div class="row" style="padding-bottom: 5%">
@@ -53,18 +53,28 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
+                    <button type="button" class="waves-effect waves-light btn-small" onclick="show_services()">
+                        {{ __('Ver todos') }}
+                        <i class="material-icons right"></i>
+                    </button>
                 </div>                        
             </div>
         </form>
+
+        <div id='all_services'>
+            TODOS oS SERVICES
+        </div>
     </div>
 </div>
 @endsection
 @section('script')
-    @if (session('status'))
-    <div class="alert alert-success">
-        <script>
-            M.toast({html: '{{ session('status') }}', classes: 'rounded', displayLength: 1000});
-        </script>
-    </div>
-    @endif
+<script>
+    show_services(){
+        if(document.getElementById('all_services').style.display === 'block'){
+            document.getElementById('all_services').style.display = 'none';
+        }else{
+            document.getElementById('all_services').style.display = 'block'
+        }
+    }
+</script>
 @endsection

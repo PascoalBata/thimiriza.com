@@ -35,6 +35,15 @@ class HomeController extends Controller
         
     }
 
+    public function view_home($name)
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = $user['surname'];
+        $email = $user['email'];
+        return view ('home.pages.home', $user);
+    }
+
 
     public function view_sell($name)
     {
@@ -52,6 +61,15 @@ class HomeController extends Controller
         $surname = $user['surname'];
         $email = $user['email'];
         return view ('home.pages.product.product', $user);
+    }
+
+    public function view_service($name)
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = $user['surname'];
+        $email = $user['email'];
+        return view ('home.pages.service.service', $user);
     }
 
     /**

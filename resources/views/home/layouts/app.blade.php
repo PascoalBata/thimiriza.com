@@ -50,7 +50,7 @@
                 </div>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="vendas()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/sells');" href="">
                     {{__('Vendas')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
 
@@ -63,21 +63,19 @@
 
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="product()" href="#">
                     {{__('Produtos')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
-                    {{__('Serviços')}} <i class="small material-icons">shopping_basket</i>
-
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/products');" href="">
+                    {{__('Produtos')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
-                    {{__('Créditos')}} <i class="small material-icons">shopping_basket</i>
-
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/services');" href="">
+                    {{__('Serviços')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>
@@ -132,6 +130,7 @@
     <!-- Scripts -->
     <script type="text/javascript" src="{{asset ('assets/js/jquery/dist/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{asset ('assets/js/materialize-css/materialize.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset ('assets/js/home.js')}}"></script>
     <script>
         $(document).ready(function () {
         $('select').formSelect();
