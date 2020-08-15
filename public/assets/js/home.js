@@ -14,3 +14,11 @@ function service() {
     document.getElementById(service_content).style.display = "block";
     window.history.replaceState(null, "Thimiriza", url + "/services");
 }
+
+function show_services() {
+    if(document.getElementById('all_services').style.display === 'block'){
+        document.getElementById('all_services').style.display = 'none';
+    }else{
+        document.getElementById('all_services').style.display = 'block'
+    }
+}

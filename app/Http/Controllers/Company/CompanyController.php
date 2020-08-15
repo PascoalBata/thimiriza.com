@@ -144,7 +144,7 @@ class CompanyController extends Controller
         //
     }
 
-    public function company_id()
+    private function company_id()
     {
         $companies_id = DB::table('companies')->orderByRaw('created_at DESC')->first();
         if (DB::table('companies')->count() == 0) {

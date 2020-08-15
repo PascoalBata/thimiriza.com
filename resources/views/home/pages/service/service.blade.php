@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row" style="padding-bottom: 5%">
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('store_service', $fullname) }}">
             @csrf
             <div class="row">
                 <div class="input-field col s12 m6 l6">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <label for="description" class="black-text">{{ __('Descrição') }}</label>
-                    <input id="description" type="text" class="black-text" name="description" value="{{ old('description') }}" required>
+                    <input id="description" type="text" data-target="250" class="black-text" name="description" value="{{ old('description') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="price" class="black-text">{{ __('Preço') }}</label>
-                    <input id="price" type="text" class="black-text" name="price" value="{{ old('price') }}" required>
+                    <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -53,7 +53,7 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small" onclick="show_services()">
+                    <button type="button" id="all_services_btn" class="waves-effect waves-light btn-small">
                         {{ __('Ver todos') }}
                         <i class="material-icons right"></i>
                     </button>
@@ -69,12 +69,8 @@
 @endsection
 @section('script')
 <script>
-    show_services(){
-        if(document.getElementById('all_services').style.display === 'block'){
-            document.getElementById('all_services').style.display = 'none';
-        }else{
-            document.getElementById('all_services').style.display = 'block'
-        }
-    }
+    $("#all_services_btn").click(function(){
+      $("#all_services").toggle();
+    });
 </script>
 @endsection

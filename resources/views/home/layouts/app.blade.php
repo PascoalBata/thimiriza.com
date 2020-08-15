@@ -91,9 +91,8 @@
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
-                    {{__('Utilizadores')}} <i class="small material-icons">shopping_basket</i>
-
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/users');" href="">
+                    {{__('Utilizadores')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>

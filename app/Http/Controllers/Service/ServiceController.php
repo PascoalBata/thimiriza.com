@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Service;
 
 use App\Http\Controllers\Controller;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
@@ -35,7 +37,17 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (Auth::check()) {
+            // The user is logged in...
+            $service = new Service;
+            $service->name = $request->name;
+            $service->description = $request->descriptions;
+            $service->price = $request->price;
+            $service->id_user = Auth::id();
+            $service->save();
+            return dd($service->name);
+        }
+        return route('root');
     }
 
     /**

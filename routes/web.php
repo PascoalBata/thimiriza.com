@@ -46,10 +46,12 @@ Route::get('{name}/products', 'HomeController@view_product')->name('view_product
 Route::get('{name}/services', 'HomeController@view_service')->name('view_service');
 Route::get('{name}/singular_clients', 'HomeController@view_client_singular')->name('view_client_singular');
 Route::get('{name}/enterprise_clients', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
+Route::get('{name}/users', 'HomeController@view_user')->name('view_user');
 
-//create
+//store
 Route::post('{name}/sells', 'HomeController@view_sell')->name('create_sell');
 Route::post('{name}/products', 'HomeController@view_product')->name('create_product');
-Route::post('{name}/services', 'HomeController@view_service')->name('create_service');
+Route::post('{name}/services', 'Service\ServiceController@store')->name('store_service');
 Route::post('{name}/singular_clients', 'HomeController@view_client_singular')->name('create_client_singular');
 Route::post('{name}/enterprise_clients', 'HomeController@view_client_enterprise')->name('create_client_enterprise');
+Route::post('{name}/users', 'User\UserController@store')->name('store_user');

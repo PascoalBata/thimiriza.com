@@ -67,9 +67,38 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $name = $user['name'];
-        $surname = $user['surname'];
+        $surname = '';
+        if($user['surname'] != 'N/A'){
+            $surname = $user['surname'];
+        }
+        $fullname = $name . $surname;
         $email = $user['email'];
-        return view ('home.pages.service.service', $user);
+        $data = [
+            'email' => $email,
+            'name' => $name,
+            'surname' => $surname,
+            'fullname' => $fullname,
+        ];
+        return view ('home.pages.service.service', $data);
+    }
+
+    public function view_user($name)
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = '';
+        if($user['surname'] != 'N/A'){
+            $surname = $user['surname'];
+        }
+        $fullname = $name . $surname;
+        $email = $user['email'];
+        $data = [
+            'email' => $email,
+            'name' => $name,
+            'surname' => $surname,
+            'fullname' => $fullname,
+        ];
+        return view ('home.pages.user.user', $data);
     }
 
     /**
