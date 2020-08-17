@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('auth.layouts.app')
 
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%;">

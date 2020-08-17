@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Pacote;
+use App\Models\Companies;
 use Illuminate\Database\Seeder;
 
-class PacotesTableSeeder extends Seeder
+class CompaniesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class PacotesTableSeeder extends Seeder
     public function run()
     {
         //
-        factory(Pacote::class, 1)->create();
+        factory(Company::class, 5)->create();
     }
 }

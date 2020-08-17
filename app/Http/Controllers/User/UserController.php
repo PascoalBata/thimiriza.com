@@ -41,8 +41,9 @@ class UserController extends Controller
     {
         //return dd($request->all());
         if(Auth::check()){
-            return User::create([
-                'id' => $this->user_id(),
+            $id = $this->user_id();
+             User::create([
+                'id' => $id,
                 'name' => $request['name'],
                 'surname' => $request['surname'],
                 'gender' => $request['gender'],
@@ -52,9 +53,10 @@ class UserController extends Controller
                 'phone' => $request['phone'],
                 'nuit' => $request['nuit'],
                 'address' => $request['address'],
-                'id_company' => $request['id'],
+                'id_company' => substr($id, 0, 5),
                 'password' => Hash::make($request['password'])
             ]);
+            return route('view_user', $request->name . $request->surname);
         }
         return route('root');
     }
