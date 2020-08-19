@@ -56,7 +56,8 @@ class UserController extends Controller
                 'id_company' => substr($id, 0, 5),
                 'password' => Hash::make($request['password'])
             ]);
-            return route('view_user', $request->name . $request->surname);
+            //return route('view_user', $request->name . $request->surname);
+            return route('view_user');
         }
         return route('root');
     }

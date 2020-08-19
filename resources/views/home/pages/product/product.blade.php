@@ -1,6 +1,6 @@
 @extends('home.layouts.app')
 
-@section('username', $name)
+@section('username', $id)
 @section('user_email', $email)
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">

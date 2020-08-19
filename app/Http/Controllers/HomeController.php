@@ -25,14 +25,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        if($surname == 'N/A'){
-            return redirect()->route('view_product', ['name' => $name]);
-        }
-        return redirect()->route('view_product', ['name' => $name . $surname]);
-        
+        return redirect()->route('view_product');
     }
 
     public function view_home($name)
@@ -54,7 +47,7 @@ class HomeController extends Controller
         return view ('home.pages.sell.sell');
     }
 
-    public function view_product($name)
+    public function view_product()
     {
         $user = Auth::user();
         $name = $user['name'];

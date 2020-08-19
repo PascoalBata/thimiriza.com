@@ -14,14 +14,15 @@ class CreateClientsSingularTable extends Migration
     public function up()
     {
         Schema::create('clients_singular', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
+            $table->string('code')->unique();
             $table->string('name');
             $table->string('surname');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
             $table->string('nuit')->unique();
-            $table->string('id_user');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');

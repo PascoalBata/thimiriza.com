@@ -14,11 +14,11 @@ class CreateMovesTable extends Migration
     public function up()
     {
         Schema::create('moves', function (Blueprint $table) {
-            $table->id('id');
+            $table->id();
             $table->string('id_product_service');
             $table->double('price');
             $table->integer('quantity');
-            $table->string('id_invoice');
+            $table->unsignedBigInteger('id_invoice');
             $table->timestamps();
 
             $table->foreign('id_invoice')->references('id')->on('invoices');

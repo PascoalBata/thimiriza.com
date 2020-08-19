@@ -14,10 +14,11 @@ class CreateInvoicesTable extends Migration
     public function up()
     {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
+            $table->string('code')->unique();
             $table->string('id_client');
             $table->double('price');
-            $table->string('id_user');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');

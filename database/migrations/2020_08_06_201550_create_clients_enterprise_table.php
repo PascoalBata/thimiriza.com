@@ -14,13 +14,14 @@ class CreateClientsEnterpriseTable extends Migration
     public function up()
     {
         Schema::create('clients_enterprise', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
+            $table->string('code')->unique();
             $table->string('name');
             $table->string('phone');
             $table->string('email')->unique();
             $table->string('address');
             $table->string('nuit')->unique();
-            $table->string('id_user');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
