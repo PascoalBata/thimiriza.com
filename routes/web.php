@@ -44,14 +44,14 @@ Route::get('home', 'HomeController@index')->name('home');
 Route::get('/sells', 'HomeController@view_sell')->name('view_sell');
 Route::get('/products', 'HomeController@view_product')->name('view_product');
 Route::get('/services', 'HomeController@view_service')->name('view_service');
-Route::get('/singular_clients', 'HomeController@view_client_singular')->name('view_client_singular');
-Route::get('/enterprise_clients', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
+Route::get('/clients_singular', 'HomeController@view_client_singular')->name('view_client_singular');
+Route::get('/clients_enterprise', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
 Route::get('/users', 'HomeController@view_user')->name('view_user');
 
 //store
-Route::post('/sells', 'HomeController@view_sell')->name('create_sell');
-Route::post('/products', 'Product\ProductController@store')->name('create_product');
+Route::post('/sells', 'Sell\SellControler@store')->name('store_sell');
+Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
-Route::post('/singular_clients', 'HomeController@view_client_singular')->name('create_client_singular');
-Route::post('/enterprise_clients', 'HomeController@view_client_enterprise')->name('create_client_enterprise');
+Route::post('/clients_singular', 'ClientSingular\ClientSingularController@store')->name('store_client_singular');
+Route::post('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@store')->name('store_client_enterprise');
 Route::post('/users', 'User\UserController@store')->name('store_user');

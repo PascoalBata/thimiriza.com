@@ -49,9 +49,12 @@ class ProductController extends Controller
                 $product->price = $request['price'];
                 $product->quantity = $request['quantity'];
                 $product->id_user = Auth::id();
-                $product->save();
+                if($product->save()){
+                    return redirect()->route('view_product')->with('product_register_status', 'Produto registado com sucesso.');
+                }
+                return redirect()->route('view_product')->with('product_register_status', 'Falhou! Ocorreu um erro durante o registo.');
             }
-            return route('view_product');
+            return redirect()->route('view_product')->with('product_register_status', 'Falhou! Esse produto já existe.');
         }
         return route('root');
     }
@@ -102,16 +105,15 @@ class ProductController extends Controller
     }
 
     private function product_exists($name, $description, $user_code){
-        $company_code = substr($user_code, 0, 5);
+        $company_code = substr($user_code, 0, 10);
         if (DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.code')
-        ->where(
-            ['companies.code', 'like', $company_code],
-            ['products.name', 'like', $name],
-            ['products.description', 'like', $description]
-            )->count() > 0) {
+        ->where('companies.code', 'like', $company_code)
+        ->where('products.name', 'like', $name)
+        ->where('products.description', 'like', $description)
+        ->count() > 0) {
             return true;
         }
         return false;
@@ -120,21 +122,21 @@ class ProductController extends Controller
     //Generate product_code
     private function product_code($user_code)
     {
-        $company_code = substr($user_code, 0, 5);
+        $company_code = substr($user_code, 0, 10);
         if (DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.code')
-        ->where('company.code', 'like', $company_code)->count() == 0) {
-            return $company_code . '/' . $this->next_code('');
+        ->where('companies.code', 'like', $company_code)->count() == 0) {
+            return $company_code . date('y') . date('m') . $this->next_code('');
         }
         $products_code = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.code')
-        ->where('companies.code', 'like', $company_code)->orderByRaw('created_at DESC')->first();
+        ->where('companies.code', 'like', $company_code)->orderByRaw('products.created_at DESC')->first();
         $product_code = $products_code->code;
-        return $company_code . '/' . date('y') . date('m') . $this->next_code($product_code);
+        return $company_code . date('y') . date('m') . $this->next_code($product_code);
     }
 
     private function next_code($last)
@@ -143,8 +145,10 @@ class ProductController extends Controller
         if ($last == "") {
             return $new_id;
         }
+        $last = substr($last, 14, 6);
         $last++;
         $new_id = $last;
+        
         /*
         if (substr($last, 16, 4) == "0000") {
             $letters = substr($last, 14, 2);

@@ -50,65 +50,65 @@
                 </div>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/sells');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/sells');" href="">
                     {{__('Vendas')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
 
             </li>
 
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="clientes()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');" href="">
                     {{__('Clientes')}} <i class="small material-icons">supervisor_account</i>
                 </a>
 
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="product()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Produtos')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/products');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
                     {{__('Produtos')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/services');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Serviços')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Débitos')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Relatório')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/@yield('username')' + '/users');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/users');" href="">
                     {{__('Utilizadores')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Empresa')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Sobre Nós')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="produtos()" href="#">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
                     {{__('Sair')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>

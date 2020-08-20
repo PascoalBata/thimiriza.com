@@ -56,23 +56,31 @@ class HomeController extends Controller
         return view ('home.pages.product.product', $user);
     }
 
-    public function view_service($name)
+    public function view_service()
     {
         $user = Auth::user();
         $name = $user['name'];
-        $surname = '';
-        if($user['surname'] != 'N/A'){
-            $surname = $user['surname'];
-        }
-        $fullname = $name . $surname;
+        $surname = $user['surname'];
         $email = $user['email'];
-        $data = [
-            'email' => $email,
-            'name' => $name,
-            'surname' => $surname,
-            'fullname' => $fullname,
-        ];
-        return view ('home.pages.service.service', $data);
+        return view ('home.pages.service.service', $user);
+    }
+
+    public function view_client_singular()
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = $user['surname'];
+        $email = $user['email'];
+        return view ('home.pages.client_singular.client_singular', $user);
+    }
+
+    public function view_client_enterprise()
+    {
+        $user = Auth::user();
+        $name = $user['name'];
+        $surname = $user['surname'];
+        $email = $user['email'];
+        return view ('home.pages.client_enterprise.client_enterprise', $user);
     }
 
     public function view_user($name)

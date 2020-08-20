@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row" style="padding-bottom: 5%">
-        <form method="POST" action="{{ route('store_service', $fullname) }}">
+        <form method="POST" action="{{ route('store_service') }}">
             @csrf
             <div class="row">
                 <div class="input-field col s12 m6 l6">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <label for="description" class="black-text">{{ __('Descrição') }}</label>
-                    <input id="description" type="text" data-target="250" class="black-text" name="description" value="{{ old('description') }}" required>
+                    <input id="description" type="text" class="black-text" name="description" value="{{ old('description') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="price" class="black-text">{{ __('Preço') }}</label>
-                    <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}" required>
+                    <input id="price" type="text" class="black-text" name="price" value="{{ old('price') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -53,24 +53,22 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" id="all_services_btn" class="waves-effect waves-light btn-small">
-                        {{ __('Ver todos') }}
+                    <button type="button" class="waves-effect waves-light btn-small">
+                        {{ __('Serviços') }}
                         <i class="material-icons right"></i>
                     </button>
                 </div>                        
             </div>
         </form>
-
-        <div id='all_services'>
-            TODOS oS SERVICES
-        </div>
     </div>
 </div>
 @endsection
 @section('script')
-<script>
-    $("#all_services_btn").click(function(){
-      $("#all_services").toggle();
-    });
-</script>
+    @if (session('service_register_status'))
+    <div class="alert alert-success">
+        <script>
+            M.toast({html: '{{ session('service_register_status') }}', classes: 'rounded', displayLength: 1000});
+        </script>
+    </div>
+    @endif
 @endsection

@@ -10,20 +10,19 @@
         </div>
     </div>
     <div class="row" style="padding-bottom: 5%">
-        <form method="POST" action="{{ route('store_product') }}">
+        <form method="POST" action="{{ route('store_client_enterprise') }}">
             @csrf
             <div class="row">
                 <div class="input-field col s12 m6 l6">
-                    <label for="name" class="black-text">{{ __('Nome') }}</label>
-                    <input id="name" type="text" class="black-text" name="name" value="{{ old('name') }}" required>
-                    @error('email')
-                        <span class="red-text" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                    <select id="type" name="type">
+                        <optgroup label="{{__('Tipo')}}">
+                            <option value="ENTERPRISE">Empresarial</option>
+                            <option value="SINGULAR">Singular</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div class="input-field col s12 m6 l6">
-                    <label for="description" class="black-text">{{ __('Descrição') }}</label>
+                    <label for="description" class="black-text">{{ __('Nome') }}</label>
                     <input id="description" type="text" class="black-text" name="description" value="{{ old('description') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
