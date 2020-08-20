@@ -41,9 +41,9 @@ class UserController extends Controller
     {
         //return dd($request->all());
         if(Auth::check()){
-            $id = $this->user_id();
+            $code = $this->user_code();
              User::create([
-                'id' => $id,
+                'code' => $code,
                 'name' => $request['name'],
                 'surname' => $request['surname'],
                 'gender' => $request['gender'],
@@ -53,7 +53,7 @@ class UserController extends Controller
                 'phone' => $request['phone'],
                 'nuit' => $request['nuit'],
                 'address' => $request['address'],
-                'id_company' => substr($id, 0, 5),
+                'id_company' => substr($code, 0, 5),
                 'password' => Hash::make($request['password'])
             ]);
             //return route('view_user', $request->name . $request->surname);
@@ -108,18 +108,18 @@ class UserController extends Controller
     }
 
     //Generate User ID
-    private function user_id()
+    private function user_code()
     {
-        $users_id = DB::table('users')->orderByRaw('created_at DESC')->first();
-        $company_id = $users_id->id_company;
+        $users_code = DB::table('users')->orderByRaw('created_at DESC')->first();
+        $company_code = $users_code->code;
         if (DB::table('users')->count() == 1) {
-            return $company_id . '/' . $this->next_id('');
+            return $company_code . '/' . $this->next_code('');
         }
-        $user_id = $users_id->id;
-        return $company_id . '/' . $this->next_id($user_id);
+        $user_code = $users_code->code;
+        return $company_code . '/' . $this->next_code($user_code);
     }
 
-    private function next_id($last)
+    private function next_code($last)
     {
         $new_id = "0001";
         if ($last == "") {

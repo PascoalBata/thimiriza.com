@@ -1,6 +1,6 @@
 @extends('home.layouts.app')
 
-@section('username', $id)
+@section('username', $name)
 @section('user_email', $email)
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row" style="padding-bottom: 5%">
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('create_product') }}">
             @csrf
             <div class="row">
                 <div class="input-field col s12 m6 l6">

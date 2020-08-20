@@ -93,7 +93,7 @@ class RegisterController extends Controller
     public function create_admin(array $data)
     {
         return User::create([
-            'id' => $data['id'] . '/Admin',
+            'code' => $data['code'] . 'Admin',
             'name' => $data['name'],
             'surname' => $data['surname'],
             'gender' => $data['gender'],
@@ -103,7 +103,7 @@ class RegisterController extends Controller
             'phone' => $data['phone'],
             'nuit' => $data['nuit'],
             'address' => $data['address'],
-            'id_company' => $data['id'],
+            'id_company' => $data['id_company'],
             'password' => Hash::make($data['password'])
         ]);
     }

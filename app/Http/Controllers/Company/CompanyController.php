@@ -57,7 +57,7 @@ class CompanyController extends Controller
         //$empresa_dados = $request->all();
         $package_id = '1'; 
         $company_status = "ON";
-        $company_id = $this->company_id(); 
+        $company_code = $this->company_id(); 
         $company_name = $request->input('name');
         $company_email = $request->input('email');
         $company_phone = $request->input('phone');
@@ -67,7 +67,7 @@ class CompanyController extends Controller
         $company_nuit = $request->input('nuit');
 
         $company = new Company;
-        $company->id = $company_id;
+        $company->code = $company_code;
         $company->name  = $company_name;
         $company->type  = $company_type;
         $company->nuit  = $company_nuit;
@@ -79,11 +79,10 @@ class CompanyController extends Controller
         if(!$company->save()){
             return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
-            //$utilizadorController = new UtilizadorController($request);
-            //$utilizadorController->storeAdmin($empresa_id, $empresa_nome, $empresa_email, $empresa_telefone, $empresa_endereco, $empresa_senha);
             $userController = new RegisterController;
             $userController->create_admin([
-            'id'=>$company_id, 
+            'id_company'=>$this->getID_by_email($company_email),
+            'code' => $company_code, 
             'name'=> $company_name, 
             'surname' => 'N/A',
             'gender' => 'N/A',
@@ -144,6 +143,16 @@ class CompanyController extends Controller
         //
     }
 
+    private function getID_by_email($email){
+        $company = DB::table('companies')->where('email', 'like', $email)->first();
+        return $company->id;
+    }
+
+    private function getID_by_nuit($nuit){
+        $company = DB::table('companies')->where('nuit', 'like', $nuit)->first();
+        return $company->id;
+    }
+
     private function company_id()
     {
         $companies_id = DB::table('companies')->orderByRaw('created_at DESC')->first();
@@ -157,14 +166,14 @@ class CompanyController extends Controller
 
     private function next_id($last)
     {
-        $new_id = "A0001";
+        $new_id = date('y') . '/' . date('m') ."A0001";
         if ($last == "") {
             return $new_id;
         }
         $last++;
         $new_id = $last;
-        if (substr($last, 1, 4) == "0000") {
-            $letters = substr($last, 0, 1);
+        if (substr($last, 6, 4) == "0000") {
+            $letters = substr($last, 5, 1);
             $numbers = "0001";
             $new_id = $letters . $numbers;
         }
