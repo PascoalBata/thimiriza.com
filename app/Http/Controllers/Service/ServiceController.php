@@ -17,7 +17,8 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        $services = Service::paginate();
+       
     }
 
     /**
@@ -140,13 +141,13 @@ class ServiceController extends Controller
 
     private function next_code($last)
     {
-        $new_id = "AA0001";
+        $new_id = "SAA0001";
         if ($last == "") {
             return $new_id;
         }
-        $last = substr($last, 14, 6);
+        $last = substr($last, 15, 6);
         $last++;
-        $new_id = $last;
+        $new_id = 'S'.$last;
         
         /*
         if (substr($last, 16, 4) == "0000") {

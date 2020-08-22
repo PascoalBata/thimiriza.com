@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="quantity" class="black-text">{{ __('Quantidade') }}</label>
-                    <input id="quantity" type="text" class="black-text" name="quantity" value="{{ old('quantity') }}" required>
+                    <input id="quantity" type="number" class="black-text" name="quantity" value="{{ old('quantity') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <label for="price" class="black-text">{{ __('Preço') }}</label>
-                    <input id="price" type="text" class="black-text" name="price" value="{{ old('price') }}" required>
+                    <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>

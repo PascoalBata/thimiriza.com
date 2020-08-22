@@ -141,13 +141,13 @@ class ProductController extends Controller
 
     private function next_code($last)
     {
-        $new_id = "AA0001";
+        $new_id = "PAA0001";
         if ($last == "") {
             return $new_id;
         }
-        $last = substr($last, 14, 6);
+        $last = substr($last, 15, 6);
         $last++;
-        $new_id = $last;
+        $new_id = 'P'.$last;
         
         /*
         if (substr($last, 16, 4) == "0000") {

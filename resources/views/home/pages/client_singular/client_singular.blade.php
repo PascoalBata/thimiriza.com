@@ -22,8 +22,8 @@
                     </select>
                 </div>
                 <div class="input-field col s12 m6 l6">
-                    <label for="description" class="black-text">{{ __('Nome') }}</label>
-                    <input id="description" type="text" class="black-text" name="description" value="{{ old('description') }}" required>
+                    <label for="email" class="black-text">{{ __('Email') }}</label>
+                    <input id="email" type="email" class="black-text" name="email" value="{{ old('email') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -33,8 +33,8 @@
             </div>
             <div class="row">
                 <div class="input-field col s12 m6 l6">
-                    <label for="quantity" class="black-text">{{ __('Quantidade') }}</label>
-                    <input id="quantity" type="text" class="black-text" name="quantity" value="{{ old('quantity') }}" required>
+                    <label for="name" class="black-text">{{ __('Nome') }}</label>
+                    <input id="name" type="text" class="black-text" name="name" value="{{ old('name') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -42,8 +42,40 @@
                     @enderror
                 </div>
                 <div class="input-field col s12 m6 l6">
-                    <label for="price" class="black-text">{{ __('Preço') }}</label>
-                    <input id="price" type="text" class="black-text" name="price" value="{{ old('price') }}" required>
+                    <label for="surname" class="black-text">{{ __('Apelido') }}</label>
+                    <input id="surname" type="text" class="black-text" name="surname" value="{{ old('surname') }}" required>
+                    @error('email')
+                        <span class="red-text" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <label for="nuit" class="black-text">{{ __('NUIT') }}</label>
+                    <input id="nuit" type="number" class="black-text" name="nuit" value="{{ old('nuit') }}" required>
+                    @error('email')
+                        <span class="red-text" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <label for="phone" class="black-text">{{ __('Telefone') }}</label>
+                    <input id="phone" type="number" class="black-text" name="phone" value="{{ old('phone') }}" required>
+                    @error('email')
+                        <span class="red-text" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+            </div>
+            <div class="row">
+                
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <label for="address" class="black-text">{{ __('Endereço') }}</label>
+                    <input id="address" type="text" class="black-text" name="address" value="{{ old('address') }}" required>
                     @error('email')
                         <span class="red-text" role="alert">
                             <strong>{{ $message }}</strong>
@@ -86,10 +118,10 @@
         }
     }
 </script>
-    @if (session('product_register_status'))
+    @if (session('view_client_singular_register_status'))
     <div class="alert alert-success">
         <script>
-            M.toast({html: '{{ session('product_register_status') }}', classes: 'rounded', displayLength: 1000});
+            M.toast({html: '{{ session('view_client_singular_register_status') }}', classes: 'rounded', displayLength: 1000});
         </script>
     </div>
     @endif

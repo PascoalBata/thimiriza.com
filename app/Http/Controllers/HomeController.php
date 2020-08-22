@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -59,10 +60,8 @@ class HomeController extends Controller
     public function view_service()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.service.service', $user);
+        $services = Service::paginate(30);
+        return view ('home.pages.service.service', $user, ['services' => $services]);
     }
 
     public function view_client_singular()
