@@ -78,8 +78,10 @@
                         <td>{{$service->name}}</td>
                         <td>{{$service->description}}</td>
                         <td>{{number_format($service->price, 2, ',', '.')}}</td>
-                        <td><a class="modal-trigger" href="#service_modal">editar</a></td>
-                        <td><a href="#">remover</a></td>
+                        <td style="text-align: right;">
+                            <a class="modal-trigger waves-effect waves-light btn-small" href="#service_modal" onclick="clickedService(this, {{$service->price}},{{$service->price}})">editar</a>
+                            <a href="#" class="waves-effect waves-light btn-small red darken-3">remover</a>
+                        </td>
                     </tr>                        
                     @endforeach
                 </tbody>
@@ -88,27 +90,28 @@
         </div>
     </div>
 </div>
-<div id="service_modal" class="modal modal-fixed-footer">
-    <form method="POST" action="{{ route('edit_service', $service->id) }}">
+<div id="service_modal" tabindex="-1" class="modal modal-fixed-footer">
+    <form method="POST" id="editServiceForm" name="editServiceForm" action="{{ route('edit_service', $service->id) }}">
         <div class="modal-content">
             <h4>{{ __('Actualizar Serviço')}}</h4>
             <p>Altere somente os campos que pretende actualizar.</p>
             @method('PUT')
             @csrf
+            <input id="id" type="number" name="id" value="{{ old('name') }}" hidden>
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="name" class="black-text">{{ __('Nome') }}</label>
-                <input id="name" value="{{$service->name}}" type="text" class="black-text" name="name" value="{{ old('name') }}">
+                    <input id="name"  type="text" class="black-text" name="name" value="{{ old('name') }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <label for="description" class="black-text">{{ __('Descrição') }}</label>
-                    <input id="description" value="{{$service->description}}" type="text" class="black-text" name="description" value="{{ old('description') }}">
+                    <input id="description"  type="text" class="black-text" name="description" value="{{ old('description') }}" autofocus>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="price" class="black-text">{{ __('Preço') }}</label>
-                    <input id="price" value="{{$service->price}}" type="number" class="black-text" name="price" value="{{ old('price') }}">
+                    <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}" autofocus>
                 </div>
             </div>
         </div>
@@ -124,6 +127,14 @@
 @endsection
 @section('script')
 <script>
+    function clickedService(button, id, price){
+        var tr = button.parentElement.parentElement;
+        editServiceForm.id.value = id;
+        editServiceForm.name.value = tr.cells[1].innerHTML;
+        editServiceForm.description.value = tr.cells[2].innerHTML;
+        editServiceForm.price.value = price;
+    }
+
     function displayTable(){
         if(document.getElementById('service_table').style.display === 'none'){
             document.getElementById('service_table').style.display = 'block';
