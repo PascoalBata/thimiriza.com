@@ -76,9 +76,25 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit()
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            if(!$this->service_exists($request['name'], $request['description'], $code)){
+                $service = new Service; 
+                $service->code = $code;
+                $service->name = $request['name'];
+                $service->description = $request['description'];
+                $service->price = $request['price'];
+                $service->id_user = Auth::id();
+                if($service->save()){
+                    return redirect()->route('view_service')->with('service_register_status', 'Serviço registado com sucesso.');
+                }
+                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante o registo.');
+            }
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Esse serviço já existe.');
+        }
+        return route('root');
     }
 
     /**

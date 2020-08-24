@@ -67,8 +67,8 @@
                 <thead>
                     <tr>
                         <th>{{ __('Nome') }}</th>
-                        <th>{{ __('Descrição') }}</th>
-                        <th>{{ __('Preço') }}</th>
+                        <th style="text-align: center;">{{ __('Descrição') }}</th>
+                        <th style="text-align: center;">{{ __('Preço') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -76,8 +76,8 @@
                     @foreach ($services as $service)
                     <tr>
                         <td>{{$service->name}}</td>
-                        <td>{{$service->description}}</td>
-                        <td>{{number_format($service->price, 2, ',', '.')}}</td>
+                        <td style="text-align: center;">{{$service->description}}</td>
+                        <td style="text-align: right;">{{number_format($service->price, 2, ',', '.')}}</td>
                         <td style="text-align: right;">
                             <a class="modal-trigger waves-effect waves-light btn-small" href="#service_modal" onclick="clickedService(this, {{$service->price}},{{$service->price}})">editar</a>
                             <a href="#" class="waves-effect waves-light btn-small red darken-3">remover</a>
@@ -91,7 +91,7 @@
     </div>
 </div>
 <div id="service_modal" tabindex="-1" class="modal modal-fixed-footer">
-    <form method="POST" id="editServiceForm" name="editServiceForm" action="{{ route('edit_service', $service->id) }}">
+    <form method="PUT" id="editServiceForm" name="editServiceForm" action="{{ route('edit_service') }}">
         <div class="modal-content">
             <h4>{{ __('Actualizar Serviço')}}</h4>
             <p>Altere somente os campos que pretende actualizar.</p>
