@@ -112,17 +112,35 @@ class ServiceController extends Controller
     }
 
     private function update_service($id, $name, $description, $price, $user_id){
-        if(DB::table('services')
+        $services = DB::table('services')
+        ->select('name', 'description', 'price')
+        ->where('id', 'like', $id);
+        if($services->name == $name && $services->description == $description && $services->price == $price){
+            return true;
+        }
+        if($services->name == $name && $services->description == $description){
+            if(DB::table('services')
             ->where('id', $id)
             ->update(array(
-                'name' => $name,
-                'description' => $description,
                 'price' => $price,
                 'id_user' => $user_id
             ))){
                 return true;
             }
-            return false;
+        }else{
+            if(!$this.service_exists($name, $description, Auth::user()->code)){
+                if(DB::table('services')
+                ->where('id', $id)
+                ->update(array(
+                    'name' => $name,
+                    'description' => $description,
+                    'id_user' => $user_id
+                ))){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private function service_exists($name, $description, $user_code){

@@ -93,7 +93,7 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small">
+                    <button type="button" onclick="displayTable()" class="waves-effect waves-light btn-small">
                         {{ __('Clientes') }}
                         <i class="material-icons right"></i>
                     </button>
@@ -101,7 +101,7 @@
             </div>
         </form>
     </div>
-    <div class="row" id="product_table" style="display: block;">
+    <div class="row" id="client_singular_table" style="display: block;">
         <div class="col s12 m12 l12" style="overflow: auto;">
             <table class="highlight striped">
                 <thead>
@@ -123,7 +123,7 @@
                         <td style="text-align: right;">{{$client_singular->phone}}</td>
                         <td style="text-align: right;">{{$client_singular->address}}</td>
                         <td style="text-align: right;">
-                            <a class="modal-trigger waves-effect waves-light btn-small" href="#client_singular_modal" onclick="clickedClientSingular(this, {{$client_singular->id}}, {{$client_singular->name}}, {{$client_singular->surname}})">editar</a>
+                            <a class="modal-trigger waves-effect waves-light btn-small" href="#client_singular_modal" onclick='clickedClientSingular(this, {{$client_singular->id}}, "{{$client_singular->name}}", "{{$client_singular->surname}}")'>editar</a>
                             <a href="#" class="waves-effect waves-light btn-small red darken-3">remover</a>
                         </td>
                     </tr>                        
@@ -190,9 +190,9 @@
         editClientSingularForm.id.value = id;
         editClientSingularForm.name.value = name;
         editClientSingularForm.surname.value = surname;
-        editClientSingularForm.email.value = tr.cells[0].innerHTML;
-        editClientSingularForm.nuit.value = tr.cells[1].innerHTML;
-        editClientSingularForm.phone.value = tr.cells[2].innerHTML;
+        editClientSingularForm.email.value = tr.cells[1].innerHTML;
+        editClientSingularForm.nuit.value = tr.cells[2].innerHTML;
+        editClientSingularForm.phone.value = tr.cells[3].innerHTML;
         editClientSingularForm.address.value = tr.cells[4].innerHTML;
     }
 
