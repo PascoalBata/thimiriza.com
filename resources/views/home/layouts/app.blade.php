@@ -63,12 +63,6 @@
 
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{__('Produtos')}} <i class="small material-icons">shopping_basket</i>
-
-                </a>
-            </li>
-            <li>
                 <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
                     {{__('Produtos')}} <i class="small material-icons">add_shopping_cart</i>
                 </a>

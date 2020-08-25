@@ -76,9 +76,16 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            if($this->update_product($request['id'], $request['name'], $request['description'], $request['quantity'], $request['price'], $user->id)){
+                return redirect()->route('view_product')->with('product_register_status', 'Produto actualizado com sucesso.');
+            }
+            return redirect()->route('view_product')->with('product_register_status', 'Falhou! Ocorreu um erro durante a actualização.');    
+        }
+        return route('root');
     }
 
     /**
@@ -102,6 +109,21 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function update_product($id, $name, $description, $quantity, $price, $user_id){
+        if(DB::table('products')
+            ->where('id', $id)
+            ->update(array(
+                'name' => $name,
+                'description' => $description,
+                'quantity' => $quantity,
+                'price' => $price,
+                'id_user' => $user_id
+            ))){
+                return true;
+            }
+            return false;
     }
 
     private function product_exists($name, $description, $user_code){

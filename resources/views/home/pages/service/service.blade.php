@@ -62,14 +62,14 @@
         </form>
     </div>
     <div class="row" id="service_table" style="display: block;">
-        <div class="col s12 m12 l12">
-            <table class="highlight">
+        <div class="col s12 m12 l12" style="overflow: auto;">
+            <table class="highlight striped">
                 <thead>
                     <tr>
                         <th>{{ __('Nome') }}</th>
                         <th style="text-align: center;">{{ __('Descrição') }}</th>
                         <th style="text-align: center;">{{ __('Preço') }}</th>
-                        <th></th>
+                        <th style="text-align: center;">{{ __('') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,7 +79,7 @@
                         <td style="text-align: center;">{{$service->description}}</td>
                         <td style="text-align: right;">{{number_format($service->price, 2, ',', '.')}}</td>
                         <td style="text-align: right;">
-                            <a class="modal-trigger waves-effect waves-light btn-small" href="#service_modal" onclick="clickedService(this, {{$service->price}},{{$service->price}})">editar</a>
+                            <a class="modal-trigger waves-effect waves-light btn-small" href="#service_modal" onclick="clickedService(this, {{$service->id}},{{$service->price}})">editar</a>
                             <a href="#" class="waves-effect waves-light btn-small red darken-3">remover</a>
                         </td>
                     </tr>                        
@@ -91,7 +91,7 @@
     </div>
 </div>
 <div id="service_modal" tabindex="-1" class="modal modal-fixed-footer">
-    <form method="PUT" id="editServiceForm" name="editServiceForm" action="{{ route('edit_service') }}">
+    <form method="POST" id="editServiceForm" name="editServiceForm" action="{{ route('edit_service') }}">
         <div class="modal-content">
             <h4>{{ __('Actualizar Serviço')}}</h4>
             <p>Altere somente os campos que pretende actualizar.</p>
@@ -130,8 +130,8 @@
     function clickedService(button, id, price){
         var tr = button.parentElement.parentElement;
         editServiceForm.id.value = id;
-        editServiceForm.name.value = tr.cells[1].innerHTML;
-        editServiceForm.description.value = tr.cells[2].innerHTML;
+        editServiceForm.name.value = tr.cells[0].innerHTML;
+        editServiceForm.description.value = tr.cells[1].innerHTML;
         editServiceForm.price.value = price;
     }
 

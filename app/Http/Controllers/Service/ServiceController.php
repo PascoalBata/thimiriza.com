@@ -76,23 +76,14 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit(Request $request)
     {
         if(Auth::check()){
             $user = Auth::user();
-            if(!$this->service_exists($request['name'], $request['description'], $code)){
-                $service = new Service; 
-                $service->code = $code;
-                $service->name = $request['name'];
-                $service->description = $request['description'];
-                $service->price = $request['price'];
-                $service->id_user = Auth::id();
-                if($service->save()){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço registado com sucesso.');
-                }
-                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante o registo.');
+            if($this->update_service($request['id'], $request['name'], $request['description'], $request['price'], $user->id)){
+                return redirect()->route('view_service')->with('service_register_status', 'Serviço actualizado com sucesso.');
             }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Esse serviço já existe.');
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualização.');    
         }
         return route('root');
     }
@@ -118,6 +109,20 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function update_service($id, $name, $description, $price, $user_id){
+        if(DB::table('services')
+            ->where('id', $id)
+            ->update(array(
+                'name' => $name,
+                'description' => $description,
+                'price' => $price,
+                'id_user' => $user_id
+            ))){
+                return true;
+            }
+            return false;
     }
 
     private function service_exists($name, $description, $user_code){

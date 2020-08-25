@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client_Enterprise;
+use App\Models\Client_Singular;
+use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,10 +54,8 @@ class HomeController extends Controller
     public function view_product()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.product.product', $user);
+        $products = Product::paginate(30);
+        return view ('home.pages.product.product', $user, ['products' => $products]);
     }
 
     public function view_service()
@@ -67,19 +68,15 @@ class HomeController extends Controller
     public function view_client_singular()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.client_singular.client_singular', $user);
+        $clients_singular = Client_Singular::paginate(30);
+        return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular]);
     }
 
     public function view_client_enterprise()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.client_enterprise.client_enterprise', $user);
+        $clients_enterprise = Client_Enterprise::paginate(30);
+        return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_singular' => $clients_enterprise]);
     }
 
     public function view_user($name)

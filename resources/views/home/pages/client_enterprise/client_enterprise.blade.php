@@ -82,7 +82,7 @@
                         <i class="material-icons right"></i>
                     </button>
                     <button type="button" class="waves-effect waves-light btn-small">
-                        {{ __('Produtos') }}
+                        {{ __('Clientes') }}
                         <i class="material-icons right"></i>
                     </button>
                 </div>                        
