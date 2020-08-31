@@ -76,14 +76,23 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit()
     {
         if(Auth::check()){
             $user = Auth::user();
-            if($this->update_service($request['id'], $request['name'], $request['description'], $request['price'], $user->id)){
-                return redirect()->route('view_service')->with('service_register_status', 'Serviço actualizado com sucesso.');
+            if(!$this->service_exists($request['name'], $request['description'], $code)){
+                $service = new Service; 
+                $service->code = $code;
+                $service->name = $request['name'];
+                $service->description = $request['description'];
+                $service->price = $request['price'];
+                $service->id_user = Auth::id();
+                if($service->save()){
+                    return redirect()->route('view_service')->with('service_register_status', 'Serviço registado com sucesso.');
+                }
+                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante o registo.');
             }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualização.');    
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Esse serviço já existe.');
         }
         return route('root');
     }
@@ -111,6 +120,7 @@ class ServiceController extends Controller
         //
     }
 
+<<<<<<< HEAD
     private function update_service($id, $name, $description, $price, $user_id){
         $services = DB::table('services')
         ->select('name', 'description', 'price')
@@ -143,6 +153,8 @@ class ServiceController extends Controller
         return false;
     }
 
+=======
+>>>>>>> parent of 3bf6596... 2508_527
     private function service_exists($name, $description, $user_code){
         $company_code = substr($user_code, 0, 10);
         if (DB::table('companies')

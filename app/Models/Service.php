@@ -8,8 +8,4 @@ class Service extends Model
 {
     //
     protected $table = 'services';
-    protected $fillable = [
-        'id', 'code', 'name', 'description', 
-        'price', 'id_user'
-    ];
 }

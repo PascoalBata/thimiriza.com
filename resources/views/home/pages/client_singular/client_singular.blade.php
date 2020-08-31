@@ -93,14 +93,20 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
+<<<<<<< HEAD
                     <button type="button" onclick="displayTable()" class="waves-effect waves-light btn-small">
                         {{ __('Clientes') }}
+=======
+                    <button type="button" class="waves-effect waves-light btn-small">
+                        {{ __('Produtos') }}
+>>>>>>> parent of 3bf6596... 2508_527
                         <i class="material-icons right"></i>
                     </button>
                 </div>                        
             </div>
         </form>
     </div>
+<<<<<<< HEAD
     <div class="row" id="client_singular_table" style="display: block;">
         <div class="col s12 m12 l12" style="overflow: auto;">
             <table class="highlight striped">
@@ -181,10 +187,13 @@
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
         </div>
     </form>
+=======
+>>>>>>> parent of 3bf6596... 2508_527
 </div>
 @endsection
 @section('script')
 <script>
+<<<<<<< HEAD
     function clickedClientSingular(button, id, name, surname){
         var tr = button.parentElement.parentElement;
         editClientSingularForm.id.value = id;
@@ -208,6 +217,8 @@
         $('.modal').modal();
     });
 
+=======
+>>>>>>> parent of 3bf6596... 2508_527
     function changeClient(value){
         if(value === 'ENTERPRISE'){
             window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');
