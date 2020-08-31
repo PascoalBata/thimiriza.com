@@ -109,6 +109,96 @@ class ServiceController extends Controller
         //
     }
 
+    public function update_name(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            $user_id = $user->id;
+            $user_code = $user->code;
+            $id = $request['id'];
+            $name = $request['name'];
+            $company_code = substr($user_code, 0, 10);
+            $services = DB::table('services')
+            ->select('name', 'description')
+            ->where('id', 'like', $id)->first();
+            if(DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('services', 'users.id', '=', 'services.id_user')
+            ->select('services.name', 'services.description')
+            ->where('companies.code', 'like', $company_code)
+            ->where('services.name', 'like', $name)
+            ->where('services.description', 'like', $services->description)->count() >= 1){
+                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Existe um Serviço com esse nome e descricao.');
+            }else{
+                if(DB::table('services')
+                ->where('id', $id)
+                ->update(array(
+                    'name' => $name,
+                    'id_user' => $user_id
+                ))){
+                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Nome) actualizado com sucesso.');
+                }
+            }
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+        }
+        return route('root');
+    }
+
+    public function update_description(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            $user_id = $user->id;
+            $user_code = $user->code;
+            $id = $request['id'];
+            $description = $request['description'];
+            $company_code = substr($user_code, 0, 10);
+            $services = DB::table('services')
+            ->select('name', 'description')
+            ->where('id', 'like', $id)->first();
+            if(DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('services', 'users.id', '=', 'services.id_user')
+            ->select('services.name', 'services.description')
+            ->where('companies.code', 'like', $company_code)
+            ->where('services.name', 'like', $services->name)
+            ->where('services.description', 'like', $description)->count() >= 1){
+                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Existe um Serviço com esse nome e descricao.');
+            }else{
+                if(DB::table('services')
+                ->where('id', $id)
+                ->update(array(
+                    'description' => $description,
+                    'id_user' => $user_id
+                ))){
+                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Descricao) actualizado com sucesso.');
+                }
+            }
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+        }
+        return route('root');
+    }
+
+    public function update_price(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            $user_id = $user->id;
+            $id = $request['id'];
+            $price = $request['price'];
+            if(DB::table('services')
+                ->where('id', $id)
+                ->update(array(
+                'price' => $price,
+                'id_user' => $user_id
+            ))){
+                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Preco) actualizado com sucesso.');
+                }
+            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+        }
+        return route('root');
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -120,41 +210,6 @@ class ServiceController extends Controller
         //
     }
 
-<<<<<<< HEAD
-    private function update_service($id, $name, $description, $price, $user_id){
-        $services = DB::table('services')
-        ->select('name', 'description', 'price')
-        ->where('id', 'like', $id);
-        if($services->name == $name && $services->description == $description && $services->price == $price){
-            return true;
-        }
-        if($services->name == $name && $services->description == $description){
-            if(DB::table('services')
-            ->where('id', $id)
-            ->update(array(
-                'price' => $price,
-                'id_user' => $user_id
-            ))){
-                return true;
-            }
-        }else{
-            if(!$this.service_exists($name, $description, Auth::user()->code)){
-                if(DB::table('services')
-                ->where('id', $id)
-                ->update(array(
-                    'name' => $name,
-                    'description' => $description,
-                    'id_user' => $user_id
-                ))){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-=======
->>>>>>> parent of 3bf6596... 2508_527
     private function service_exists($name, $description, $user_code){
         $company_code = substr($user_code, 0, 10);
         if (DB::table('companies')

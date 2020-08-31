@@ -59,7 +59,9 @@ Route::post('/users', 'User\UserController@store')->name('store_user');
 //edit
 Route::post('/sells/edit', 'Sell\SellControler@store')->name('edit_sell');
 Route::post('/products/edit', 'Product\ProductController@store')->name('edit_product');
-Route::put('/services', 'Service\ServiceController@store')->name('edit_service');
+Route::put('/services/update_name', 'Service\ServiceController@update_name')->name('edit_service_name');
+Route::put('/services/update_description', 'Service\ServiceController@update_description')->name('edit_service_description');
+Route::put('/services/update_price', 'Service\ServiceController@update_price')->name('edit_service_price');
 Route::post('/clients_singular/edit', 'ClientSingular\ClientSingularController@store')->name('edit_client_singular');
 Route::post('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@store')->name('edit_client_enterprise');
 Route::post('/users/edit', 'User\UserController@store')->name('edit_user');
