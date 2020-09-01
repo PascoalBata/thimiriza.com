@@ -49,12 +49,13 @@ class ServiceController extends Controller
                 $service->description = $request['description'];
                 $service->price = $request['price'];
                 $service->id_user = Auth::id();
+                //$service->id_company = ;
                 if($service->save()){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço registado com sucesso.');
+                    return redirect()->route('view_service')->with('service_notification', 'Serviço registado com sucesso.');
                 }
-                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante o registo.');
+                return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante o registo.');
             }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Esse serviço já existe.');
+            return redirect()->route('view_service')->with('service_notification', 'Falhou! Esse serviço já existe.');
         }
         return route('root');
     }
@@ -76,25 +77,9 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit(Request $request)
     {
-        if(Auth::check()){
-            $user = Auth::user();
-            if(!$this->service_exists($request['name'], $request['description'], $code)){
-                $service = new Service; 
-                $service->code = $code;
-                $service->name = $request['name'];
-                $service->description = $request['description'];
-                $service->price = $request['price'];
-                $service->id_user = Auth::id();
-                if($service->save()){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço registado com sucesso.');
-                }
-                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante o registo.');
-            }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Esse serviço já existe.');
-        }
-        return route('root');
+        //
     }
 
     /**
@@ -128,7 +113,7 @@ class ServiceController extends Controller
             ->where('companies.code', 'like', $company_code)
             ->where('services.name', 'like', $name)
             ->where('services.description', 'like', $services->description)->count() >= 1){
-                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Existe um Serviço com esse nome e descricao.');
+                return redirect()->route('view_service')->with('service_notification', 'Falhou! Existe um Serviço com esse nome e descricao.');
             }else{
                 if(DB::table('services')
                 ->where('id', $id)
@@ -136,10 +121,10 @@ class ServiceController extends Controller
                     'name' => $name,
                     'id_user' => $user_id
                 ))){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Nome) actualizado com sucesso.');
+                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Nome) actualizado com sucesso.');
                 }
             }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
         }
         return route('root');
     }
@@ -163,7 +148,7 @@ class ServiceController extends Controller
             ->where('companies.code', 'like', $company_code)
             ->where('services.name', 'like', $services->name)
             ->where('services.description', 'like', $description)->count() >= 1){
-                return redirect()->route('view_service')->with('service_register_status', 'Falhou! Existe um Serviço com esse nome e descricao.');
+                return redirect()->route('view_service')->with('service_notification', 'Falhou! Existe um Serviço com esse nome e descricao.');
             }else{
                 if(DB::table('services')
                 ->where('id', $id)
@@ -171,10 +156,10 @@ class ServiceController extends Controller
                     'description' => $description,
                     'id_user' => $user_id
                 ))){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Descricao) actualizado com sucesso.');
+                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Descricao) actualizado com sucesso.');
                 }
             }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            return redirect()->route('view_service')->with('service_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
         }
         return route('root');
     }
@@ -192,9 +177,9 @@ class ServiceController extends Controller
                 'price' => $price,
                 'id_user' => $user_id
             ))){
-                    return redirect()->route('view_service')->with('service_register_status', 'Serviço (Preco) actualizado com sucesso.');
+                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Preco) actualizado com sucesso.');
                 }
-            return redirect()->route('view_service')->with('service_register_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
         }
         return route('root');
     }
@@ -205,9 +190,16 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        if(Auth::check()){
+            $id = $request['id'];
+            if(DB::table('services')->where('id', 'like', $id)->delete()){
+                return redirect()->route('view_service')->with('service_notification', 'Servico removido com sucesso.');
+            }
+            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a remocao do servico.');
+        }
+        return route('root');
     }
 
     private function service_exists($name, $description, $user_code){

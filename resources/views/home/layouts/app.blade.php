@@ -60,13 +60,6 @@
                 <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');" href="">
                     {{__('Clientes')}} <i class="small material-icons">supervisor_account</i>
                 </a>
-
-            </li>
-            <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{__('Produtos')}} <i class="small material-icons">shopping_basket</i>
-
-                </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">

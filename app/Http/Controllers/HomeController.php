@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,10 +52,8 @@ class HomeController extends Controller
     public function view_product()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.product.product', $user);
+        $products = Product::paginate(30);
+        return view ('home.pages.product.product', $user, ['products' => $products]);
     }
 
     public function view_service()

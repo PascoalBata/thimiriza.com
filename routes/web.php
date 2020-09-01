@@ -58,10 +58,33 @@ Route::post('/users', 'User\UserController@store')->name('store_user');
 
 //edit
 Route::post('/sells/edit', 'Sell\SellControler@store')->name('edit_sell');
-Route::post('/products/edit', 'Product\ProductController@store')->name('edit_product');
+
+//edit_sevice
 Route::put('/services/update_name', 'Service\ServiceController@update_name')->name('edit_service_name');
 Route::put('/services/update_description', 'Service\ServiceController@update_description')->name('edit_service_description');
 Route::put('/services/update_price', 'Service\ServiceController@update_price')->name('edit_service_price');
+
+//edit_product
+Route::put('/products/update_name', 'Product\ProductController@update_name')->name('edit_product_name');
+Route::put('/products/update_description', 'Product\ProductController@update_description')->name('edit_product_description');
+Route::put('/products/update_quantity', 'Product\ProductController@update_quantity')->name('edit_product_quantity');
+Route::put('/products/update_price', 'Product\ProductController@update_price')->name('edit_product_price');
+
+//edit_client_singular
 Route::post('/clients_singular/edit', 'ClientSingular\ClientSingularController@store')->name('edit_client_singular');
-Route::post('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@store')->name('edit_client_enterprise');
+
+//edit_client_enterprise
+Route::put('/clients_enterprise/update_name', 'ClientEnterprise\ClientEnterpriseController@update_name')->name('edit_client_enterprise_name');
+Route::put('/clients_enterprise/update_email', 'ClientEnterprise\ClientEnterpriseController@update_email')->name('edit_client_enterprise_email');
+Route::put('/clients_enterprise/update_nuit', 'ClientEnterprise\ClientEnterpriseController@update_nuit')->name('edit_client_enterprise_nuit');
+Route::put('/clients_enterprise/update_phone', 'ClientEnterprise\ClientEnterpriseController@update_phone')->name('edit_client_enterprise_phone');
+Route::put('/clients_enterprise/update_address', 'ClientEnterprise\ClientEnterpriseController@update_address')->name('edit_client_enterprise_address');
+
+//edit_user
 Route::post('/users/edit', 'User\UserController@store')->name('edit_user');
+
+//remove_service
+Route::delete('/services/delete_service', 'Service\ServiceController@destroy')->name('remove_service');
+
+//remove_product
+Route::delete('/products/delete_product', 'Product\ProductController@destroy')->name('remove_product');

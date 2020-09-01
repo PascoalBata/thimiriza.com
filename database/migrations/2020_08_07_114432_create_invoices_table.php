@@ -17,11 +17,17 @@ class CreateInvoicesTable extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('id_client');
+            $table->string('id_product_service');
+            $table->string('client');
+            $table->string('product_service');
+            $table->string('description');
             $table->double('price');
-            $table->unsignedBigInteger('id_user');
+            $table->double('status');
+            $table->bigInteger('id_user');
+            $table->unsignedBigInteger('id_company');
             $table->timestamps();
 
-            $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_company')->references('id')->on('companies');
         });
     }
 

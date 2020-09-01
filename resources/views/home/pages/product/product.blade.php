@@ -62,21 +62,181 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small">
-                        {{ __('Produtos') }}
+                    <button type="button" class="waves-effect waves-light btn-small" onclick="displayProductTable()">
+                        {{ __('Serviços') }}
                         <i class="material-icons right"></i>
                     </button>
                 </div>                        
             </div>
         </form>
     </div>
+    <div class="row" id="service_table" style="display: block;">
+        <div class="col s12 m12 l12">
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>{{ __('Nome') }}</th>
+                        <th style="text-align: center;">{{ __('Descrição') }}</th>
+                        <th style="text-align: center;">{{ __('Preço') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($products as $product)
+                    <tr>
+                        <td>{{$product->name}}</td>
+                        <td style="text-align: center;">{{$product->description}}</td>
+                        <td style="text-align: center;">{{$product->quantity}}</td>
+                        <td style="text-align: right;">{{number_format($product->price, 2, ',', '.')}} {{ __('MT') }}</td>
+                        <td style="text-align: right;">
+                            <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_product_modal" onclick="editProduct(this, {{$product->id}}, {{$product->price}})">editar</a>
+                            <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_product_modal" onclick="removeProduct(this, {{$product->id}})">remover</a>
+                        </td>
+                    </tr>                        
+                    @endforeach
+                </tbody>
+            </table>
+            {!! $products->links() !!}
+        </div>
+    </div>
+</div>
+<div id="edit_product_modal" tabindex="-1" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>{{ __('Actualizar Produto')}}</h4>
+        <p>Altere somente os campos que pretende actualizar.</p>
+        <form method="POST" id="editProductNameForm" name="editProductNameForm" action="{{ route('edit_product_name') }}">
+            @method('PUT')
+            @csrf
+            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <label for="name" class="black-text">{{ __('Nome') }}</label>
+                    <input id="name"  type="text" class="black-text" name="name" value="{{ old('name') }}" autofocus>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <button type="submit" class="waves-effect waves-light btn-small " >
+                        {{ __('Salvar') }}
+                        <i class="material-icons left"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <form method="POST" id="editProductDescriptionForm" name="editProductDescriptionForm" action="{{ route('edit_product_description') }}">
+            @method('PUT')
+            @csrf
+            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <label for="description" class="black-text">{{ __('Descrição') }}</label>
+                    <input id="description"  type="text" class="black-text" name="description" value="{{ old('description') }}" autofocus>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <button type="submit" class="waves-effect waves-light btn-small " >
+                        {{ __('Salvar') }}
+                        <i class="material-icons left"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <form method="POST" id="editProductQuantityForm" name="editProductQuantityForm" action="{{ route('edit_product_quantity') }}">
+            @method('PUT')
+            @csrf
+            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <label for="quantity" class="black-text">{{ __('Preço') }}</label>
+                    <input id="quantity" type="number" class="black-text" name="quantity" value="{{ old('quantity') }}" autofocus>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <button type="submit" class="waves-effect waves-light btn-small " >
+                        {{ __('Salvar') }}
+                        <i class="material-icons left"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <form method="POST" id="editProductPriceForm" name="editProductPriceForm" action="{{ route('edit_product_price') }}">
+            @method('PUT')
+            @csrf
+            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <label for="price" class="black-text">{{ __('Preço') }}</label>
+                    <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}" autofocus>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <button type="submit" class="waves-effect waves-light btn-small " >
+                        {{ __('Salvar') }}
+                        <i class="material-icons left"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+    </div>
+</div>
+<div id="remove_product_modal" tabindex="-1" class="modal modal-fixed-footer">
+    <form method="POST" id="removeProductForm" name="removeProductForm" action="{{ route('remove_product') }}">
+        <div class="modal-content">
+            <h4>{{ __('Remover Produto')}}</h4>
+            <p>{{__('Tem certeza que deseja remover este produto?')}}</p>
+            @method('DELETE')
+            @csrf
+            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+            <div class="row">
+                <div class="input-field col s12 m12 l12">
+                    <input id="product" type="text" class="black-text" name="product" value="{{ old('product') }}" autofocus disabled>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="waves-effect waves-light btn-small " >
+                {{ __('SIM') }}
+                <i class="material-icons left"></i>
+            </button>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">{{ __('NÃO') }}</a>
+        </div>
+    </form>
 </div>
 @endsection
 @section('script')
-    @if (session('product_register_status'))
+<script>
+    function editProduct(button, id, price){
+        var tr = button.parentElement.parentElement;
+        editProductNameForm.id.value = id;
+        editProductDescriptionForm.id.value = id;
+        editProductPriceForm.id.value = id;
+        editProductQuantityForm.id.value = id;
+        editProductNameForm.name.value = tr.cells[0].innerHTML;
+        editProductDescriptionForm.description.value = tr.cells[1].innerHTML;
+        editProductQuantityForm.quantity.value = tr.cells[2].innerHTML;
+        editProductPriceForm.price.value = price;
+    }
+
+    function removeProduct(button, id){
+        var tr = button.parentElement.parentElement;
+        removeProductForm.id.value = id;
+        removeProductForm.product.value = tr.cells[0].innerHTML + " <<->> " + tr.cells[1].innerHTML;
+    }
+
+    function displayProductTable(){
+        if(document.getElementById('product_table').style.display === 'none'){
+            document.getElementById('product_table').style.display = 'block';
+        }else{
+            document.getElementById('product_table').style.display = 'none';
+        }
+    }
+
+    $(document).ready(function(){
+        $('.modal').modal();
+    });
+</script>    
+    @if (session('product_notification'))
     <div class="alert alert-success">
         <script>
-            M.toast({html: '{{ session('product_register_status') }}', classes: 'rounded', displayLength: 1000});
+            M.toast({html: '{{ session('product_notification') }}', classes: 'rounded', displayLength: 1000});
         </script>
     </div>
     @endif

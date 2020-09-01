@@ -94,6 +94,43 @@ class ClientEnterpriseController extends Controller
         //
     }
 
+    public function update_name(Request $request)
+    {
+        {
+            if(Auth::check()){
+                $user = Auth::user();
+                $user_id = $user->id;
+                $user_code = $user->code;
+                $id = $request['id'];
+                $name = $request['name'];
+                $company_code = substr($user_code, 0, 10);
+                $clients_enterprise = DB::table('clients_enterprise')
+                ->select('name')
+                ->where('id', 'like', $id)->first();
+                if(DB::table('companies')
+                ->join('users', 'companies.id', '=', 'users.id_company')
+                ->join('products', 'users.id', '=', 'products.id_user')
+                ->select('products.name', 'products.description')
+                ->where('companies.code', 'like', $company_code)
+                ->where('products.name', 'like', $name)
+                ->where('products.description', 'like', $products->description)->count() >= 1){
+                    return redirect()->route('view_product')->with('product_notification', 'Falhou! Existe um Produto com esse nome e descricao.');
+                }else{
+                    if(DB::table('products')
+                    ->where('id', $id)
+                    ->update(array(
+                        'name' => $name,
+                        'id_user' => $user_id
+                    ))){
+                        return redirect()->route('view_product')->with('product_notification', 'Produto (Nome) actualizado com sucesso.');
+                    }
+                }
+                return redirect()->route('view_product')->with('product_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            }
+            return route('root');
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *

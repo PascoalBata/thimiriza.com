@@ -21,11 +21,12 @@ class CreateClientsSingularTable extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('address')->nullable();
-            $table->string('nuit')->unique();
-            $table->unsignedBigInteger('id_user');
+            $table->string('nuit');
+            $table->bigInteger('id_user');
+            $table->unsignedBigInteger('id_company');
             $table->timestamps();
 
-            $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_company')->references('id')->on('companies');
         });
     }
 

@@ -20,9 +20,11 @@ class CreateProductsTable extends Migration
             $table->text('description')->nullable();
             $table->double('price');
             $table->integer('quantity');
-            $table->unsignedBigInteger('id_user');
-            $table->foreign('id_user')->references('id')->on('users');
+            $table->bigInteger('id_user');
+            $table->unsignedBigInteger('id_company');
             $table->timestamps();
+
+            $table->foreign('id_company')->references('id')->on('companies');
         });
     }
 
