@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -85,6 +86,16 @@ class HomeController extends Controller
         if($user['privilege'] == "TOTAL"){
             $users = User::paginate(30);
             return view ('home.pages.user.user', $user, ['users' => $users]);
+        }
+        $this->view_product();
+    }
+
+    public function view_company()
+    {
+        $user = Auth::user();
+        $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
+        if($user['privilege'] == "TOTAL"){
+            return view ('home.pages.company.company', $user, ['company' => $company]);
         }
         $this->view_product();
     }

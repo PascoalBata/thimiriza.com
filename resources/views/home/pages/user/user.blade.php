@@ -43,7 +43,7 @@
                     </select>
                 </div>
                 <div class="input-field col s12 m6 l6">
-                    <label for="birthdate" class="black-text">{{ __('Birthdate') }}</label>
+                    <label for="birthdate" class="black-text">{{ __('Data de nascimento') }}</label>
                     <input id="birthdate" type="text" class="black-text" name="birthdate" value="{{ old('birthdate') }}"
                            required onfocus="(this.type='date')" onblur="(this.type='text')">
                 </div>
@@ -140,7 +140,14 @@
             <tbody>
             @foreach ($users as $user)
             <tr>
-                <td>{{$user->name}} {{$user->surname}}</td>
+                <td>
+                    @if ($user->surname == "N/A")
+                    {{$user->name}} 
+                    @endif
+                    @if ($user->surname != "N/A")
+                    {{$user->name}} {{$user->surname}} 
+                    @endif
+                </td>
                 <td style="text-align: center;">{{$user->email}}</td>
                 <td style="text-align: center;">{{$user->phone}}</td>
                 <td style="text-align: center;">{{$user->gender}}</td>

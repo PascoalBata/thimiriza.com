@@ -89,7 +89,7 @@
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/company');" href="">
                     {{__('Empresa')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>
@@ -101,7 +101,7 @@
                 </a>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                <a class="nav-link black-text sidenav-close" onclick="window.history.replaceState(null, 'Thimiriza', '/');" href="">
                     {{__('Sair')}} <i class="small material-icons">shopping_basket</i>
 
                 </a>

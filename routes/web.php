@@ -47,6 +47,7 @@ Route::get('/services', 'HomeController@view_service')->name('view_service');
 Route::get('/clients_singular', 'HomeController@view_client_singular')->name('view_client_singular');
 Route::get('/clients_enterprise', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
 Route::get('/users', 'HomeController@view_user')->name('view_user');
+Route::get('/company', 'HomeController@view_company')->name('view_company');
 
 //store
 Route::post('/sells', 'Sell\SellControler@store')->name('store_sell');
