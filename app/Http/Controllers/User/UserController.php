@@ -41,7 +41,9 @@ class UserController extends Controller
     {
         //return dd($request->all());
         if(Auth::check()){
+            $user = Auth::user();
             $code = $this->user_code();
+            $id_company = $user->id_company;
              User::create([
                 'code' => $code,
                 'name' => $request['name'],
@@ -53,7 +55,7 @@ class UserController extends Controller
                 'phone' => $request['phone'],
                 'nuit' => $request['nuit'],
                 'address' => $request['address'],
-                'id_company' => substr($code, 0, 5),
+                'id_company' => $id_company,
                 'password' => Hash::make($request['password'])
             ]);
             //return route('view_user', $request->name . $request->surname);
@@ -91,7 +93,54 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update_name(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            $user_id = $user->id;
+            $id = $request['id'];
+            $name = $request['name'];
+            $surname = $request['surname'];          
+            if(DB::table('users')
+            ->where('id', $id)
+            ->update(array(
+                'name' => $name,
+                'surname' => $surname,
+                'updated_at' => now()
+            ))){
+                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Nome) actualizado com sucesso.');
+            }
+            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+        }
+        return route('root');
+    }
+
+    public function update_gender(Request $request)
+    {
+        //
+    }
+
+    public function update_birthdate(Request $request)
+    {
+        //
+    }
+
+    public function update_privilege(Request $request)
+    {
+        //
+    }
+
+    public function update_address(Request $request)
+    {
+        //
+    }
+
+    public function update_phone(Request $request)
+    {
+        //
+    }
+
+    public function update_email(Request $request)
     {
         //
     }
@@ -102,7 +151,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
     }
@@ -111,29 +160,20 @@ class UserController extends Controller
     private function user_code()
     {
         $users_code = DB::table('users')->orderByRaw('created_at DESC')->first();
-        $company_code = $users_code->code;
+        $company_code = substr($users_code->code, 0, 10);
         if (DB::table('users')->count() == 1) {
-            return $company_code . '/' . $this->next_code('');
+            return $company_code . '00001';
         }
         $user_code = $users_code->code;
-        return $company_code . '/' . $this->next_code($user_code);
+        return $company_code . '' . $this->next_code($user_code);
     }
 
     private function next_code($last)
     {
-        $new_id = "0001";
-        if ($last == "") {
-            return $new_id;
+        if (substr($last, 10, 5) == "Admin") {
+            return substr($last, 0, 10) . "00001";
         }
-        $length = strlen($last);
-        $last++;
-        for($i = $length; $i > 0; $i--){
-            if(strlen($last) < $length){
-                $last = '0' . $last;
-            }
-        }
-        $new_id = $last;
-        return $new_id;
+        return $last++;
     }
 
 }

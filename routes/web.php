@@ -71,7 +71,11 @@ Route::put('/products/update_quantity', 'Product\ProductController@update_quanti
 Route::put('/products/update_price', 'Product\ProductController@update_price')->name('edit_product_price');
 
 //edit_client_singular
-Route::post('/clients_singular/edit', 'ClientSingular\ClientSingularController@store')->name('edit_client_singular');
+Route::put('/clients_singular/update_name', 'ClientSingular\ClientSingularController@update_name')->name('edit_client_singular_name');
+Route::put('/clients_singular/update_email', 'ClientSingular\ClientSingularController@update_email')->name('edit_client_singular_email');
+Route::put('/clients_singular/update_nuit', 'ClientSingular\ClientSingularController@update_nuit')->name('edit_client_singular_nuit');
+Route::put('/clients_singular/update_phone', 'ClientSingular\ClientSingularController@update_phone')->name('edit_client_singular_phone');
+Route::put('/clients_singular/update_address', 'ClientSingular\ClientSingularController@update_address')->name('edit_client_singular_address');
 
 //edit_client_enterprise
 Route::put('/clients_enterprise/update_name', 'ClientEnterprise\ClientEnterpriseController@update_name')->name('edit_client_enterprise_name');
@@ -81,10 +85,25 @@ Route::put('/clients_enterprise/update_phone', 'ClientEnterprise\ClientEnterpris
 Route::put('/clients_enterprise/update_address', 'ClientEnterprise\ClientEnterpriseController@update_address')->name('edit_client_enterprise_address');
 
 //edit_user
-Route::post('/users/edit', 'User\UserController@store')->name('edit_user');
+Route::put('/users/edit_name', 'User\UserController@update_name')->name('edit_user_name');
+Route::put('/users/edit_email', 'User\UserController@update_email')->name('edit_user_email');
+Route::put('/users/edit_phone', 'User\UserController@update_phone')->name('edit_user_phone');
+Route::put('/users/edit_priviliege', 'User\UserController@update_priviliege')->name('edit_user_privilege');
+Route::put('/users/edit_address', 'User\UserController@update_address')->name('edit_user_address');
+Route::put('/users/edit_gender', 'User\UserController@update_gender')->name('edit_user_gender');
+Route::put('/users/edit_birthdate', 'User\UserController@update_name')->name('edit_user_birthdate');
 
 //remove_service
 Route::delete('/services/delete_service', 'Service\ServiceController@destroy')->name('remove_service');
 
 //remove_product
 Route::delete('/products/delete_product', 'Product\ProductController@destroy')->name('remove_product');
+
+//remove_client_enterprise
+Route::delete('/clients_enterprise/delete_client_enterprise', 'ClientEnterprise\ClientEnterpriseController@destroy')->name('remove_client_enterprise');
+
+//remove_client_singular
+Route::delete('/clients_singular/delete_client_singular', 'ClientSingular\ClientSingularController@destroy')->name('remove_client_singular');
+
+//remove_user
+Route::delete('/users/remove_user', 'User\UserController@destroy')->name('remove_user');

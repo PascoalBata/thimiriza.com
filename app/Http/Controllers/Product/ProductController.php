@@ -117,7 +117,8 @@ class ProductController extends Controller
                 ->where('id', $id)
                 ->update(array(
                     'name' => $name,
-                    'id_user' => $user_id
+                    'id_user' => $user_id,
+                    'updated_at' => now()
                 ))){
                     return redirect()->route('view_product')->with('product_notification', 'Produto (Nome) actualizado com sucesso.');
                 }
@@ -152,7 +153,8 @@ class ProductController extends Controller
                 ->where('id', $id)
                 ->update(array(
                     'description' => $description,
-                    'id_user' => $user_id
+                    'id_user' => $user_id,
+                    'updated_at' => now()
                 ))){
                     return redirect()->route('view_product')->with('product_notification', 'Produto (Descricao) actualizado com sucesso.');
                 }
@@ -173,7 +175,8 @@ class ProductController extends Controller
                 ->where('id', $id)
                 ->update(array(
                 'quantity' => $quantity,
-                'id_user' => $user_id
+                'id_user' => $user_id,
+                'updated_at' => now()
             ))){
                     return redirect()->route('view_product')->with('product_notification', 'Produto (Quantidade) actualizado com sucesso.');
                 }
@@ -193,7 +196,8 @@ class ProductController extends Controller
                 ->where('id', $id)
                 ->update(array(
                 'price' => $price,
-                'id_user' => $user_id
+                'id_user' => $user_id,
+                'updated_at' => now()
             ))){
                     return redirect()->route('view_product')->with('product_notification', 'Produto (Preco) actualizado com sucesso.');
                 }

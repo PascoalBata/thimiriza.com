@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client_Enterprise;
+use App\Models\Client_Singular;
 use App\Models\Product;
 use App\Models\Service;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,23 +33,22 @@ class HomeController extends Controller
         return redirect()->route('view_product');
     }
 
-    public function view_home($name)
+    public function view_home()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.home', $user);
+        if($user->privilege == "TOTAL"){
+            $users = User::paginate(30);
+            return view ('home.pages.home', $user, ['users' => $users]);
+        }
+        $this->view_product();
     }
 
 
-    public function view_sell($name)
+    public function view_sell()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.sell.sell');
+        $products = Product::paginate(30);
+        return view ('home.pages.product.product', $user, ['products' => $products]);
     }
 
     public function view_product()
@@ -66,38 +68,25 @@ class HomeController extends Controller
     public function view_client_singular()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.client_singular.client_singular', $user);
+        $clients_singular = Client_Singular::paginate(30);
+        return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular]);
     }
 
     public function view_client_enterprise()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = $user['surname'];
-        $email = $user['email'];
-        return view ('home.pages.client_enterprise.client_enterprise', $user);
+        $clients_enterprise = Client_Enterprise::paginate(30);
+        return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise]);
     }
 
-    public function view_user($name)
+    public function view_user()
     {
         $user = Auth::user();
-        $name = $user['name'];
-        $surname = '';
-        if($user['surname'] != 'N/A'){
-            $surname = $user['surname'];
+        if($user['privilege'] == "TOTAL"){
+            $users = User::paginate(30);
+            return view ('home.pages.user.user', $user, ['users' => $users]);
         }
-        $fullname = $name . $surname;
-        $email = $user['email'];
-        $data = [
-            'email' => $email,
-            'name' => $name,
-            'surname' => $surname,
-            'fullname' => $fullname,
-        ];
-        return view ('home.pages.user.user', $data);
+        $this->view_product();
     }
 
     /**

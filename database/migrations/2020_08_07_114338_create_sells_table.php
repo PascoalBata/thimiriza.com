@@ -18,11 +18,10 @@ class CreateSellsTable extends Migration
             $table->string('id_product_service');
             $table->string('id_client');
             $table->double('quantity');
-            $table->bigInteger('id_user');
-            $table->unsignedBigInteger('id_company');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
-            $table->foreign('id_company')->references('id')->on('companies');
+            $table->foreign('id_user')->references('id')->on('users');
         });
     }
 

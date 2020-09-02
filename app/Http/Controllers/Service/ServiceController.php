@@ -49,7 +49,6 @@ class ServiceController extends Controller
                 $service->description = $request['description'];
                 $service->price = $request['price'];
                 $service->id_user = Auth::id();
-                //$service->id_company = ;
                 if($service->save()){
                     return redirect()->route('view_service')->with('service_notification', 'Serviço registado com sucesso.');
                 }
@@ -119,7 +118,8 @@ class ServiceController extends Controller
                 ->where('id', $id)
                 ->update(array(
                     'name' => $name,
-                    'id_user' => $user_id
+                    'id_user' => $user_id,
+                    'updated_at' => now()
                 ))){
                     return redirect()->route('view_service')->with('service_notification', 'Serviço (Nome) actualizado com sucesso.');
                 }
@@ -154,7 +154,8 @@ class ServiceController extends Controller
                 ->where('id', $id)
                 ->update(array(
                     'description' => $description,
-                    'id_user' => $user_id
+                    'id_user' => $user_id,
+                    'updated_at' => now()
                 ))){
                     return redirect()->route('view_service')->with('service_notification', 'Serviço (Descricao) actualizado com sucesso.');
                 }
@@ -175,7 +176,8 @@ class ServiceController extends Controller
                 ->where('id', $id)
                 ->update(array(
                 'price' => $price,
-                'id_user' => $user_id
+                'id_user' => $user_id,
+                'updated_at' => now()
             ))){
                     return redirect()->route('view_service')->with('service_notification', 'Serviço (Preco) actualizado com sucesso.');
                 }
