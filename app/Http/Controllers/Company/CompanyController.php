@@ -9,6 +9,8 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
@@ -57,7 +59,7 @@ class CompanyController extends Controller
         //$empresa_dados = $request->all();
         $package_id = '1'; 
         $company_status = "ON";
-        $company_code = $this->company_id(); 
+        $company_code = $this->company_code(); 
         $company_name = $request->input('name');
         $company_email = $request->input('email');
         $company_phone = $request->input('phone');
@@ -79,9 +81,11 @@ class CompanyController extends Controller
         if(!$company->save()){
             return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
+            $company_query = DB::table('companies')->select('id')->where('email', 'like', $company_email)->first();
+            $id = $company_query->id;
             $userController = new RegisterController;
             $userController->create_admin([
-            'id_company'=>$this->getID_by_email($company_email),
+            'id_company'=>$id,
             'code' => $company_code, 
             'name'=> $company_name, 
             'surname' => 'N/A',
@@ -89,8 +93,7 @@ class CompanyController extends Controller
             'privilege' => 'TOTAL',
             'birthdate' => now(),
             'email'=> $company_email, 
-            'phone'=> $company_phone, 
-            'nuit'=> $company_nuit, 
+            'phone'=> $company_phone,
             'address'=> $company_address, 
             'password'=> $company_password]);
             return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
@@ -132,6 +135,85 @@ class CompanyController extends Controller
         //
     }
 
+    public function update_company(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            if($user->privilege == "TOTAL"){
+                    $user_id = $user->id;
+                //if($request->filled('name')){
+                    //update name
+                //}
+                $id = $request['id'];
+                $name = $request['name'];
+                $type = $request['type'];
+                $email = $request['email'];
+                $phone = $request['phone'];
+                $nuit = $request['nuit'];
+                $address = $request['address'];
+                $bank_account_owner = $request['bank_account_owner'];
+                $bank_account_number = $request['bank_account_number'];
+                $bank_account_nib = $request['bank_account_nib'];
+                $bank_account_name = $request['bank_account_name'];
+                //$company_query = DB::table('companies')->find($id)->first();
+                if(DB::table('companies')->select('*')->where('nuit', 'like', $nuit)->where('id', 'not like', $id)->exists()){
+                    return redirect()->route('view_company')->with('company_notification', 'Falhou! Este NUIT ja encontra-se associado a uma outra entidade.');
+                }
+                if(DB::table('companies')->select('*')->where('email', 'like', $email)->where('id', 'not like', $id)->exists()){
+                    return redirect()->route('view_company')->with('company_notification', 'Falhou! Este Email ja encontra-se associado a uma outra entidade.');
+                }
+
+                if($request->hasFile('logo')){
+                    Storage::deleteDirectory('companies/logo/'.$id);
+                    $logo = $request->file('logo')->store(
+                        'companies/logo/'.$id
+                    );
+                    if(DB::table('companies')
+                    ->where('id', $id)
+                    ->update(array(
+                        'logo' => $logo,
+                        'updated_at' => now()
+                    ))){
+                        //Logo updated successfully
+                    }
+                }
+                if($request->filled('name')){
+                    if(DB::table('companies')
+                    ->where('id', $id)
+                    ->update(array(
+                        'name' => $name,
+                        'type' => $type,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'address' => $address,
+                        'bank_account_owner' => $bank_account_owner,
+                        'bank_account_number' => $bank_account_number,
+                        'bank_account_name' => $bank_account_name,
+                        'bank_account_nib' => $bank_account_nib,
+                        'updated_at' => now()
+                    ))){
+                        $user_query = DB::table('users')->select('id')->where('email', 'like', $email)->first();
+                        if(DB::table('users')
+                        ->where('id', $user_query->id)
+                        ->update(array(
+                            'name' => $name,
+                            'email' => $email,
+                            'phone' => $phone,
+                            'address' => $address,
+                            'updated_at' => now()
+                        ))){
+                            //user updated successfuly
+                        }
+                        return redirect()->route('view_company')->with('company_notification', 'Actualizacao da empresa realizada com sucesso. ');
+                    }
+                }
+                return redirect()->route('view_company')->with('company_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            }
+            return redirect()->route('view_company')->with('company_notification', 'A sua conta nao possui previlegios para realizar esta accao.');
+        }
+        return route('root');
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -143,28 +225,17 @@ class CompanyController extends Controller
         //
     }
 
-    private function getID_by_email($email){
-        $company = DB::table('companies')->where('email', 'like', $email)->first();
-        return $company->id;
-    }
-
-    private function getID_by_nuit($nuit){
-        $company = DB::table('companies')->where('nuit', 'like', $nuit)->first();
-        return $company->id;
-    }
-
-    private function company_id()
+    private function company_code()
     {
         $companies_id = DB::table('companies')->orderByRaw('created_at DESC')->first();
         if (DB::table('companies')->count() == 0) {
-            return $this->next_id('');
+            return $this->next_code('');
         }
         $company_id = $companies_id->id;
-        return $this->next_id($company_id);
-        //return view('pt.Admin.pages.teste', ['empresas' => $empresa_id]);
+        return $this->next_code($company_id);
     }
 
-    private function next_id($last)
+    private function next_code($last)
     {
         $new_id = date('y') . '/' . date('m') ."A0001";
         if ($last == "") {

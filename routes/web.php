@@ -94,6 +94,10 @@ Route::put('/users/edit_address', 'User\UserController@update_address')->name('e
 Route::put('/users/edit_gender', 'User\UserController@update_gender')->name('edit_user_gender');
 Route::put('/users/edit_birthdate', 'User\UserController@update_name')->name('edit_user_birthdate');
 
+//edit_company
+
+Route::put('/company', 'Company\CompanyController@update_company')->name('edit_company');
+
 //remove_service
 Route::delete('/services/delete_service', 'Service\ServiceController@destroy')->name('remove_service');
 
