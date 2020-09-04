@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Client_Enterprise;
 use App\Models\Client_Singular;
+use App\Models\Company;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\Service;
 use App\User;
 use Illuminate\Http\Request;
@@ -45,38 +47,96 @@ class HomeController extends Controller
     }
 
 
-    public function view_sell()
+    public function view_sale()
     {
         $user = Auth::user();
-        $products = Product::paginate(30);
-        return view ('home.pages.product.product', $user, ['products' => $products]);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $services = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('services', 'users.id', '=', 'services.id_user')
+        ->select('services.*')
+        ->where('companies.id', 'like', $company->id)->get();
+        $products = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('products', 'users.id', '=', 'products.id_user')
+        ->select('products.*')
+        ->where('companies.id', 'like', $company->id)->get();
+        $clients_enterprise = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
+        ->select('clients_enterprise.*')
+        ->where('companies.id', 'like', $company->id)->get();
+        $clients_singular = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
+        ->select('clients_singular.*')
+        ->where('companies.id', 'like', $company->id)->get();
+        $sales = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('products', 'users.id', '=', 'products.id_user')
+        ->join('services', 'users.id', '=', 'services.id_user')
+        ->join('sales', 'users.id', '=', 'sales.id_user')
+        ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
+        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
+        ->select('sales.*, products.name, products.description,
+        products.price, services.name, services.description,
+        clients_singular.name, clients_singular_surname, clients_enterprise_name')
+        ->where('sales.id_user', 'like', $user->id)->paginate(30);
+        return view ('home.pages.sale.sale', $user, 
+        [
+            'sales' => $sales,
+            'services' => $services,
+            'products' => $products,
+            'clients_enterprise' => $clients_enterprise,
+            'clients_singular' => $clients_singular
+        ]);
     }
 
     public function view_product()
     {
         $user = Auth::user();
-        $products = Product::paginate(30);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $products = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('products', 'users.id', '=', 'products.id_user')
+        ->select('products.*')
+        ->where('companies.id', 'like', $company->id)->paginate(30);
         return view ('home.pages.product.product', $user, ['products' => $products]);
     }
 
     public function view_service()
     {
         $user = Auth::user();
-        $services = Service::paginate(30);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $services = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('services', 'users.id', '=', 'services.id_user')
+        ->select('services.*')
+        ->where('companies.id', 'like', $company->id)->paginate(30);
         return view ('home.pages.service.service', $user, ['services' => $services]);
     }
 
     public function view_client_singular()
     {
         $user = Auth::user();
-        $clients_singular = Client_Singular::paginate(30);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $clients_singular = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
+        ->select('clients_singular.*')
+        ->where('companies.id', 'like', $company->id)->paginate(30);
         return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular]);
     }
 
     public function view_client_enterprise()
     {
         $user = Auth::user();
-        $clients_enterprise = Client_Enterprise::paginate(30);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $clients_enterprise = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
+        ->select('clients_enterprise.*')
+        ->where('companies.id', 'like', $company->id)->paginate(30);
         return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise]);
     }
 
@@ -84,7 +144,7 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         if($user['privilege'] == "TOTAL"){
-            $users = User::paginate(30);
+            $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
             return view ('home.pages.user.user', $user, ['users' => $users]);
         }
         $this->view_product();

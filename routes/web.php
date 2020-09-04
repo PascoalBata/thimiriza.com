@@ -41,7 +41,7 @@ Auth::routes();
 Route::get('home', 'HomeController@index')->name('home');
 
 //home_views
-Route::get('/sells', 'HomeController@view_sell')->name('view_sell');
+Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
 Route::get('/products', 'HomeController@view_product')->name('view_product');
 Route::get('/services', 'HomeController@view_service')->name('view_service');
 Route::get('/clients_singular', 'HomeController@view_client_singular')->name('view_client_singular');
@@ -50,15 +50,13 @@ Route::get('/users', 'HomeController@view_user')->name('view_user');
 Route::get('/company', 'HomeController@view_company')->name('view_company');
 
 //store
-Route::post('/sells', 'Sell\SellControler@store')->name('store_sell');
+Route::post('/sales', 'Sale\SaleControler@store')->name('store_sale');
 Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
 Route::post('/clients_singular', 'ClientSingular\ClientSingularController@store')->name('store_client_singular');
 Route::post('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@store')->name('store_client_enterprise');
 Route::post('/users', 'User\UserController@store')->name('store_user');
 
-//edit
-Route::post('/sells/edit', 'Sell\SellControler@store')->name('edit_sell');
 
 //edit_sevice
 Route::put('/services/update_name', 'Service\ServiceController@update_name')->name('edit_service_name');
@@ -70,6 +68,10 @@ Route::put('/products/update_name', 'Product\ProductController@update_name')->na
 Route::put('/products/update_description', 'Product\ProductController@update_description')->name('edit_product_description');
 Route::put('/products/update_quantity', 'Product\ProductController@update_quantity')->name('edit_product_quantity');
 Route::put('/products/update_price', 'Product\ProductController@update_price')->name('edit_product_price');
+
+//edit_sale
+Route::put('/sales', 'Sale\SaleControler@store')->name('edit_sale');
+
 
 //edit_client_singular
 Route::put('/clients_singular/update_name', 'ClientSingular\ClientSingularController@update_name')->name('edit_client_singular_name');

@@ -77,6 +77,7 @@
                     <tr>
                         <th>{{ __('Nome') }}</th>
                         <th style="text-align: center;">{{ __('Descrição') }}</th>
+                        <th style="text-align: center;">{{ __('Quantidade') }}</th>
                         <th style="text-align: center;">{{ __('Preço') }}</th>
                         <th></th>
                     </tr>
