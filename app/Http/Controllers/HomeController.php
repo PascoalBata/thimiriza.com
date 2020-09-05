@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class HomeController extends Controller
 {
@@ -71,6 +72,7 @@ class HomeController extends Controller
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
         ->where('companies.id', 'like', $company->id)->get();
+        /*
         $sales = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
@@ -78,17 +80,81 @@ class HomeController extends Controller
         ->join('sales', 'users.id', '=', 'sales.id_user')
         ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
-        ->select('sales.*, products.name, products.description,
-        products.price, services.name, services.description,
-        clients_singular.name, clients_singular_surname, clients_enterprise_name')
+        ->select('*')
         ->where('sales.id_user', 'like', $user->id)->paginate(30);
+        */
+        $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity')
+        ->where('id_user', 'like', $user->id)->get();
+        $sales = [];
+        $i = 0;
+        $hasSales = false;
+        $actual_client = '';
+        foreach ($sales_query as $sale_query){
+            $sale = new stdClass;
+            if($sale_query->type === 'PRODUCT'){
+                $product = DB::table('products')->select('products.name', 'products.description', 'products.price')
+                ->find($sale_query->id_product_service);
+                $sale->id = $sale_query->id;
+                $sale->sale_type = 'PRODUCT';
+                $sale->name = $product->name;
+                $sale->description = $product->description;
+                $sale->price_unit = $product->price;
+                if($sale_query->type_client === 'ENTERPRISE'){
+                    $sale->client_type = 'ENTERPRISE';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' === ' . $client->email;
+                }
+                if($sale_query->type_client === 'SINGULAR'){
+                    $sale->client_type = 'SINGULAR';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                }
+                $sale->quantity = $sale_query->quantity;
+                $sale->price = $product->price * $sale_query->quantity;
+            }
+            if($sale_query->type === 'SERVICE'){
+                $service = DB::table('services')->select('services.name', 'services.description', 'services.price')
+                ->find($sale_query->id_product_service);
+                $sale->id = $sale_query->id;
+                $sale->sale_type = 'PRODUCT';
+                $sale->name = $service->name;
+                $sale->description = $service->description;
+                $sale->price_unit = $service->price;
+                if($sale_query->type_client === 'ENTERPRISE'){
+                    $sale->client_type = 'ENTERPRISE';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' === ' . $client->email;
+                }
+                if($sale_query->type_client === 'SINGULAR'){
+                    $sale->client_type = 'SINGULAR';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                }
+                $sale->quantity = $sale_query->quantity;
+                $sale->price = $service->price * $sale_query->quantity;
+            }
+            $sales[$i] = $sale; 
+            $i++;  
+        }
+        if($i > 0){
+            $hasSales = true;
+        }else{
+            $hasSales = false;
+        }
+        //dd($sales);
         return view ('home.pages.sale.sale', $user, 
         [
             'sales' => $sales,
             'services' => $services,
             'products' => $products,
             'clients_enterprise' => $clients_enterprise,
-            'clients_singular' => $clients_singular
+            'clients_singular' => $clients_singular,
+            'hasSales' => $hasSales,
+            'actual_client' => $actual_client
         ]);
     }
 

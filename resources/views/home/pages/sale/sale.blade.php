@@ -19,7 +19,12 @@
                     <div class="input-field col s12 m6 l6">
                         <label for="client" class="black-text">{{ __('Cliente') }}</label>
                         <input id="client" list="clients" type="text" autocomplete="off" class="black-text" name="client"
-                            value="{{ old('client') }}" required>
+                            @if ($hasSales)
+                        value="{{ $actual_client }}"
+                    @else
+                        value="{{ old('client') }}"
+                        @endif
+                        required>
                         <datalist id="clients">
                             @foreach ($clients_singular as $client_singular)
                                 <option
@@ -64,6 +69,13 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="input-field col s12 m6 l6">
+                        <label for="discount" class="black-text">{{ __('Desconto') }}</label>
+                        <input id="discount" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
+                            required>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col s12 m12 l12">
                         <button type="submit" class="waves-effect waves-light btn-small">
                             {{ __('Salvar') }}
@@ -86,16 +98,24 @@
                         <th>{{ __('Nome') }}</th>
                         <th style="text-align: center;">{{ __('Descrição') }}</th>
                         <th style="text-align: center;">{{ __('Quantidade') }}</th>
-                        <th style="text-align: center;">{{ __('Preço') }}</th>
+                        <th style="text-align: right;">{{ __('Preço unit.') }}</th>
+                        <th style="text-align: center;">{{ __('Desconto') }}</th>
+                        <th style="text-align: right;">{{ __('Preço') }}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                    $total = 0;
+                    @endphp
                     @foreach ($sales as $sale)
                         <tr>
                             <td>{{ $sale->name }}</td>
                             <td style="text-align: center;">{{ $sale->description }}</td>
                             <td style="text-align: center;">{{ $sale->quantity }}</td>
+                            <td style="text-align: right;">{{ number_format($sale->price_unit, 2, ',', '.') }}
+                                {{ __('MT') }}</td>
+                            <td style="text-align: center;">{{ __('0%') }}</td>
                             <td style="text-align: right;">{{ number_format($sale->price, 2, ',', '.') }} {{ __('MT') }}
                             </td>
                             <td style="text-align: right;">
@@ -106,10 +126,21 @@
                                     onclick="removeProduct(this, {{ $product->id }})">remover</a>
                             </td>
                         </tr>
+                        @php
+                        $total = $total + $sale->price;
+                        @endphp
                     @endforeach
+                    <tr>
+                        <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}
+                            {{ __('MT') }}</td>
+                    </tr>
                 </tbody>
             </table>
-            {!! $sales->links() !!}
         </div>
     </div>
     <div id="remove_product_modal" tabindex="-1" class="modal modal-fixed-footer">

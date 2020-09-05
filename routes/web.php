@@ -50,7 +50,7 @@ Route::get('/users', 'HomeController@view_user')->name('view_user');
 Route::get('/company', 'HomeController@view_company')->name('view_company');
 
 //store
-Route::post('/sales', 'Sale\SaleControler@store')->name('store_sale');
+Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');
 Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
 Route::post('/clients_singular', 'ClientSingular\ClientSingularController@store')->name('store_client_singular');
