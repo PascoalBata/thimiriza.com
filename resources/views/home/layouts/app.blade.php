@@ -46,7 +46,7 @@
             <li>
                 <div style="padding-top: 48px; padding-bottom: 0px; height: 115px" class="user-view">
                     <div class="background" style="height: 115px;">
-                        <img src="@yield('image')">
+                        <img src="@yield('logo')">
                     </div>
                     <a href="#"><span class="white-text name">@yield('username')</span></a>
                     <a href="#"><span style="padding-bottom: 0px;"

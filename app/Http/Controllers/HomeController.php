@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class HomeController extends Controller
@@ -52,6 +53,14 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $company = Company::where('id', 'like', $user->id_company)->first();
+        $company_logo = url('storage/' . $company->logo);
+        if($company->logo === ''){
+            $company_logo = '';
+        }
+        $isAdmin = true;
+        if($company->email !== $user->email){
+            $isAdmin = false;
+        }
         $services = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('services', 'users.id', '=', 'services.id_user')
@@ -72,17 +81,6 @@ class HomeController extends Controller
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
         ->where('companies.id', 'like', $company->id)->get();
-        /*
-        $sales = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('products', 'users.id', '=', 'products.id_user')
-        ->join('services', 'users.id', '=', 'services.id_user')
-        ->join('sales', 'users.id', '=', 'sales.id_user')
-        ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
-        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
-        ->select('*')
-        ->where('sales.id_user', 'like', $user->id)->paginate(30);
-        */
         $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity')
         ->where('id_user', 'like', $user->id)->get();
         $sales = [];
@@ -146,15 +144,18 @@ class HomeController extends Controller
             $hasSales = false;
         }
         //dd($sales);
+        //dd($company_logo);
         return view ('home.pages.sale.sale', $user, 
         [
+            'logo' => $company_logo,
             'sales' => $sales,
             'services' => $services,
             'products' => $products,
             'clients_enterprise' => $clients_enterprise,
             'clients_singular' => $clients_singular,
             'hasSales' => $hasSales,
-            'actual_client' => $actual_client
+            'actual_client' => $actual_client,
+            'isAdmin' => $isAdmin
         ]);
     }
 

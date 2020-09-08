@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('content')
     @php
     $sale_type = 'PRODUCT';
@@ -141,6 +142,29 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <button type="submit" class="waves-effect waves-light btn-small">
+                {{ __('LIMPAR') }}
+                <i class="material-icons right">archive</i>
+            </button>
+            <button type="reset" class="waves-effect waves-light btn-small">
+                {{ __('COTAÇÃO') }}
+                <i class="material-icons right"></i>
+            </button>
+            <button type="reset" class="waves-effect waves-light btn-small"
+            @if ($logo === '')
+                disabled
+            @endif
+            @if($isAdmin)
+                disabled
+            @endif
+            >
+                {{ __('VENDER') }}
+                <i class="material-icons right"></i>
+            </button>
         </div>
     </div>
     <div id="remove_product_modal" tabindex="-1" class="modal modal-fixed-footer">

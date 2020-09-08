@@ -164,9 +164,10 @@ class CompanyController extends Controller
                 }
 
                 if($request->hasFile('logo')){
-                    Storage::deleteDirectory('companies/logo/'.$id);
+                    Storage::deleteDirectory('public/companies/'.$id.'/logo');
                     $logo = $request->file('logo')->store(
-                        'companies/logo/'.$id
+                        'companies/'. $id . '/logo',
+                        'public'
                     );
                     if(DB::table('companies')
                     ->where('id', $id)
@@ -174,7 +175,7 @@ class CompanyController extends Controller
                         'logo' => $logo,
                         'updated_at' => now()
                     ))){
-                        //Logo updated successfully
+                        //Storage::setVisibility($logo, 'public');
                     }
                 }
                 if($request->filled('name')){
