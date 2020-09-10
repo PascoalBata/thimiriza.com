@@ -15,6 +15,7 @@
         </div>
         <div class="row" style="padding-bottom: 5%">
             <form method="POST" name="saleForm" action="{{ route('store_sale') }}">
+                @method('POST')
                 @csrf
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
@@ -71,7 +72,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
-                        <label for="discount" class="black-text">{{ __('Desconto') }}</label>
+                        <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
                         <input id="discount" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
                             required>
                     </div>
@@ -101,6 +102,9 @@
                         <th style="text-align: center;">{{ __('Quantidade') }}</th>
                         <th style="text-align: right;">{{ __('Preço unit.') }}</th>
                         <th style="text-align: center;">{{ __('Desconto') }}</th>
+                        @if ($company_type === 'NORMAL')
+                            <th style="text-align: center;">{{ __('IVA') }}</th>
+                        @endif
                         <th style="text-align: right;">{{ __('Preço') }}</th>
                         <th></th>
                     </tr>
@@ -116,15 +120,20 @@
                             <td style="text-align: center;">{{ $sale->quantity }}</td>
                             <td style="text-align: right;">{{ number_format($sale->price_unit, 2, ',', '.') }}
                                 {{ __('MT') }}</td>
-                            <td style="text-align: center;">{{ __('0%') }}</td>
+                            <td style="text-align: center;">{{ number_format($sale->discount_price, 2, ',', '.') }}
+                                {{ __('MT') }}</td>
+                            @if ($company_type === 'NORMAL')
+                                <td style="text-align: center;">{{ number_format($sale->iva, 2, ',', '.') }} {{ __('MT') }}
+                                </td>
+                            @endif
                             <td style="text-align: right;">{{ number_format($sale->price, 2, ',', '.') }} {{ __('MT') }}
                             </td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_product_modal"
-                                    onclick="editProduct(this, {{ $product->id }}, {{ $product->price }})">editar</a>
+                                <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_sale_item_modal"
+                                    onclick="editSaleItem(this, {{ $sale->id }}, {{ $sale->quantity }}, {{ $sale->discount * 100 }})">editar</a>
                                 <a class="modal-trigger waves-effect waves-light btn-small red darken-3"
-                                    href="#remove_product_modal"
-                                    onclick="removeProduct(this, {{ $product->id }})">remover</a>
+                                    href="#remove_sale_item_modal"
+                                    onclick="removeSaleItem(this, {{ $sale->id }})">remover</a>
                             </td>
                         </tr>
                         @php
@@ -136,6 +145,9 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        @if ($company_type === 'NORMAL')
+                            <td></td>
+                        @endif
                         <td></td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}
                             {{ __('MT') }}</td>
@@ -145,33 +157,73 @@
         </div>
     </div>
     <div class="row">
-        <div class="col s12 m12 l12">
-            <button type="submit" class="waves-effect waves-light btn-small">
-                {{ __('LIMPAR') }}
-                <i class="material-icons right">archive</i>
-            </button>
-            <button type="reset" class="waves-effect waves-light btn-small">
-                {{ __('COTAÇÃO') }}
-                <i class="material-icons right"></i>
-            </button>
-            <button type="reset" class="waves-effect waves-light btn-small"
-            @if ($logo === '')
-                disabled
-            @endif
-            @if($isAdmin)
-                disabled
-            @endif
-            >
-                {{ __('VENDER') }}
-                <i class="material-icons right"></i>
-            </button>
+        <div class="col s12 m12 l12" style="display: flex;">
+            <form method="POST" action="{{ route('clean_sale') }}">
+                @method('DELETE')
+                @csrf
+                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;">
+                    {{ __('LIMPAR') }}
+                    <i class="material-icons right"></i>
+                </button>
+            </form>
+            <form method="POST" action="{{ route('quote') }}">
+                @method('POST')
+                @csrf
+                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;">
+                    {{ __('COTAÇÃO') }}
+                    <i class="material-icons right"></i>
+                </button>
+            </form>
+            <form method="POST" action="{{ route('sell') }}">
+                @method('POST')
+                @csrf
+                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
+                    disabled
+                    @endif
+                    @if ($isAdmin)
+                        disabled
+                    @endif
+                    >
+                    {{ __('VENDER') }}
+                    <i class="material-icons right"></i>
+                </button>
+            </form>
         </div>
     </div>
-    <div id="remove_product_modal" tabindex="-1" class="modal modal-fixed-footer">
-        <form method="POST" id="removeProductForm" name="removeProductForm" action="{{ route('remove_product') }}">
+    <div id="edit_sale_item_modal" tabindex="-1" class="modal">
+        <form method="POST" id="editSaleItemForm" name="editSaleItemForm" action="{{ route('edit_sale_item') }}">
             <div class="modal-content">
-                <h4>{{ __('Remover Produto') }}</h4>
-                <p>{{ __('Tem certeza que deseja remover este produto?') }}</p>
+                <h4>{{ __('Editar Item') }}</h4>
+                @method('PUT')
+                @csrf
+                <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
+                <div class="row">
+                    <div class="input-field col s12 m4 l4">
+                        <label for="discount" class="black-text">{{ __('Quantidade') }}</label>
+                        <input required id="quantity" type="text" class="black-text" name="quantity"
+                            value="{{ old('quantity') }}" autofocus>
+                    </div>
+                    <div class="input-field col s12 m4 l4">
+                        <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
+                        <input required id="discount" type="text" class="black-text" name="discount"
+                            value="{{ old('discount') }}" autofocus>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="waves-effect waves-light btn-small ">
+                    {{ __('SALVAR') }}
+                    <i class="material-icons left"></i>
+                </button>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">{{ __('FECHAR') }}</a>
+            </div>
+        </form>
+    </div>
+    <div id="remove_sale_item_modal" tabindex="-1" class="modal">
+        <form method="POST" id="removeSaleItemForm" name="removeSaleItemForm" action="{{ route('remove_sale_item') }}">
+            <div class="modal-content">
+                <h4>{{ __('Remover Item') }}</h4>
+                <p>{{ __('Tem certeza que deseja remover este item?') }}</p>
                 @method('DELETE')
                 @csrf
                 <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
@@ -194,22 +246,17 @@
 @endsection
 @section('script')
     <script>
-        function editProduct(button, id, price) {
+        function editSaleItem(button, id, quantity, discount) {
             var tr = button.parentElement.parentElement;
-            editProductNameForm.id.value = id;
-            editProductDescriptionForm.id.value = id;
-            editProductPriceForm.id.value = id;
-            editProductQuantityForm.id.value = id;
-            editProductNameForm.name.value = tr.cells[0].innerHTML;
-            editProductDescriptionForm.description.value = tr.cells[1].innerHTML;
-            editProductQuantityForm.quantity.value = tr.cells[2].innerHTML;
-            editProductPriceForm.price.value = price;
+            editSaleItemForm.id.value = id;
+            editSaleItemForm.quantity.value = quantity;
+            editSaleItemForm.discount.value = discount;
         }
 
-        function removeProduct(button, id) {
+        function removeSaleItem(button, id) {
             var tr = button.parentElement.parentElement;
-            removeProductForm.id.value = id;
-            removeProductForm.product.value = tr.cells[0].innerHTML + " <<->> " + tr.cells[1].innerHTML;
+            removeSaleItemForm.id.value = id;
+            removeSaleItemForm.product.value = tr.cells[0].innerHTML + " <<->> " + tr.cells[1].innerHTML;
         }
 
         function saleType(click) {

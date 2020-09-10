@@ -79,7 +79,7 @@ class CompanyController extends Controller
         $company->status  = $company_status;
         $company->id_package = $package_id;
         if(!$company->save()){
-            return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
+            //return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
             $company_query = DB::table('companies')->select('id')->where('email', 'like', $company_email)->first();
             $id = $company_query->id;
@@ -155,7 +155,7 @@ class CompanyController extends Controller
                 $bank_account_number = $request['bank_account_number'];
                 $bank_account_nib = $request['bank_account_nib'];
                 $bank_account_name = $request['bank_account_name'];
-                //$company_query = DB::table('companies')->find($id)->first();
+                $company_query = DB::table('companies')->find($id);
                 if(DB::table('companies')->select('*')->where('nuit', 'like', $nuit)->where('id', 'not like', $id)->exists()){
                     return redirect()->route('view_company')->with('company_notification', 'Falhou! Este NUIT ja encontra-se associado a uma outra entidade.');
                 }
@@ -228,12 +228,12 @@ class CompanyController extends Controller
 
     private function company_code()
     {
-        $companies_id = DB::table('companies')->orderByRaw('created_at DESC')->first();
+        $companies = DB::table('companies')->orderByRaw('created_at DESC')->first();
         if (DB::table('companies')->count() == 0) {
             return $this->next_code('');
         }
-        $company_id = $companies_id->id;
-        return $this->next_code($company_id);
+        $company_code = $companies->code;
+        return $this->next_code($company_code);
     }
 
     private function next_code($last)
@@ -244,11 +244,13 @@ class CompanyController extends Controller
         }
         $last++;
         $new_id = $last;
+        /*
         if (substr($last, 6, 4) == "0000") {
             $letters = substr($last, 5, 1);
             $numbers = "0001";
             $new_id = $letters . $numbers;
         }
+        */
         return $new_id;
     }
 }

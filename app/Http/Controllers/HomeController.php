@@ -35,7 +35,11 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return redirect()->route('view_product');
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        if($company->email === $user->email){
+            return redirect()->route('view_user');    
+        }
+        return redirect()->route('view_sale');
     }
 
     public function view_home()
@@ -81,7 +85,7 @@ class HomeController extends Controller
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
         ->where('companies.id', 'like', $company->id)->get();
-        $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity')
+        $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity', 'iva', 'discount')
         ->where('id_user', 'like', $user->id)->get();
         $sales = [];
         $i = 0;
@@ -109,8 +113,12 @@ class HomeController extends Controller
                     $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
-                $sale->quantity = $sale_query->quantity;
-                $sale->price = $product->price * $sale_query->quantity;
+                $sale->discount = $sale_query->discount;
+                $sale->quantity = $sale_query->quantity; 
+                $price = $product->price * $sale_query->quantity;
+                $sale->discount_price = $sale_query->discount * $price;
+                $sale->iva = $sale_query->iva * $price;
+                $sale->price = $price + $sale->iva - $sale->discount_price;
             }
             if($sale_query->type === 'SERVICE'){
                 $service = DB::table('services')->select('services.name', 'services.description', 'services.price')
@@ -132,8 +140,12 @@ class HomeController extends Controller
                     $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
-                $sale->quantity = $sale_query->quantity;
-                $sale->price = $service->price * $sale_query->quantity;
+                $sale->discount = $sale_query->discount;
+                $sale->quantity = $sale_query->quantity; 
+                $price = $service->price * $sale_query->quantity;
+                $sale->discount_price = $sale_query->discount * $price;
+                $sale->iva = $sale_query->iva * $price;
+                $sale->price = $price + $sale->iva - $sale->discount_price;
             }
             $sales[$i] = $sale; 
             $i++;  
@@ -147,6 +159,7 @@ class HomeController extends Controller
         //dd($company_logo);
         return view ('home.pages.sale.sale', $user, 
         [
+            'company_type' => $company->type,
             'logo' => $company_logo,
             'sales' => $sales,
             'services' => $services,
@@ -214,7 +227,7 @@ class HomeController extends Controller
             $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
             return view ('home.pages.user.user', $user, ['users' => $users]);
         }
-        $this->view_product();
+        $this->view_sale();
     }
 
     public function view_company()
@@ -224,7 +237,7 @@ class HomeController extends Controller
         if($user['privilege'] == "TOTAL"){
             return view ('home.pages.company.company', $user, ['company' => $company]);
         }
-        $this->view_product();
+        $this->view_sale();
     }
 
     /**

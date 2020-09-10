@@ -16,9 +16,24 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index()
     {
         //
+    }
+
+    public function root(Request $request)
+    {
+        //
+        //$request->session()->flush();
+        return view('auth.login');
+    }
+
+    public function end_session(Request $request)
+    {
+        //
+        $request->session()->flush();
+        return redirect('/');
     }
 
     /**

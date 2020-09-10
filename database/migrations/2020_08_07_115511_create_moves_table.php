@@ -15,9 +15,12 @@ class CreateMovesTable extends Migration
     {
         Schema::create('moves', function (Blueprint $table) {
             $table->id();
+            $table->string('sale_type');
             $table->string('id_product_service');
             $table->double('price');
             $table->integer('quantity');
+            $table->double('discount');
+            $table->double('iva');
             $table->unsignedBigInteger('id_invoice');
             $table->timestamps();
 

@@ -20,6 +20,8 @@ class CreateSalesTable extends Migration
             $table->string('type_client');
             $table->string('id_client');
             $table->double('quantity');
+            $table->double('discount');
+            $table->double('iva');
             $table->unsignedBigInteger('id_user');
             $table->timestamps();
 

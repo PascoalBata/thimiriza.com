@@ -113,13 +113,16 @@
 
                 </a>
             </li>
-            <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/');" href="">
-                    {{ __('Sair') }} <i class="small material-icons">shopping_basket</i>
+            <form method="POST" id="loggoutForm" action="{{ route('end_session') }}">
+                <li>
+                    @csrf
+                    @method('POST')
+                    <a class="nav-link black-text sidenav-close" id="submit_btn" href="#">
+                        {{ __('Sair') }} <i class="small material-icons">shopping_basket</i>
 
-                </a>
-            </li>
+                    </a>
+                </li>
+            </form>
         </ul>
     </header>
     <main>
@@ -148,6 +151,11 @@
         $(document).ready(function() {
             $('.modal').modal();
         });
+
+        document.getElementById("submit_btn").onclick = function() {
+            document.getElementById("loggoutForm").submit();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.fixed-action-btn');
             var instances = M.FloatingActionButton.init(elems, {
