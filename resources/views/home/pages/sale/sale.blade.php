@@ -279,8 +279,7 @@
         <div class="alert alert-success">
             <script>
                 M.toast({
-                    html: '{{ session('
-                    sale_notification ') }}',
+                    html: '{{ session('sale_notification') }}',
                     classes: 'rounded',
                     displayLength: 1000
                 });

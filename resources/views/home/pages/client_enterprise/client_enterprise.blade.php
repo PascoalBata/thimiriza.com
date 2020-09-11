@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
     <div class="row center-align">
@@ -81,45 +82,48 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small" onclick="displayClientEnterpriseTable()">
-                        {{ __('Produtos') }}
-                        <i class="material-icons right"></i>
-                    </button>
+                    <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_clients_enterprise">{{__('Clientes')}}</a>
                 </div>                        
             </div>
         </form>
     </div>
 </div>
-<div class="row" id="client_enterprise_table" style="display: block;">
-    <div class="col s12 m12 l12" style="overflow-x: scroll;">
-        <table class="highlight">
-            <thead>
-                <tr>
-                    <th style="text-align: center;">{{ __('Nome') }}</th>
-                    <th style="text-align: center;">{{ __('Email') }}</th>
-                    <th style="text-align: center;">{{ __('Telefone') }}</th>
-                    <th style="text-align: center;">{{ __('NUIT') }}</th>
-                    <th style="text-align: center;">{{ __('Endereço') }}</th>
-                    <th style="width: 5%;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($clients_enterprise as $client_enterprise)
-                <tr>
-                    <td>{{$client_enterprise->name}}</td>
-                    <td style="text-align: left;">{{$client_enterprise->email}}</td>
-                    <td style="text-align: left;">{{$client_enterprise->phone}}</td>
-                    <td style="text-align: center;">{{$client_enterprise->nuit}}</td>
-                    <td style="text-align: left;">{{$client_enterprise->address}}</td>
-                    <td style="text-align: right;">
-                        <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_client_enterprise_modal" onclick="editClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">editar</a>
-                        <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_client_enterprise_modal" onclick="removeClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">remover</a>
-                    </td>
-                </tr>                        
-                @endforeach
-            </tbody>
-        </table>
-        {!! $clients_enterprise->links() !!}
+<!-- Users Modal -->
+<div id="modal_clients_enterprise" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>{{__('Clientes Empresariais')}}</h4>
+        <div class="row" id="client_enterprise_table" style="display: block;">
+            <div class="col s12 m12 l12" style="overflow-x: scroll;">
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Nome') }}</th>
+                            <th style="text-align: center;">{{ __('Email') }}</th>
+                            <th style="text-align: center;">{{ __('Telefone') }}</th>
+                            <th style="text-align: center;">{{ __('NUIT') }}</th>
+                            <th style="text-align: center;">{{ __('Endereço') }}</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($clients_enterprise as $client_enterprise)
+                        <tr>
+                            <td>{{$client_enterprise->name}}</td>
+                            <td style="text-align: center;">{{$client_enterprise->email}}</td>
+                            <td style="text-align: center;">{{$client_enterprise->phone}}</td>
+                            <td style="text-align: center;">{{$client_enterprise->nuit}}</td>
+                            <td style="text-align: center;">{{$client_enterprise->address}}</td>
+                            <td style="text-align: right;">
+                                <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_client_enterprise_modal" onclick="editClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">editar</a>
+                                <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_client_enterprise_modal" onclick="removeClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">remover</a>
+                            </td>
+                        </tr>                        
+                        @endforeach
+                    </tbody>
+                </table>
+                {!! $clients_enterprise->links() !!}
+            </div>
+        </div>
     </div>
 </div>
 <div id="edit_client_enterprise_modal" tabindex="-1" class="modal modal-fixed-footer">

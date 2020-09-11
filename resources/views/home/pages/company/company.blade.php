@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('style')
     <style>
         div .text-1 {
@@ -270,8 +271,7 @@
         <div class="alert alert-success">
             <script>
                 M.toast({
-                    html: '{{ session('
-                    company_notification ') }}',
+                    html: '{{ session('company_notification') }}',
                     classes: 'rounded',
                     displayLength: 1000
                 });

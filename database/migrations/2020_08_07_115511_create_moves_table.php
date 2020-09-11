@@ -17,6 +17,8 @@ class CreateMovesTable extends Migration
             $table->id();
             $table->string('sale_type');
             $table->string('id_product_service');
+            $table->string('product_service');
+            $table->string('description');
             $table->double('price');
             $table->integer('quantity');
             $table->double('discount');

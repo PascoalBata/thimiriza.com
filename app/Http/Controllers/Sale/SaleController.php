@@ -392,6 +392,7 @@ class SaleController extends Controller
             $this->invoice_generator([
                 'user_id' => $user->id,
                 'client_type' => $client_type,
+                'client_id' => $client_id,
                 'client_name' => $client_name,
                 'client_email' => $client_email,
                 'client_address' => $client_address,
@@ -417,82 +418,58 @@ class SaleController extends Controller
         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor($data['company_name'] . '/' . $data['user_name']);
-        $info_1 = '';
         if($type === 'QUOTE'){
             $pdf->SetTitle("Cotação");    
             $pdf->SetSubject("Cotação");
             $pdf->SetKeywords("Thimiriza, $company_name, Cotação");
             $pdf->setType($type);
             $info_1 = '<hr/><html>'
-            . '<head></head>'
-            . '<body>'
-            . '<table>'
-            . '<tr><td><table>'
-            . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
-            . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
-            . '</table></td>'
-            . '<td></td>'
-            . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
-            . '<tr><td></td><td></td><td></td></tr>'
-            . '</table>'
-            . '</body>'
-            . '</html>';
-        }
-        if($type === 'INVOICE'){
-            $pdf->setType($type);
-            $pdf->SetTitle("Factura");    
-            $pdf->SetSubject("Factura");
+                . '<head></head>'
+                . '<body>'
+                . '<table>'
+                . '<tr><td><table>'
+                . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
+                . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
+                . '</table></td>'
+                . '<td></td>'
+                . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
+                . '<tr><td></td><td></td><td></td></tr>'
+                . '</table>'
+                . '</body>'
+                . '</html>';
             $pdf->SetKeywords("Thimiriza, $company_name, Factura");
-            $info_1 = '<hr/><html>'
-            . '<head></head>'
-            . '<body>'
-            . '<table>'
-            . '<tr><td><table>'
-            . '<tr><td style="width: 100px;">Nº. da Factura:</td><td colspan="2" style="width: 250px;">' . date('y') . '/' . 'factura_id' . '</td></tr>'
-            . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
-            . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
-            . '</table></td>'
-            . '<td></td>'
-            . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
-            . '<tr><td></td><td></td><td></td></tr>'
-            . '</table>'
-            . '</body>'
-            . '</html>';
-        }
-        $pdf->SetKeywords("Thimiriza, $company_name, Factura");
-        $pdf->SetMargins(10, 23, 10);
-        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-        $pdf->AddPage();
-    $pdf->SetFont('times', 'B', 10);
-    $pdf->writeHTML($info_1, true, false, true, false, '');
-    $pdf->SetFont('times', '', 10);
-    $info_2 = '<html>'
-            . '<head></head>'
-            . '<body>'
-            . '<table>'
-            . '<tr><td>DE:</td><td>PARA:</td></tr>'
-            . '<tr><td><strong>' . $data['company_name'] . '</strong></td><td><strong>' . $data['client_name'] . '</strong></td></tr>'
-            . '<tr><td>NUIT: ' . $data['company_nuit'] . '</td><td>NUIT: ' . $data['client_nuit'] . '</td></tr>'
-            . '<tr><td>Endereço:</td><td>Endereço:</td></tr>'
-            . '<tr><td>' . $data['company_address'] . '</td><td>' . $data['client_address'] . '</td></tr>'
-            . '</table>'
-            . '</body>'
-            . '</html>';
-    $pdf->writeHTML($info_2, true, false, true, false, '');
-    $pdf->SetFont('times', 'B', 10);
-    $details = '<html>'
-            . '<head></head>'
-            . '<body>'
-            . '<table cellspacing="1">'
-            . '<tr><th style="text-align:left;">NOME</th><th style="text-align:left;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESCONTO</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>'
-            . '</table>'
-            . '<hr/>'
-            . '</body>'
-            . '</html>';
-    $pdf->writeHTML($details, true, false, true, false, '');
-    $pdf->SetFont('times', '', 10);
-        if($type === 'QUOTE'){
+            $pdf->SetMargins(10, 23, 10);
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+            $pdf->AddPage();
+            $pdf->SetFont('times', 'B', 10);
+            $pdf->writeHTML($info_1, true, false, true, false, '');
+            $pdf->SetFont('times', '', 10);
+            $info_2 = '<html>'
+                . '<head></head>'
+                . '<body>'
+                . '<table>'
+                . '<tr><td>DE:</td><td>PARA:</td></tr>'
+                . '<tr><td><strong>' . $data['company_name'] . '</strong></td><td><strong>' . $data['client_name'] . '</strong></td></tr>'
+                . '<tr><td>NUIT: ' . $data['company_nuit'] . '</td><td>NUIT: ' . $data['client_nuit'] . '</td></tr>'
+                . '<tr><td>Endereço:</td><td>Endereço:</td></tr>'
+                . '<tr><td>' . $data['company_address'] . '</td><td>' . $data['client_address'] . '</td></tr>'
+                . '</table>'
+                . '</body>'
+                . '</html>';
+            $pdf->writeHTML($info_2, true, false, true, false, '');
+            $pdf->SetFont('times', 'B', 10);
+            $details = '<html>'
+                . '<head></head>'
+                . '<body>'
+                . '<table cellspacing="1">'
+                . '<tr><th style="text-align:left;">NOME</th><th style="text-align:left;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESCONTO</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>'
+                . '</table>'
+                . '<hr/>'
+                . '</body>'
+                . '</html>';
+            $pdf->writeHTML($details, true, false, true, false, '');
+            $pdf->SetFont('times', '', 10);
             $sales = DB::table('sales')->select('*')
             ->where('id_user', 'like', $data['user_id'])->get();
             $price_total = 0;
@@ -558,17 +535,74 @@ class SaleController extends Controller
             $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
             $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
         }
+        //INVOICE
         if($type === 'INVOICE'){
+            $invoice_code = $this->invoice_code();
+            $pdf->setType($type);
+            $pdf->SetTitle("Factura");    
+            $pdf->SetSubject("Factura");
+            $pdf->SetKeywords("Thimiriza, $company_name, Factura");
+            $info_1 = '<hr/><html>'
+                . '<head></head>'
+                . '<body>'
+                . '<table>'
+                . '<tr><td><table>'
+                . '<tr><td style="width: 100px;">Nº. da Factura:</td><td colspan="2" style="width: 250px;">' . date('y') .'/' . date('m') . substr($invoice_code, 10 ,11) . '</td></tr>'
+                . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
+                . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
+                . '</table></td>'
+                . '<td></td>'
+                . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
+                . '<tr><td></td><td></td><td></td></tr>'
+                . '</table>'
+                . '</body>'
+                . '</html>';
+            $pdf->SetKeywords("Thimiriza, $company_name, Factura");
+            $pdf->SetMargins(10, 23, 10);
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+            $pdf->AddPage();
+            $pdf->SetFont('times', 'B', 10);
+            $pdf->writeHTML($info_1, true, false, true, false, '');
+            $pdf->SetFont('times', '', 10);
+            $info_2 = '<html>'
+                . '<head></head>'
+                . '<body>'
+                . '<table>'
+                . '<tr><td>DE:</td><td>PARA:</td></tr>'
+                . '<tr><td><strong>' . $data['company_name'] . '</strong></td><td><strong>' . $data['client_name'] . '</strong></td></tr>'
+                . '<tr><td>NUIT: ' . $data['company_nuit'] . '</td><td>NUIT: ' . $data['client_nuit'] . '</td></tr>'
+                . '<tr><td>Endereço:</td><td>Endereço:</td></tr>'
+                . '<tr><td>' . $data['company_address'] . '</td><td>' . $data['client_address'] . '</td></tr>'
+                . '</table>'
+                . '</body>'
+                . '</html>';
+            $pdf->writeHTML($info_2, true, false, true, false, '');
+            $pdf->SetFont('times', 'B', 10);
+            $details = '<html>'
+                . '<head></head>'
+                . '<body>'
+                . '<table cellspacing="1">'
+                . '<tr><th style="text-align:left;">NOME</th><th style="text-align:left;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESCONTO</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>'
+                . '</table>'
+                . '<hr/>'
+                . '</body>'
+                . '</html>';
+            $pdf->writeHTML($details, true, false, true, false, '');
+            $pdf->SetFont('times', '', 10);
             $sales = DB::table('sales')->select('*')
             ->where('id_user', 'like', $data['user_id'])->get();
             $price_total = 0;
             $iva_total = 0;
             $price_inc_total = 0;
             $discount_total = 0;
+            $invoice = '';
             foreach($sales as $sale){
                 $price_sale = 0;
                 $iva = 0;
                 $price_inc = 0;
+                $quantity = 0;
+                $discount = 0;
                 if($sale->type === 'PRODUCT'){
                     $product = DB::table('products')->find($sale->id_product_service);
                     $name = $product->name;
@@ -615,6 +649,81 @@ class SaleController extends Controller
                 $price_inc_total = $price_inc_total + $price_inc;
                 $iva_total = $iva_total + $iva;
                 $discount_total = $discount_total + $discount; 
+            }
+            $invoice_date = now();
+            if(DB::table('invoices')
+                ->insert([
+                    [
+                        'code' => $invoice_code,
+                        'client_type' => $data['client_type'],
+                        'id_client' => $data['client_id'],
+                        'price' => $price_total,
+                        'status' => $data['status'],
+                        'id_user' => $data['user_id'],
+                        'created_at' => $invoice_date
+                    ]
+                ])
+            ){
+                $invoice = DB::table('invoices')->where('id_user', 'like', $data['user_id'])
+                ->where('created_at', 'like', $invoice_date)->where('code', 'like', $invoice_code)->first();
+                foreach($sales as $sale){
+                    if($sale->type === 'PRODUCT'){
+                        $product = DB::table('products')->find($sale->id_product_service);
+                        $name = $product->name;
+                        $description = $product->description;
+                        $quantity = $sale->quantity;
+                        $price = $product->price;
+                        $price_inc = $product->price * $sale->quantity;
+                        $iva = $price_inc * $sale->iva;
+                        $discount = $price_inc * $sale->discount;
+                        $price_sale = $price_inc - $discount + $iva;
+                        if(DB::table('moves')
+                        ->insert([[
+                                'sale_type' => $sale->type,
+                                'id_product_service' => $sale->id_product_service,
+                                'product_service' => $name,
+                                'description' => $description,
+                                'price' => $price_sale,
+                                'quantity' => $quantity,
+                                'discount' => $discount,
+                                'iva' => $iva,
+                                'id_invoice' => $invoice->id,
+                                'created_at' => now()
+                            ]])){
+
+                        }else{
+                            //remove all recorded products on moves
+                        }
+                    }
+                    if($sale->type === 'SERVICE'){
+                        $service = DB::table('services')->find($sale->id_product_service);
+                        $name = $service->name;
+                        $description = $service->description;
+                        $quantity = $sale->quantity;
+                        $price = $service->price;
+                        $price_inc = $service->price * $sale->quantity;
+                        $iva = $price_inc * $sale->iva;
+                        $discount = $price_inc * $sale->discount;
+                        $price_sale = $price_inc - $discount + $iva;
+                        if(DB::table('moves')
+                        ->insert([[
+                                'sale_type' => $sale->type,
+                                'id_product_service' => $sale->id_product_service,
+                                'product_service' => $name,
+                                'description' => $description,
+                                'price' => $price_sale,
+                                'quantity' => $quantity,
+                                'discount' => $discount,
+                                'iva' => $iva,
+                                'id_invoice' => $invoice->id,
+                                'created_at' => now()
+                            ]])){
+
+                        }else{
+                            //remove all recorded services on moves
+                        }
+                    }
+                }
             }
             $details_3 = "<hr/>"
             . "<table>"
@@ -626,6 +735,31 @@ class SaleController extends Controller
         }
         $pdf->Output('factura.pdf', 'I');
     } 
+    //generate invoice_code
+    private function invoice_code()
+    {
+        $user = Auth::user();
+        $invoices = DB::table('invoices')
+        ->join('users', 'invoices.id_user', '=', 'users.id')
+        ->join('companies', 'users.id_company', '=', 'companies.id')
+        ->select('invoices.code')
+        ->where('companies.id', 'like', $user->id_company)
+        ->orderByRaw('invoices.created_at DESC');
+        $company = DB::table('users')
+        ->join('companies', 'users.id_company', '=', 'companies.id')
+        ->select('companies.code')
+        ->where('users.id', 'like', $user->id)->first();
+        if ($invoices->count() == 0) {
+            return $company->code . 'F' . date('y') . date('m') . '000001';
+        }
+        return $this->next_code($invoices->first()->code);
+    }
+
+    private function next_code($last)
+    {   
+        $last++;
+        return $last;
+    }
 }
 
 class MYPDF extends TCPDF {
@@ -691,5 +825,4 @@ class MYPDF extends TCPDF {
         $this->nr_conta = $nr_conta;
         $this->nib = $nib;
     }
-
 }

@@ -155,8 +155,6 @@ class HomeController extends Controller
         }else{
             $hasSales = false;
         }
-        //dd($sales);
-        //dd($company_logo);
         return view ('home.pages.sale.sale', $user, 
         [
             'company_type' => $company->type,
@@ -181,7 +179,8 @@ class HomeController extends Controller
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.*')
         ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.product.product', $user, ['products' => $products]);
+        return view ('home.pages.product.product', $user, ['products' => $products, 
+        'logo' => url('storage/' . $company->logo)]);
     }
 
     public function view_service()
@@ -193,7 +192,8 @@ class HomeController extends Controller
         ->join('services', 'users.id', '=', 'services.id_user')
         ->select('services.*')
         ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.service.service', $user, ['services' => $services]);
+        return view ('home.pages.service.service', $user, ['services' => $services, 
+        'logo' => url('storage/' . $company->logo)]);
     }
 
     public function view_client_singular()
@@ -205,7 +205,8 @@ class HomeController extends Controller
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
         ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular]);
+        return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
+        'logo' => url('storage/' . $company->logo)]);
     }
 
     public function view_client_enterprise()
@@ -217,17 +218,19 @@ class HomeController extends Controller
         ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
         ->select('clients_enterprise.*')
         ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise]);
+        return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise,
+        'logo' => url('storage/' . $company->logo)]);
     }
 
     public function view_user()
     {
         $user = Auth::user();
+        $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
         if($user['privilege'] == "TOTAL"){
             $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
-            return view ('home.pages.user.user', $user, ['users' => $users]);
+            return view ('home.pages.user.user', $user, ['users' => $users, 'logo' => url('storage/' . $company->logo)]);
         }
-        $this->view_sale();
+        return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
     }
 
     public function view_company()
@@ -235,9 +238,18 @@ class HomeController extends Controller
         $user = Auth::user();
         $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
         if($user['privilege'] == "TOTAL"){
-            return view ('home.pages.company.company', $user, ['company' => $company]);
+            return view ('home.pages.company.company', $user, ['company' => $company, 
+            'logo' => url('storage/' . $company->logo)]);
         }
-        $this->view_sale();
+        //return $this->view_sale();
+        return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
+    }
+
+    public function view_about()
+    {
+        $user = Auth::user();
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        return view ('home.pages.about.about', $user, ['logo' => url('storage/' . $company->logo)]);
     }
 
     /**

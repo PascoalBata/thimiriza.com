@@ -18,12 +18,8 @@ class CreateInvoicesTable extends Migration
             $table->string('code')->unique();
             $table->string('client_type');
             $table->string('id_client');
-            $table->string('id_product_service');
-            $table->string('client');
-            $table->string('product_service');
-            $table->string('description');
             $table->double('price');
-            $table->double('status');
+            $table->string('status');
             $table->unsignedBigInteger('id_user');
             $table->timestamps();
 

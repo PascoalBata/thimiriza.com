@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
     <div class="row center-align">
@@ -53,40 +54,43 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small" onclick="displayServiceTable()">
-                        {{ __('Serviços') }}
-                        <i class="material-icons right"></i>
-                    </button>
+                    <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_services">{{__('Serviços')}}</a>
                 </div>                        
             </div>
         </form>
     </div>
-    <div class="row" id="service_table" style="display: block;">
-        <div class="col s12 m12 l12">
-            <table class="highlight">
-                <thead>
-                    <tr>
-                        <th>{{ __('Nome') }}</th>
-                        <th style="text-align: center;">{{ __('Descrição') }}</th>
-                        <th style="text-align: center;">{{ __('Preço') }}</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($services as $service)
-                    <tr>
-                        <td>{{$service->name}}</td>
-                        <td style="text-align: center;">{{$service->description}}</td>
-                        <td style="text-align: right;">{{number_format($service->price, 2, ',', '.')}} {{ __('MT') }}</td>
-                        <td style="text-align: right;">
-                            <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_service_modal" onclick="editService(this, {{$service->id}}, {{$service->price}})">editar</a>
-                            <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_service_modal" onclick="removeService(this, {{$service->id}})">remover</a>
-                        </td>
-                    </tr>                        
-                    @endforeach
-                </tbody>
-            </table>
-            {!! $services->links() !!}
+</div>
+<!-- Users Modal -->
+<div id="modal_services" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>{{__('Serviços')}}</h4>
+        <div class="row" id="service_table" style="display: block;">
+            <div class="col s12 m12 l12">
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Nome') }}</th>
+                            <th style="text-align: center;">{{ __('Descrição') }}</th>
+                            <th style="text-align: center;">{{ __('Preço') }}</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($services as $service)
+                        <tr>
+                            <td>{{$service->name}}</td>
+                            <td style="text-align: center;">{{$service->description}}</td>
+                            <td style="text-align: center;">{{number_format($service->price, 2, ',', '.')}} {{ __('MT') }}</td>
+                            <td style="text-align: right;">
+                                <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small" href="#edit_service_modal" onclick="editService(this, {{$service->id}}, {{$service->price}})">editar</a>
+                                <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_service_modal" onclick="removeService(this, {{$service->id}})">remover</a>
+                            </td>
+                        </tr>                        
+                        @endforeach
+                    </tbody>
+                </table>
+                {!! $services->links() !!}
+            </div>
         </div>
     </div>
 </div>

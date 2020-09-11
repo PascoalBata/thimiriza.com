@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('content')
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
@@ -113,7 +114,7 @@
                             {{ __('Limpar') }}
                             <i class="material-icons right"></i>
                         </button>
-                        <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_users">Utilizadores</a>
+                        <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_users">{{__('Utilizadores')}}</a>
                     </div>
                 </div>
             </form>
@@ -155,12 +156,12 @@
                                     <td style="text-align: center;">{{ $user->birthdate }}</td>
                                     <td style="text-align: center;">{{ $user->privilege }}</td>
                                     <td style="text-align: center;">{{ $user->address }}</td>
-                                    <td style="text-align: right;">
+                                    <td style="width: 5%;">
                                         <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_user_modal"
-                                            onclick="editUser(this, {{ $user->id }}, '{{ $user->name }}', '{{ $user->surname }}')">editar</a>
+                                            onclick="editUser(this, {{ $user->id }}, '{{ $user->name }}', '{{ $user->surname }}')" style="width: 100%;">editar</a>
                                         <a class="modal-trigger waves-effect waves-light btn-small red darken-3"
                                             href="#remove_user_modal"
-                                            onclick="removeUser(this, {{ $user->id }})">remover</a>
+                                            onclick="removeUser(this, {{ $user->id }})" style="width: 100%;">remover</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -169,9 +170,6 @@
                     {!! $users->links() !!}
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
         </div>
     </div>
 
@@ -384,8 +382,7 @@
         <div class="alert alert-success">
             <script>
                 M.toast({
-                    html: '{{ session('
-                    user_notification ') }}',
+                    html: '{{ session('user_notification') }}',
                     classes: 'rounded',
                     displayLength: 1000
                 });

@@ -36,6 +36,84 @@
             position: absolute;
         }
 
+
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        @media (min-width: 993px) {
+            #float-btn {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1540px) {
+            #content {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 992px) {
+            #content {
+                
+            }
+        }
+
+        @media (min-width: 992px) {
+            #content {
+                width: 78%;
+                margin-left: 3.8%;
+            }
+
+            .footer-copyright {
+                margin-left: 7%;
+            }
+        }
+
+        @media (min-width: 1050px) {
+            #content {
+                width: 80%;
+                margin-left: 2.5%;
+            }
+        }
+
+        @media (min-width: 1100px) {
+            #content {
+                width: 80%;
+                margin-left: 2%;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #content {
+                width: 80%;
+                margin-left: 1%;
+            }
+        }
+
+        @media (min-width: 1300px) {
+            #content {
+                width: 80%;
+                margin-left: 0.1%;
+            }
+        }
+
+        @media (min-width: 1800px) {
+            #content {
+                width: 100%;
+                margin-left: 3%;
+            }
+        }
+
+
+
+
     </style>
     @yield('style')
 </head>
@@ -70,46 +148,46 @@
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
-                    {{ __('Produtos') }} <i class="small material-icons">add_shopping_cart</i>
+                    {{ __('Produtos') }} <i class="small material-icons">shopping_basket</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{ __('Serviços') }} <i class="small material-icons">add_shopping_cart</i>
+                    {{ __('Serviços') }} <i class="small material-icons">build</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{ __('Débitos') }} <i class="small material-icons">shopping_basket</i>
+                    {{ __('Créditos') }} <i class="small material-icons">credit_card</i>
 
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{ __('Relatório') }} <i class="small material-icons">shopping_basket</i>
+                    {{ __('Débitos') }} <i class="small material-icons">event_busy</i>
 
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/users');" href="">
-                    {{ __('Utilizadores') }} <i class="small material-icons">add_shopping_cart</i>
+                    {{ __('Utilizadores') }} <i class="small material-icons">group_add</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/company');" href="">
-                    {{ __('Empresa') }} <i class="small material-icons">shopping_basket</i>
+                    {{ __('Empresa') }} <i class="small material-icons">account_balance</i>
 
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{ __('Sobre Nós') }} <i class="small material-icons">shopping_basket</i>
+                    onclick="window.history.replaceState(null, 'Thimiriza', '/about');" href="">
+                    {{ __('Sobre Nós') }} <i class="small material-icons">work</i>
 
                 </a>
             </li>
@@ -118,16 +196,21 @@
                     @csrf
                     @method('POST')
                     <a class="nav-link black-text sidenav-close" id="submit_btn" href="#">
-                        {{ __('Sair') }} <i class="small material-icons">shopping_basket</i>
+                        {{ __('Sair') }} <i class="small material-icons">power_settings_new</i>
 
                     </a>
                 </li>
             </form>
         </ul>
+        <div id="float-btn" class="fixed-action-btn">
+            <a hre="#" data-target="slide-out" class="btn-floating btn-large teal lighten-2 sidenav-trigger">
+                <i class="large material-icons">menu</i>
+            </a>
+        </div>
     </header>
     <main>
         <div id="app" class="row main left-align">
-            <div class="col s12 m12 l8 xl8 push-l2 pull-l1 push-xl2 pull-xl1 container grey lighten-5">
+            <div id="content" class="col s12 m12 l8 xl8 push-l2 pull-l1 push-xl2 pull-xl1 container grey lighten-5">
                 @yield('content')
             </div>
         </div>

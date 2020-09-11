@@ -2,6 +2,7 @@
 
 @section('username', $name)
 @section('user_email', $email)
+@section('logo', $logo)
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
     <div class="row center-align">
@@ -62,42 +63,45 @@
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <button type="button" class="waves-effect waves-light btn-small" onclick="displayProductTable()">
-                        {{ __('Serviços') }}
-                        <i class="material-icons right"></i>
-                    </button>
+                    <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_products">{{__('Produtos')}}</a>
                 </div>                        
             </div>
         </form>
     </div>
-    <div class="row" id="service_table" style="display: block;">
-        <div class="col s12 m12 l12">
-            <table class="highlight">
-                <thead>
-                    <tr>
-                        <th>{{ __('Nome') }}</th>
-                        <th style="text-align: center;">{{ __('Descrição') }}</th>
-                        <th style="text-align: center;">{{ __('Quantidade') }}</th>
-                        <th style="text-align: center;">{{ __('Preço') }}</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($products as $product)
-                    <tr>
-                        <td>{{$product->name}}</td>
-                        <td style="text-align: center;">{{$product->description}}</td>
-                        <td style="text-align: center;">{{$product->quantity}}</td>
-                        <td style="text-align: right;">{{number_format($product->price, 2, ',', '.')}} {{ __('MT') }}</td>
-                        <td style="text-align: right;">
-                            <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_product_modal" onclick="editProduct(this, {{$product->id}}, {{$product->price}})">editar</a>
-                            <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_product_modal" onclick="removeProduct(this, {{$product->id}})">remover</a>
-                        </td>
-                    </tr>                        
-                    @endforeach
-                </tbody>
-            </table>
-            {!! $products->links() !!}
+</div>
+<!-- Users Modal -->
+<div id="modal_products" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>{{__('Produtos')}}</h4>
+        <div class="row" id="service_table" style="display: block;">
+            <div class="col s12 m12 l12">
+                <table class="highlight">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Nome') }}</th>
+                            <th style="text-align: center;">{{ __('Descrição') }}</th>
+                            <th style="text-align: center;">{{ __('Quantidade') }}</th>
+                            <th style="text-align: center;">{{ __('Preço') }}</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($products as $product)
+                        <tr>
+                            <td>{{$product->name}}</td>
+                            <td style="text-align: center;">{{$product->description}}</td>
+                            <td style="text-align: center;">{{$product->quantity}}</td>
+                            <td style="text-align: center;">{{number_format($product->price, 2, ',', '.')}} {{ __('MT') }}</td>
+                            <td style="text-align: right;">
+                                <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small" href="#edit_product_modal" onclick="editProduct(this, {{$product->id}}, {{$product->price}})">editar</a>
+                                <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_product_modal" onclick="removeProduct(this, {{$product->id}})">remover</a>
+                            </td>
+                        </tr>                        
+                        @endforeach
+                    </tbody>
+                </table>
+                {!! $products->links() !!}
+            </div>
         </div>
     </div>
 </div>
