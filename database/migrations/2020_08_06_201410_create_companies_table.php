@@ -30,6 +30,7 @@ class CreateCompaniesTable extends Migration
             $table->string('logo')->nullable();
             $table->string('status')->default('ON');
             $table->unsignedBigInteger('id_package');
+            $table->timestamp('payment_date')->default(now());
             $table->timestamp('email_verified_at')->useCurrent();
             $table->rememberToken();
             $table->timestamps();

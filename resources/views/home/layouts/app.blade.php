@@ -124,7 +124,7 @@
             <li>
                 <div style="padding-top: 48px; padding-bottom: 0px; height: 115px" class="user-view">
                     <div class="background" style="height: 115px;">
-                        <img src="@yield('logo')">
+                        <img style="height:100%; width:100%;" src="@yield('logo')">
                     </div>
                     <a href="#"><span class="white-text name">@yield('username')</span></a>
                     <a href="#"><span style="padding-bottom: 0px;"
@@ -159,14 +159,14 @@
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                    onclick="window.history.replaceState(null, 'Thimiriza', '/credit');" href="">
                     {{ __('Créditos') }} <i class="small material-icons">credit_card</i>
 
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                    onclick="window.history.replaceState(null, 'Thimiriza', '/debit');" href="">
                     {{ __('Débitos') }} <i class="small material-icons">event_busy</i>
 
                 </a>
@@ -208,7 +208,7 @@
             </a>
         </div>
     </header>
-    <main>
+    <main style="margin-bottom: 2%;">
         <div id="app" class="row main left-align">
             <div id="content" class="col s12 m12 l8 xl8 push-l2 pull-l1 push-xl2 pull-xl1 container grey lighten-5">
                 @yield('content')

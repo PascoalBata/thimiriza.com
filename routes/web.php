@@ -50,7 +50,13 @@ Route::get('/clients_enterprise', 'HomeController@view_client_enterprise')->name
 Route::get('/users', 'HomeController@view_user')->name('view_user');
 Route::get('/company', 'HomeController@view_company')->name('view_company');
 Route::put('/company', 'Company\CompanyController@update_company')->name('edit_company');
+Route::put('/company/payment', 'Company\CompanyController@payment')->name('company_payment');
 Route::get('/about', 'HomeController@view_about')->name('view_about');
+Route::get('/credit', 'HomeController@view_credit')->name('view_credit');
+Route::get('/debit', 'HomeController@view_debit')->name('view_debit');
+
+//invoice
+Route::put('/debit/payment', 'Invoice\InvoiceController@invoice_payment')->name('invoice_payment');
 
 //store
 Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');

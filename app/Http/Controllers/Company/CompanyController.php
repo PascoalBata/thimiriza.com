@@ -57,9 +57,9 @@ class CompanyController extends Controller
     {
         //
         //$empresa_dados = $request->all();
-        $package_id = '1'; 
-        $company_status = "ON";
-        $company_code = $this->company_code(); 
+        $package_id = '2';
+        $company_status = "OFF";
+        $company_code = $this->company_code();
         $company_name = $request->input('name');
         $company_email = $request->input('email');
         $company_phone = $request->input('phone');
@@ -78,24 +78,27 @@ class CompanyController extends Controller
         $company->email  = $company_email;
         $company->status  = $company_status;
         $company->id_package = $package_id;
+        $company->payment_date = now();
+        $company->created_at = now();
         if(!$company->save()){
-            //return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
+            return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
             $company_query = DB::table('companies')->select('id')->where('email', 'like', $company_email)->first();
             $id = $company_query->id;
             $userController = new RegisterController;
             $userController->create_admin([
             'id_company'=>$id,
-            'code' => $company_code, 
-            'name'=> $company_name, 
+            'code' => $company_code,
+            'name'=> $company_name,
             'surname' => 'N/A',
             'gender' => 'N/A',
             'privilege' => 'TOTAL',
             'birthdate' => now(),
-            'email'=> $company_email, 
+            'email'=> $company_email,
             'phone'=> $company_phone,
-            'address'=> $company_address, 
+            'address'=> $company_address,
             'password'=> $company_password]);
+            //Send an email
             return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
         }
     }
@@ -121,6 +124,44 @@ class CompanyController extends Controller
     public function edit($id)
     {
         //
+    }
+
+    public function payment(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            if($user->privilege == "TOTAL"){
+                $phone = $request['phone'];
+                $company_id = $user->id_company;
+                $user_id = $user->id;
+                $channel = "Thimiriza";
+                $amount = 750.0;
+                $package_id = '3';
+                $url = "https://mpesaphp.herokuapp.com/api/payment-fake";
+                $payment = array('amount' => $amount, 'phone' => $phone, 'channel' => $channel, 'user_id' => $user_id);
+                $headers = array('Content-Type: application/json', 'Accept: application/json');
+                json_encode($payment);
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payment));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                $server_output = curl_exec($ch);
+                if ($server_output == '{"message":"Pagamento feito com Sucesso"}') {
+                    if(DB::table('companies')
+                    ->where('id', $company_id)
+                    ->update(array(
+                        'payment_date' => now(),
+                        'id_package' => $package_id_id
+                    ))){
+                        return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso. ');
+                    }
+                    return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso, porem, ocorreu um falha no sistema. Por favor, reporte-nos contactando a linha do apoio ao cliente. ');
+                }else{
+                    return redirect()->route('view_company')->with('company_notification', 'Pagamento sem sucesso.');
+                }    
+            }
+        }
     }
 
     /**

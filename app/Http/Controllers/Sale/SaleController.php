@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SystemMail\SystemMailController;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,15 +85,15 @@ class SaleController extends Controller
                     //product exists
                     $products = $products->first();
                     if($products->quantity < $quantity){
-                        return redirect()->route('view_sale')->with('sale_notification', 
+                        return redirect()->route('view_sale')->with('sale_notification',
                         'A quantidade requisitada excede o stock. Actualmente o stock possui .' . $products->quantity);
                     }else{
                         $update_status = false;
                         if(
                             DB::table('sales')
                             ->updateOrInsert(
-                                ['id_product_service' => $products->id, 'type' => $sale_type, 'iva' => $iva, 
-                                'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id], 
+                                ['id_product_service' => $products->id, 'type' => $sale_type, 'iva' => $iva,
+                                'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id],
                                 ['discount' => $discount, 'quantity' => $quantity]
                             )
                         ){$update_status = true;}
@@ -118,7 +119,7 @@ class SaleController extends Controller
                         DB::table('sales')
                         ->updateOrInsert(
                             ['id_product_service' => $services->id, 'type' => $sale_type, 'iva' => $iva,
-                            'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id,], 
+                            'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id,],
                             ['quantity' => $quantity, 'discount' => $discount]
                         )
                     ){
@@ -126,7 +127,7 @@ class SaleController extends Controller
                     }
                 }
                 return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nao existe.');
-            }    
+            }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }
         return route('root');
@@ -151,7 +152,7 @@ class SaleController extends Controller
                 ->where('name', 'like', $client_name);
             if($client->exists()){
                 //client_enterprise exists
-                
+
             }else{
                 $client = DB::table('clients_singular')
                     ->select('*')
@@ -193,7 +194,7 @@ class SaleController extends Controller
                     return redirect()->route('view_sale')->with('sale_notification', 'Prosseguir venda do servico.');
                 }
                 return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nao existe.');
-            }    
+            }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }
         return route('root');
@@ -301,12 +302,13 @@ class SaleController extends Controller
             }else{
                 $user_name = 'Admin';
             }
-            
+
             if($sale->type_client === 'SINGULAR'){
                 $client = DB::table('clients_singular')->find($client_id);
                 $client_name = $client->name . ' ' . $client->surname;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
+                $client_email = $client->email;
             }
 
             if($sale->type_client === 'ENTERPRISE'){
@@ -314,6 +316,7 @@ class SaleController extends Controller
                 $client_name = $client->name;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
+                $client_email = $client->email;
             }
             //$company_logo = url('storage/' . $company->logo);
             $this->invoice_generator([
@@ -374,12 +377,13 @@ class SaleController extends Controller
             }else{
                 $user_name = 'Admin';
             }
-            
+
             if($sale->type_client === 'SINGULAR'){
                 $client = DB::table('clients_singular')->find($client_id);
                 $client_name = $client->name . ' ' . $client->surname;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
+                $client_email = $client->email;
             }
 
             if($sale->type_client === 'ENTERPRISE'){
@@ -387,6 +391,7 @@ class SaleController extends Controller
                 $client_name = $client->name;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
+                $client_email = $client->email;
             }
             //$company_logo = url('storage/' . $company->logo);
             $this->invoice_generator([
@@ -419,7 +424,7 @@ class SaleController extends Controller
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor($data['company_name'] . '/' . $data['user_name']);
         if($type === 'QUOTE'){
-            $pdf->SetTitle("Cotação");    
+            $pdf->SetTitle("Cotação");
             $pdf->SetSubject("Cotação");
             $pdf->SetKeywords("Thimiriza, $company_name, Cotação");
             $pdf->setType($type);
@@ -525,7 +530,7 @@ class SaleController extends Controller
                 $price_total = $price_total + $price_sale;
                 $price_inc_total = $price_inc_total + $price_inc;
                 $iva_total = $iva_total + $iva;
-                $discount_total = $discount_total + $discount; 
+                $discount_total = $discount_total + $discount;
             }
             $details_3 = "<hr/>"
             . "<table>"
@@ -539,7 +544,7 @@ class SaleController extends Controller
         if($type === 'INVOICE'){
             $invoice_code = $this->invoice_code();
             $pdf->setType($type);
-            $pdf->SetTitle("Factura");    
+            $pdf->SetTitle("Factura");
             $pdf->SetSubject("Factura");
             $pdf->SetKeywords("Thimiriza, $company_name, Factura");
             $info_1 = '<hr/><html>'
@@ -648,7 +653,7 @@ class SaleController extends Controller
                 $price_total = $price_total + $price_sale;
                 $price_inc_total = $price_inc_total + $price_inc;
                 $iva_total = $iva_total + $iva;
-                $discount_total = $discount_total + $discount; 
+                $discount_total = $discount_total + $discount;
             }
             $invoice_date = now();
             if(DB::table('invoices')
@@ -733,8 +738,13 @@ class SaleController extends Controller
             $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
             $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
         }
-        $pdf->Output('factura.pdf', 'I');
-    } 
+        $pdf_output= $pdf;
+        $file = $pdf->Output('Factura.pdf', 'S');
+        $mail_controller = new SystemMailController;
+        $mail_controller->quote_email($data['client_email'], $data['client_name'], $file);
+        ob_end_clean();
+        $pdf_output->Output('Factura.pdf', 'I');
+    }
     //generate invoice_code
     private function invoice_code()
     {
@@ -756,7 +766,7 @@ class SaleController extends Controller
     }
 
     private function next_code($last)
-    {   
+    {
         $last++;
         return $last;
     }

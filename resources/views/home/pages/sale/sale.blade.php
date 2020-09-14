@@ -7,6 +7,7 @@
     @php
     $sale_type = 'PRODUCT';
     @endphp
+    <label>{{$deadline_payment}}</label>
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
             <div class="col s12 m12 l12">
@@ -73,7 +74,7 @@
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
-                        <input id="discount" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
+                        <input id="discount" placeholder="Ex.: 12.5" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
                             required>
                     </div>
                 </div>
@@ -93,8 +94,8 @@
         </div>
     </div>
     <div class="row" id="service_table" style="display: block;">
-        <div class="col s12 m12 l12">
-            <table class="highlight">
+        <div class="col s12 m12 l12" style="overflow-x: auto;">
+            <table class="highlight" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>{{ __('Nome') }}</th>
@@ -106,7 +107,7 @@
                             <th style="text-align: center;">{{ __('IVA') }}</th>
                         @endif
                         <th style="text-align: right;">{{ __('Preço') }}</th>
-                        <th></th>
+                        <th style="width: 5%;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,20 +119,19 @@
                             <td>{{ $sale->name }}</td>
                             <td style="text-align: center;">{{ $sale->description }}</td>
                             <td style="text-align: center;">{{ $sale->quantity }}</td>
-                            <td style="text-align: right;">{{ number_format($sale->price_unit, 2, ',', '.') }}
-                                {{ __('MT') }}</td>
+                            <td style="text-align: right;">{{ number_format($sale->price_unit, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: center;">{{ number_format($sale->discount_price, 2, ',', '.') }}
                                 {{ __('MT') }}</td>
                             @if ($company_type === 'NORMAL')
-                                <td style="text-align: center;">{{ number_format($sale->iva, 2, ',', '.') }} {{ __('MT') }}
+                                <td style="text-align: center;">{{ number_format($sale->iva, 2, ',', '.') }}{{ __('MT') }}
                                 </td>
                             @endif
-                            <td style="text-align: right;">{{ number_format($sale->price, 2, ',', '.') }} {{ __('MT') }}
+                            <td style="text-align: right;">{{ number_format($sale->price, 2, ',', '.') }}{{ __('MT') }}
                             </td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_sale_item_modal"
+                                <a style="width:100%;" class="modal-trigger waves-effect waves-light btn-small" href="#edit_sale_item_modal"
                                     onclick="editSaleItem(this, {{ $sale->id }}, {{ $sale->quantity }}, {{ $sale->discount * 100 }})">editar</a>
-                                <a class="modal-trigger waves-effect waves-light btn-small red darken-3"
+                                <a style="width:100%;" class="modal-trigger waves-effect waves-light btn-small red darken-3"
                                     href="#remove_sale_item_modal"
                                     onclick="removeSaleItem(this, {{ $sale->id }})">remover</a>
                             </td>
@@ -144,12 +144,11 @@
                         <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
                         <td></td>
                         <td></td>
-                        <td></td>
                         @if ($company_type === 'NORMAL')
                             <td></td>
                         @endif
                         <td></td>
-                        <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}
+                        <td colspan="2" style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}
                             {{ __('MT') }}</td>
                     </tr>
                 </tbody>
@@ -188,6 +187,9 @@
                     <i class="material-icons right"></i>
                 </button>
             </form>
+        </div>
+        <div class="col s12 m12 l12">
+            <p class="black-text">{{__('NOTA: Utilizadores administrativos nao podem efectuar vendas')}}</p>
         </div>
     </div>
     <div id="edit_sale_item_modal" tabindex="-1" class="modal">

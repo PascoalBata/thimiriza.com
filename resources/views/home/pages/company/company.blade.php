@@ -229,10 +229,10 @@
         </form>
     </div>
     <div id="payment_modal" tabindex="-1" class="modal">
-        <form method="POST" id="paymentForm" name="paymentForm" action="{{ route('edit_company') }}">
+        <form method="POST" id="paymentForm" name="paymentForm" action="{{ route('company_payment') }}">
             <div class="modal-content">
                 <h4>{{ __('Pagamento (MPESA)') }}</h4>
-                <p>{{ __('Sera cobrado um valor de 750mt') }}</p>
+                <p>{{ __('Será cobrado um valor de 750mt') }}</p>
                 @method('PUT')
                 @csrf
                 <input id="id" hidden type="text" class="black-text" name="id" value="{{ $company->id }}" required>

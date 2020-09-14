@@ -37,7 +37,7 @@ class HomeController extends Controller
         $user = Auth::user();
         $company = Company::where('id', 'like', $user->id_company)->first();
         if($company->email === $user->email){
-            return redirect()->route('view_user');    
+            return redirect()->route('view_user');
         }
         return redirect()->route('view_sale');
     }
@@ -58,6 +58,20 @@ class HomeController extends Controller
         $user = Auth::user();
         $company = Company::where('id', 'like', $user->id_company)->first();
         $company_logo = url('storage/' . $company->logo);
+        //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
+        $expire = date('Y/m/d', strtotime('+1 month', strtotime($company->payment_date))) . PHP_EOL;
+        $expire_days_left = intval((strtotime($expire) - strtotime(now()))/86400)+1;
+        $expire_msg = 'Validade: ';
+        if($company->id_package === 2){
+            $expire_msg = 'Possui apenas ' . $expire_days_left . ' dias de uso gratuito.';
+        }
+        if($company->id_package !== 2){
+            $expire_msg = 'Validade: ' . $expire;
+        }
+        $enable_sales = true;
+        if($expire_days_left <= 0){
+            $enable_sales = false;
+        }
         if($company->logo === ''){
             $company_logo = '';
         }
@@ -114,7 +128,7 @@ class HomeController extends Controller
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
                 $sale->discount = $sale_query->discount;
-                $sale->quantity = $sale_query->quantity; 
+                $sale->quantity = $sale_query->quantity;
                 $price = $product->price * $sale_query->quantity;
                 $sale->discount_price = $sale_query->discount * $price;
                 $sale->iva = $sale_query->iva * $price;
@@ -141,24 +155,25 @@ class HomeController extends Controller
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
                 $sale->discount = $sale_query->discount;
-                $sale->quantity = $sale_query->quantity; 
+                $sale->quantity = $sale_query->quantity;
                 $price = $service->price * $sale_query->quantity;
                 $sale->discount_price = $sale_query->discount * $price;
                 $sale->iva = $sale_query->iva * $price;
                 $sale->price = $price + $sale->iva - $sale->discount_price;
             }
-            $sales[$i] = $sale; 
-            $i++;  
+            $sales[$i] = $sale;
+            $i++;
         }
         if($i > 0){
             $hasSales = true;
         }else{
             $hasSales = false;
         }
-        return view ('home.pages.sale.sale', $user, 
+        return view ('home.pages.sale.sale', $user,
         [
             'company_type' => $company->type,
             'logo' => $company_logo,
+            'deadline_payment' =>  $expire_msg,
             'sales' => $sales,
             'services' => $services,
             'products' => $products,
@@ -166,7 +181,8 @@ class HomeController extends Controller
             'clients_singular' => $clients_singular,
             'hasSales' => $hasSales,
             'actual_client' => $actual_client,
-            'isAdmin' => $isAdmin
+            'isAdmin' => $isAdmin,
+            'enable_sales' => $enable_sales
         ]);
     }
 
@@ -178,8 +194,76 @@ class HomeController extends Controller
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.*')
-        ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.product.product', $user, ['products' => $products, 
+        ->where('companies.id', 'like', $company->id)->orderBy('name')->paginate(30);
+        return view ('home.pages.product.product', $user, ['products' => $products,
+        'logo' => url('storage/' . $company->logo)]);
+    }
+
+    public function view_credit()
+    {
+        $user = Auth::user();
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $invoices_query = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('invoices', 'users.id', '=', 'invoices.id_user')
+        ->select('invoices.*')
+        ->where('companies.id', 'like', $company->id)
+        ->where('invoices.status', 'like', 'PAID')
+        ->orderByDesc('invoices.created_at')->get();
+        $invoices = [];
+        $i=0;
+        foreach($invoices_query as $invoice_query){
+            $invoice = new stdClass;
+            $invoice->id = $invoice_query->id;
+            $invoice->created_at = $invoice_query->created_at;
+            $invoice->price = $invoice_query->price;
+            $invoice->code = substr($invoice_query->code, 10, 11);
+            if($invoice_query->client_type === 'SINGULAR'){
+                $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                $invoice->client_name = $client->name . ' ' . $client->surname;
+            }
+            if($invoice_query->client_type === 'ENTERPRISE'){
+                $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                $invoice->client_name = $client->name;
+            }
+            $invoices[$i] = $invoice;
+            $i++;
+        }
+        return view ('home.pages.credit.credit', $user, ['invoices' => $invoices,
+        'logo' => url('storage/' . $company->logo)]);
+    }
+
+    public function view_debit()
+    {
+        $user = Auth::user();
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $invoices_query = DB::table('companies')
+        ->join('users', 'companies.id', '=', 'users.id_company')
+        ->join('invoices', 'users.id', '=', 'invoices.id_user')
+        ->select('invoices.*')
+        ->where('companies.id', 'like', $company->id)
+        ->where('invoices.status', 'like', 'NOT PAID')
+        ->orderByDesc('invoices.created_at')->get();
+        $invoices = [];
+        $i=0;
+        foreach($invoices_query as $invoice_query){
+            $invoice = new stdClass;
+            $invoice->id = $invoice_query->id;
+            $invoice->created_at = $invoice_query->created_at;
+            $invoice->price = $invoice_query->price;
+            $invoice->code = substr($invoice_query->code, 10, 11);
+            if($invoice_query->client_type === 'SINGULAR'){
+                $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                $invoice->client_name = $client->name . ' ' . $client->surname;
+            }
+            if($invoice_query->client_type === 'ENTERPRISE'){
+                $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                $invoice->client_name = $client->name;
+            }
+            $invoices[$i] = $invoice;
+            $i++;
+        }
+        return view ('home.pages.debit.debit', $user, ['invoices' => $invoices,
         'logo' => url('storage/' . $company->logo)]);
     }
 
@@ -191,8 +275,8 @@ class HomeController extends Controller
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('services', 'users.id', '=', 'services.id_user')
         ->select('services.*')
-        ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.service.service', $user, ['services' => $services, 
+        ->where('companies.id', 'like', $company->id)->orderBy('name')->paginate(30);
+        return view ('home.pages.service.service', $user, ['services' => $services,
         'logo' => url('storage/' . $company->logo)]);
     }
 
@@ -238,7 +322,7 @@ class HomeController extends Controller
         $user = Auth::user();
         $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
         if($user['privilege'] == "TOTAL"){
-            return view ('home.pages.company.company', $user, ['company' => $company, 
+            return view ('home.pages.company.company', $user, ['company' => $company,
             'logo' => url('storage/' . $company->logo)]);
         }
         //return $this->view_sale();
@@ -260,7 +344,7 @@ class HomeController extends Controller
      */
     public function update(Request $request)
     {
-        $request->user(); 
+        $request->user();
         return '';
         //returns an instance of the authenticated user...
     }
