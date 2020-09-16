@@ -34,33 +34,38 @@ class HomeController extends Controller
         $this->middleware(['auth', 'verified']);
     }
 
-    public function company_validate(Object $user){
+    public function company_validate(){
         $this->enable_sales = true;
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
-        $company_logo = url('storage/' . $company->logo);
+        $this->user = Auth::user();
+        $this->company = Company::where('id', 'like', $this->user->id_company)->first();
+        $this->company_logo = url('storage/' . $this->company->logo);
         //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
-        $this->expire = date('Y/m/d', strtotime('+1 month', strtotime($company->payment_date))) . PHP_EOL;
+        $this->expire = date('Y/m/d', strtotime('+1 month', strtotime($this->company->payment_date))) . PHP_EOL;
         $this->expire_days_left = intval((strtotime($this->expire) - strtotime(now()))/86400)+1;
-        $expire_msg = 'Validade: ';
-        if($company->id_package === 2){
+        $this->expire_msg = 'Validade: ';
+        if($this->company->id_package === 2){
             $this->expire_msg = 'Possui apenas ' . $this->expire_days_left . ' dias de uso gratuito.';
         }
-        if($company->id_package !== 2){
+        if($this->company->id_package !== 0 && $this->company->id_package !== 2){
             $this->expire_msg = 'Validade: ' . $this->expire;
         }
-        $this->company_validate($user);
-        if($company->logo === ''){
-            $company_logo = '';
+        if($this->company->bank_account_owner === '' || $this->company->bank_account_number === ''
+        || $this->company->bank_account_name === '' || $this->company->bank_account_nib === ''){
+            $this->enable_sales = false;
+        }
+        if($this->company->logo === ''){
+            $this->company_logo = '';
             $this->enable_sales = false;
         }
         if($this->expire_days_left <= 0){
-            DB::table('companies')
-                    ->where('id', $company->id)
+            if($this->company->id_package !== 1){
+                DB::table('companies')
+                    ->where('id', $this->company->id)
                     ->update(array(
-                        'payment_date' => now(),
-                        'id_package' => 0
+                        'id_package' => 1
                     ));
+            }
+            $this->expire_msg = 'Conta expirou!';
             $this->enable_sales = false;
         }
     }
@@ -81,46 +86,39 @@ class HomeController extends Controller
 
     public function view_home()
     {
-        $user = Auth::user();
-        if($user->privilege == "TOTAL"){
-            $users = User::paginate(30);
-            return view ('home.pages.home', $user, ['users' => $users]);
-        }
-        $this->view_product();
+        //
     }
 
 
     public function view_sale()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
-        
+        $this->company_validate();
         $isAdmin = true;
-        if($company->email !== $user->email){
+        if($this->company->email !== $this->user->email){
             $isAdmin = false;
         }
         $services = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('services', 'users.id', '=', 'services.id_user')
         ->select('services.*')
-        ->where('companies.id', 'like', $company->id)->get();
+        ->where('companies.id', 'like', $this->company->id)->get();
         $products = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.*')
-        ->where('companies.id', 'like', $company->id)->get();
+        ->where('companies.id', 'like', $this->company->id)->get();
         $clients_enterprise = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
         ->select('clients_enterprise.*')
-        ->where('companies.id', 'like', $company->id)->get();
+        ->where('companies.id', 'like', $this->company->id)->get();
         $clients_singular = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
-        ->where('companies.id', 'like', $company->id)->get();
+        ->where('companies.id', 'like', $this->company->id)->get();
         $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity', 'iva', 'discount')
-        ->where('id_user', 'like', $user->id)->get();
+        ->where('id_user', 'like', $this->user->id)->get();
         $sales = [];
         $i = 0;
         $hasSales = false;
@@ -189,10 +187,10 @@ class HomeController extends Controller
         }else{
             $hasSales = false;
         }
-        return view ('home.pages.sale.sale', $user,
+        return view ('home.pages.sale.sale', $this->user,
         [
-            'company_type' => $company->type,
-            'logo' => $company_logo,
+            'company_type' => $this->company->type,
+            'logo' => $this->company_logo,
             'deadline_payment' =>  $this->expire_msg,
             'sales' => $sales,
             'services' => $services,
@@ -208,26 +206,24 @@ class HomeController extends Controller
 
     public function view_product()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $products = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('products', 'users.id', '=', 'products.id_user')
         ->select('products.*')
-        ->where('companies.id', 'like', $company->id)->orderBy('name')->paginate(30);
-        return view ('home.pages.product.product', $user, ['products' => $products,
-        'logo' => url('storage/' . $company->logo)]);
+        ->where('companies.id', 'like', $this->company->id)->orderBy('name')->paginate(30);
+        return view ('home.pages.product.product', $this->user, ['products' => $products,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_credit()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $invoices_query = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('invoices', 'users.id', '=', 'invoices.id_user')
         ->select('invoices.*')
-        ->where('companies.id', 'like', $company->id)
+        ->where('companies.id', 'like', $this->company->id)
         ->where('invoices.status', 'like', 'PAID')
         ->orderByDesc('invoices.created_at')->get();
         $invoices = [];
@@ -249,19 +245,18 @@ class HomeController extends Controller
             $invoices[$i] = $invoice;
             $i++;
         }
-        return view ('home.pages.credit.credit', $user, ['invoices' => $invoices,
-        'logo' => url('storage/' . $company->logo)]);
+        return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_debit()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $invoices_query = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('invoices', 'users.id', '=', 'invoices.id_user')
         ->select('invoices.*')
-        ->where('companies.id', 'like', $company->id)
+        ->where('companies.id', 'like', $this->company->id)
         ->where('invoices.status', 'like', 'NOT PAID')
         ->orderByDesc('invoices.created_at')->get();
         $invoices = [];
@@ -283,51 +278,49 @@ class HomeController extends Controller
             $invoices[$i] = $invoice;
             $i++;
         }
-        return view ('home.pages.debit.debit', $user, ['invoices' => $invoices,
-        'logo' => url('storage/' . $company->logo)]);
+        return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_service()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $services = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('services', 'users.id', '=', 'services.id_user')
         ->select('services.*')
-        ->where('companies.id', 'like', $company->id)->orderBy('name')->paginate(30);
-        return view ('home.pages.service.service', $user, ['services' => $services,
-        'logo' => url('storage/' . $company->logo)]);
+        ->where('companies.id', 'like', $this->company->id)->orderBy('name')->paginate(30);
+        return view ('home.pages.service.service', $this->user, ['services' => $services,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_client_singular()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $clients_singular = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
         ->select('clients_singular.*')
-        ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
-        'logo' => url('storage/' . $company->logo)]);
+        ->where('companies.id', 'like', $this->company->id)->paginate(30);
+        return view ('home.pages.client_singular.client_singular', $this->user, ['clients_singular' => $clients_singular,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_client_enterprise()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
+        $this->company_validate();
         $clients_enterprise = DB::table('companies')
         ->join('users', 'companies.id', '=', 'users.id_company')
         ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
         ->select('clients_enterprise.*')
-        ->where('companies.id', 'like', $company->id)->paginate(30);
-        return view ('home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise,
-        'logo' => url('storage/' . $company->logo)]);
+        ->where('companies.id', 'like', $this->company->id)->paginate(30);
+        return view ('home.pages.client_enterprise.client_enterprise', $this->user, ['clients_enterprise' => $clients_enterprise,
+        'logo' => url('storage/' . $this->company_logo)]);
     }
 
     public function view_user()
     {
+        $this->company_validate();
         $user = Auth::user();
         $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
         if($user['privilege'] == "TOTAL"){
@@ -339,11 +332,10 @@ class HomeController extends Controller
 
     public function view_company()
     {
-        $user = Auth::user();
-        $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
-        if($user['privilege'] == "TOTAL"){
-            return view ('home.pages.company.company', $user, ['company' => $company,
-            'logo' => url('storage/' . $company->logo)]);
+        $this->company_validate();
+        if($this->user['privilege'] == "TOTAL"){
+            return view ('home.pages.company.company', $this->user, ['company' => $this->company,
+            'logo' => url('storage/' . $this->company_logo)]);
         }
         //return $this->view_sale();
         return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
@@ -351,9 +343,8 @@ class HomeController extends Controller
 
     public function view_about()
     {
-        $user = Auth::user();
-        $company = Company::where('id', 'like', $user->id_company)->first();
-        return view ('home.pages.about.about', $user, ['logo' => url('storage/' . $company->logo)]);
+        $this->company_validate();
+        return view ('home.pages.about.about', $this->user, ['logo' => url('storage/' . $this->company_logo)]);
     }
 
     /**

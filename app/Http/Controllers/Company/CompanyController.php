@@ -133,12 +133,13 @@ class CompanyController extends Controller
             if($user->privilege == "TOTAL"){
                 $phone = $request['phone'];
                 $company_id = $user->id_company;
-                $user_id = $user->id;
+                $company = DB::table('companies')->find($company_id);
+                $company_data = $company->name . ' - ' . $company->nuit;
                 $channel = "Thimiriza";
                 $amount = 750.0;
                 $package_id = '3';
                 $url = "https://mpesaphp.herokuapp.com/api/payment-fake";
-                $payment = array('amount' => $amount, 'phone' => $phone, 'channel' => $channel, 'user_id' => $user_id);
+                $payment = array('amount' => $amount, 'phone' => $phone, 'channel' => $channel, 'user_id' => $company_data);
                 $headers = array('Content-Type: application/json', 'Accept: application/json');
                 json_encode($payment);
                 $ch = curl_init($url);
@@ -147,6 +148,7 @@ class CompanyController extends Controller
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                 $server_output = curl_exec($ch);
+                dd($server_output);
                 if ($server_output == '{"message":"Pagamento feito com Sucesso"}') {
                     if(DB::table('companies')
                     ->where('id', $company_id)

@@ -168,7 +168,11 @@
             <form method="POST" action="{{ route('quote') }}">
                 @method('POST')
                 @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;">
+                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;"
+                @if (!$enable_sales)
+                        disabled
+                    @endif
+                >
                     {{ __('COTAÇÃO') }}
                     <i class="material-icons right"></i>
                 </button>
@@ -178,6 +182,9 @@
                 @csrf
                 <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
                     disabled
+                    @endif
+                    @if (!$enable_sales)
+                        disabled
                     @endif
                     @if ($isAdmin)
                         disabled
