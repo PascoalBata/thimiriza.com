@@ -39,6 +39,9 @@ Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_c
 //Authentication
 Auth::routes();
 
+//Verification email
+Auth::routes(['verify' => true]);
+
 Route::get('home', 'HomeController@index')->name('home');
 
 //home_views

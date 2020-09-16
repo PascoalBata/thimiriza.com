@@ -58,7 +58,7 @@ class CompanyController extends Controller
         //
         //$empresa_dados = $request->all();
         $package_id = '2';
-        $company_status = "OFF";
+        $company_status = "ON";
         $company_code = $this->company_code();
         $company_name = $request->input('name');
         $company_email = $request->input('email');
@@ -152,14 +152,14 @@ class CompanyController extends Controller
                     ->where('id', $company_id)
                     ->update(array(
                         'payment_date' => now(),
-                        'id_package' => $package_id_id
+                        'id_package' => $package_id
                     ))){
                         return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso. ');
                     }
                     return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso, porem, ocorreu um falha no sistema. Por favor, reporte-nos contactando a linha do apoio ao cliente. ');
                 }else{
                     return redirect()->route('view_company')->with('company_notification', 'Pagamento sem sucesso.');
-                }    
+                }
             }
         }
     }

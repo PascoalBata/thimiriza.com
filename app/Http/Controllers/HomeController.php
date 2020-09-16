@@ -22,11 +22,48 @@ class HomeController extends Controller
      *
      * @return void
      */
+    private $expire;
+    private $expire_msg;
+    private $company_logo;
+    private $expire_days_left;
+    private $enable_sales;
+    private $user;
+    private $company;
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'verified']);
     }
 
+    public function company_validate(Object $user){
+        $this->enable_sales = true;
+        $user = Auth::user();
+        $company = Company::where('id', 'like', $user->id_company)->first();
+        $company_logo = url('storage/' . $company->logo);
+        //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
+        $this->expire = date('Y/m/d', strtotime('+1 month', strtotime($company->payment_date))) . PHP_EOL;
+        $this->expire_days_left = intval((strtotime($this->expire) - strtotime(now()))/86400)+1;
+        $expire_msg = 'Validade: ';
+        if($company->id_package === 2){
+            $this->expire_msg = 'Possui apenas ' . $this->expire_days_left . ' dias de uso gratuito.';
+        }
+        if($company->id_package !== 2){
+            $this->expire_msg = 'Validade: ' . $this->expire;
+        }
+        $this->company_validate($user);
+        if($company->logo === ''){
+            $company_logo = '';
+            $this->enable_sales = false;
+        }
+        if($this->expire_days_left <= 0){
+            DB::table('companies')
+                    ->where('id', $company->id)
+                    ->update(array(
+                        'payment_date' => now(),
+                        'id_package' => 0
+                    ));
+            $this->enable_sales = false;
+        }
+    }
     /**
      * Show the application dashboard.
      *
@@ -57,24 +94,7 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $company = Company::where('id', 'like', $user->id_company)->first();
-        $company_logo = url('storage/' . $company->logo);
-        //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
-        $expire = date('Y/m/d', strtotime('+1 month', strtotime($company->payment_date))) . PHP_EOL;
-        $expire_days_left = intval((strtotime($expire) - strtotime(now()))/86400)+1;
-        $expire_msg = 'Validade: ';
-        if($company->id_package === 2){
-            $expire_msg = 'Possui apenas ' . $expire_days_left . ' dias de uso gratuito.';
-        }
-        if($company->id_package !== 2){
-            $expire_msg = 'Validade: ' . $expire;
-        }
-        $enable_sales = true;
-        if($expire_days_left <= 0){
-            $enable_sales = false;
-        }
-        if($company->logo === ''){
-            $company_logo = '';
-        }
+        
         $isAdmin = true;
         if($company->email !== $user->email){
             $isAdmin = false;
@@ -173,7 +193,7 @@ class HomeController extends Controller
         [
             'company_type' => $company->type,
             'logo' => $company_logo,
-            'deadline_payment' =>  $expire_msg,
+            'deadline_payment' =>  $this->expire_msg,
             'sales' => $sales,
             'services' => $services,
             'products' => $products,
@@ -182,7 +202,7 @@ class HomeController extends Controller
             'hasSales' => $hasSales,
             'actual_client' => $actual_client,
             'isAdmin' => $isAdmin,
-            'enable_sales' => $enable_sales
+            'enable_sales' => $this->enable_sales
         ]);
     }
 
