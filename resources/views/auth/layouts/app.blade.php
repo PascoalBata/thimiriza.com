@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" rel="stylesheet" href="{{asset ('assets/css/materialize-css/materialize.min.css')}}" 
+    <link type="text/css" rel="stylesheet" href="{{asset ('assets/css/materialize-css/materialize.min.css')}}"
     media="screen,projection">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -31,7 +31,7 @@
         footer {
             width: 100%;
             bottom: 0;
-            position: absolute;
+            position: fixed;
         }
     </style>
     @yield('style')

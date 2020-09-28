@@ -1,7 +1,7 @@
 @extends('auth.layouts.app')
 
 @section('content')
-<div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(20%);">
+<div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(2%);">
     <div class="row center-align">
         <div class="col s12 m12 l12">
             <h1 class="display-4 black-text"><strong>{{ __('Login') }}</strong></h1>
@@ -46,7 +46,7 @@
                         <button type="submit" class="btn btn-primary">
                             {{ __('Login') }}
                         </button>
-                    </div>                        
+                    </div>
                 </div>
                 <div>
                     @if (Route::has('new_company'))

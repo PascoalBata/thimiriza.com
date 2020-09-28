@@ -24,6 +24,8 @@ class CreateProductsTable extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
         });
     }
 

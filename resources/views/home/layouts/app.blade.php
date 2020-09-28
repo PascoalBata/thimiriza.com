@@ -61,7 +61,7 @@
 
         @media (max-width: 992px) {
             #content {
-                
+
             }
         }
 
@@ -120,7 +120,7 @@
 
 <body>
     <header>
-        <ul style="width: 200px; height:100%;" id="slide-out" class="sidenav sidenav-fixed grey lighten-5">
+        <ul style="width: 225px; height:100%;" id="slide-out" class="sidenav sidenav-fixed grey lighten-5">
             <li>
                 <div style="padding-top: 48px; padding-bottom: 0px; height: 115px" class="user-view">
                     <div class="background" style="height: 115px;">
@@ -181,7 +181,6 @@
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/company');" href="">
                     {{ __('Empresa') }} <i class="small material-icons">account_balance</i>
-
                 </a>
             </li>
             <li>

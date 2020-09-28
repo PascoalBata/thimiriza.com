@@ -34,8 +34,9 @@ class CreateCompaniesTable extends Migration
             $table->timestamp('email_verified_at')->useCurrent();
             $table->rememberToken();
             $table->timestamps();
-
             $table->foreign('id_package')->references('id')->on('packages');
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
         });
     }
 

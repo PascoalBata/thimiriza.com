@@ -114,20 +114,22 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        @if ($privileges === 'TOTAL')
             <div class="row">
-                <div class="col s12 m12 l12">
-                    <a class="modal-trigger waves-effect waves-light btn-small" href="#update_modal">
-                        {{ __('Actualizar') }}
-                        <i class="material-icons right">update</i>
-                    </a>
-                    <a class="modal-trigger waves-effect waves-light btn-small" href="#payment_modal">
-                        {{ __('Pagamento') }}
-                        <i class="material-icons right">payment</i>
-                    </a>
+                <div class="row">
+                    <div class="col s12 m12 l12">
+                        <a class="modal-trigger waves-effect waves-light btn-small" href="#update_modal">
+                            {{ __('Actualizar') }}
+                            <i class="material-icons right">update</i>
+                        </a>
+                        <a class="modal-trigger waves-effect waves-light btn-small" href="#payment_modal">
+                            {{ __('Pagamento') }}
+                            <i class="material-icons right">payment</i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
     <div id="update_modal" tabindex="-1" class="modal modal-fixed-footer">
         <form method="POST" id="updateCompanyForm" name="updateCompanyForm" action="{{ route('edit_company') }}"

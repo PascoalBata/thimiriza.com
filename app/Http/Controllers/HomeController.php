@@ -39,6 +39,8 @@ class HomeController extends Controller
         $this->user = Auth::user();
         $this->company = Company::where('id', 'like', $this->user->id_company)->first();
         $this->company_logo = url('storage/' . $this->company->logo);
+        //$this->company_logo = '..' . Storage::url($this->company->logo);
+        //dd($this->company_logo);
         //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
         $this->expire = date('Y/m/d', strtotime('+1 month', strtotime($this->company->payment_date))) . PHP_EOL;
         $this->expire_days_left = intval((strtotime($this->expire) - strtotime(now()))/86400)+1;
@@ -53,8 +55,8 @@ class HomeController extends Controller
         || $this->company->bank_account_name === '' || $this->company->bank_account_nib === ''){
             $this->enable_sales = false;
         }
-        if($this->company->logo === ''){
-            $this->company_logo = '';
+        if($this->company->logo === null || trim($this->company->logo) === ''){
+            $this->company_logo = url('storage/companies/default/logo/default.png');
             $this->enable_sales = false;
         }
         if($this->expire_days_left <= 0){
@@ -213,7 +215,7 @@ class HomeController extends Controller
         ->select('products.*')
         ->where('companies.id', 'like', $this->company->id)->orderBy('name')->paginate(30);
         return view ('home.pages.product.product', $this->user, ['products' => $products,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_credit()
@@ -246,7 +248,7 @@ class HomeController extends Controller
             $i++;
         }
         return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_debit()
@@ -279,7 +281,7 @@ class HomeController extends Controller
             $i++;
         }
         return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_service()
@@ -291,7 +293,7 @@ class HomeController extends Controller
         ->select('services.*')
         ->where('companies.id', 'like', $this->company->id)->orderBy('name')->paginate(30);
         return view ('home.pages.service.service', $this->user, ['services' => $services,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_client_singular()
@@ -303,7 +305,7 @@ class HomeController extends Controller
         ->select('clients_singular.*')
         ->where('companies.id', 'like', $this->company->id)->paginate(30);
         return view ('home.pages.client_singular.client_singular', $this->user, ['clients_singular' => $clients_singular,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_client_enterprise()
@@ -315,7 +317,7 @@ class HomeController extends Controller
         ->select('clients_enterprise.*')
         ->where('companies.id', 'like', $this->company->id)->paginate(30);
         return view ('home.pages.client_enterprise.client_enterprise', $this->user, ['clients_enterprise' => $clients_enterprise,
-        'logo' => url('storage/' . $this->company_logo)]);
+        'logo' => $this->company_logo]);
     }
 
     public function view_user()
@@ -325,7 +327,7 @@ class HomeController extends Controller
         $company = DB::table('companies')->select('*')->where('id', 'like', $user->id_company)->first();
         if($user['privilege'] == "TOTAL"){
             $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
-            return view ('home.pages.user.user', $user, ['users' => $users, 'logo' => url('storage/' . $company->logo)]);
+            return view ('home.pages.user.user', $user, ['users' => $users, 'logo' => $this->company_logo]);
         }
         return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
     }
@@ -333,18 +335,20 @@ class HomeController extends Controller
     public function view_company()
     {
         $this->company_validate();
-        if($this->user['privilege'] == "TOTAL"){
-            return view ('home.pages.company.company', $this->user, ['company' => $this->company,
-            'logo' => url('storage/' . $this->company_logo)]);
-        }
+            return view ('home.pages.company.company', $this->user,
+            [
+                'company' => $this->company,
+                'privileges' => $this->user['privilege'],
+                'logo' => url('storage/' . $this->company_logo)
+            ]);
         //return $this->view_sale();
-        return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
+        //return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
     }
 
     public function view_about()
     {
         $this->company_validate();
-        return view ('home.pages.about.about', $this->user, ['logo' => url('storage/' . $this->company_logo)]);
+        return view ('home.pages.about.about', $this->user, ['logo' => $this->company_logo]);
     }
 
     /**

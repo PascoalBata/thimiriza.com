@@ -41,11 +41,6 @@
                             <div class="input-field col s12 m6 l6">
                                 <input id="phone" type="number" class="black-text validate" name="phone" value="{{ old('phone') }}" required>
                                 <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
                             </div>
                         </div>
                         <div class="row">
@@ -111,7 +106,7 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
-    
+
     function submeter() {
         if(document.getElementById('senha_confirmacao').value !== document.getElementById('empresa_senha').value){
             M.toast({html: 'As senhas devem ser as mesmas.', classes: 'rounded', displayLength: 1000});
