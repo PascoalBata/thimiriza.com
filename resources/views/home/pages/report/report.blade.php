@@ -10,11 +10,11 @@
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
             <div class="col s12 m12 l12">
-                <h1 class="display-4 black-text"><strong>{{ __('Facturas Em Dívida') }}</strong></h1>
+                <h1 class="display-4 black-text"><strong>{{ __('Relatório') }}</strong></h1>
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
-            <form method="POST" name="saleForm" action="{{ route('get_debit') }}">
+            <form method="POST" name="saleForm" action="{{ route('get_report') }}">
                 @method('POST')
                 @csrf
                 <div class="row">
@@ -51,7 +51,7 @@
                         <th style="text-align: center;">{{ __('Factura') }}</th>
                         <th style="text-align: center;">{{ __('Cliente') }}</th>
                         <th style="text-align: right;">{{ __('Valor') }}</th>
-                        <th style=""></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,14 +62,13 @@
                     @foreach ($invoices as $invoice)
                         <tr>
                             <td>{{ $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ $invoice->code, 10, 11 }}</td>
+                            <td style="text-align: center;">{{ substr($invoice->code, 10, 11) }}</td>
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: right;">
-                                <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small" href="#invoice_payment_modal"
-                                    onclick="payInvoice(this, {{ $invoice->id }})">{{__('Pagar')}}</a>
-                                <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small" href="#invoice_payment_modal"
-                                    onclick="payInvoice(this, {{ $invoice->id }})">{{__('ver')}}</a>
+                                <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                                    onclick="window.history.replaceState(null, 'Thimiriza', 'report/{{ $invoice->id }}');">
+                                    {{__('ver')}}</a>
                             </td>
                         </tr>
                         @php
@@ -87,59 +86,18 @@
             </table>
         </div>
     </div>
-    <div id="invoice_payment_modal" tabindex="-1" class="modal">
-        <form method="POST" id="payInvoiceForm" name="payInvoiceForm" action="{{ route('invoice_payment') }}">
-            <div class="modal-content">
-                <h4>{{ __('Pagar Factura')}}</h4>
-                @method('PUT')
-                @csrf
-                <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
-                <div class="row">
-                    <div class="input-field col s12 m4 l4">
-                        <label for="invoice" class="black-text active">{{ __('Factura') }}</label>
-                        <input id="invoice" type="text" class="black-text" name="invoice" value="{{ old('invoice') }}" autofocus disabled>
-                    </div>
-                    <div class="input-field col s12 m4 l4">
-                        <label for="invoice" class="black-text active">{{ __('Preço') }}</label>
-                        <input id="price" type="text" class="black-text" name="price" value="{{ old('price') }}" autofocus disabled>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="waves-effect waves-light btn-small " >
-                    {{ __('PAGAR') }}
-                    <i class="material-icons left"></i>
-                </button>
-                <a href="#!" class="modal-close waves-effect waves-green btn-flat">{{ __('CANCELAR') }}</a>
-            </div>
-        </form>
-    </div>
 @endsection
 @section('script')
     <script>
-        function payInvoice(button, id) {
-            var tr = button.parentElement.parentElement;
-            payInvoiceForm.id.value = id;
-            payInvoiceForm.invoice.value = tr.cells[1].innerHTML;
-            payInvoiceForm.price.value = tr.cells[3].innerHTML;
-        }
-
-        function removeSaleItem(button, id) {
-            //var tr = button.parentElement.parentElement;
-            //removeSaleItemForm.id.value = id;
-            //removeSaleItemForm.product.value = tr.cells[0].innerHTML + " <<->> " + tr.cells[1].innerHTML;
-        }
-
         $(document).ready(function() {
             $('.modal').modal();
         });
-
     </script>
-    @if (session('debit_notification'))
+    @if (session('credit_notification'))
         <div class="alert alert-success">
             <script>
                 M.toast({
-                    html: '{{ session('debit_notification') }}',
+                    html: '{{ session('credit_notification') }}',
                     classes: 'rounded',
                     displayLength: 1000
                 });

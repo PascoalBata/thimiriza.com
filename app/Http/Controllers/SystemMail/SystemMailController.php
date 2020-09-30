@@ -50,11 +50,14 @@ class SystemMailController extends Controller
     */
 
 
-     public function quote_email($email, $name, $file) {
+     public function quote_email($email, $name, $file, $invoice_id, $value, $company_name) {
         $data = array(
-            'name' => $name
+            'name' => $name,
+            'email' => $email,
+            'value' => $value,
+            'company_name' => $company_name
         );
-        if(Mail::send('home.pages.mail.quote', $data, function($message) use($email, $name, $file) {
+        if(Mail::send('home.pages.mail.quote', $data, function($message) use($email, $name, $file, $value, $company_name) {
            $message->to($email, $name)->subject('Cotação');
            $message->attachData($file, 'Cotação.pdf', [
                                 'mime' => 'application/pdf',
@@ -66,11 +69,15 @@ class SystemMailController extends Controller
         //return HomeController::view_sale();
      }
 
-     public function invoice_email($email, $name, $file) {
+     public function invoice_email($email, $name, $file, $invoice_id, $value, $company_name) {
         $data = array(
-            'name' => $name
+            'name' => $name,
+            'email' => $email,
+            'invoice_id' => $invoice_id,
+            'value' => $value,
+            'company_name' => $company_name
         );
-        if(Mail::send('home.pages.mail.invoice', $data, function($message) use($email, $name, $file) {
+        if(Mail::send('home.pages.mail.invoice', $data, function($message) use($email, $name, $file, $invoice_id, $value, $company_name) {
            $message->to($email, $name)->subject('Factura');
            $message->attachData($file, 'Factura.pdf', [
                                 'mime' => 'application/pdf',

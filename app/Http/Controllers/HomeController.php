@@ -2,17 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client_Enterprise;
-use App\Models\Client_Singular;
 use App\Models\Company;
-use App\Models\Product;
-use App\Models\Sale;
-use App\Models\Service;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class HomeController extends Controller
@@ -218,70 +212,286 @@ class HomeController extends Controller
         'logo' => $this->company_logo]);
     }
 
-    public function view_credit()
+    public function view_credit(Request $request)
     {
         $this->company_validate();
-        $invoices_query = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('invoices', 'users.id', '=', 'invoices.id_user')
-        ->select('invoices.*')
-        ->where('companies.id', 'like', $this->company->id)
-        ->where('invoices.status', 'like', 'PAID')
-        ->orderByDesc('invoices.created_at')->get();
         $invoices = [];
-        $i=0;
-        foreach($invoices_query as $invoice_query){
-            $invoice = new stdClass;
-            $invoice->id = $invoice_query->id;
-            $invoice->created_at = $invoice_query->created_at;
-            $invoice->price = $invoice_query->price;
-            $invoice->code = substr($invoice_query->code, 10, 11);
-            if($invoice_query->client_type === 'SINGULAR'){
-                $client = DB::table('clients_singular')->find($invoice_query->id_client);
-                $invoice->client_name = $client->name . ' ' . $client->surname;
+        if(!$request->filled('inicial_date') && !$request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->where('invoices.status', 'like', 'PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
             }
-            if($invoice_query->client_type === 'ENTERPRISE'){
-                $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
-                $invoice->client_name = $client->name;
-            }
-            $invoices[$i] = $invoice;
-            $i++;
+            return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
         }
-        return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
-        'logo' => $this->company_logo]);
+        if($request->filled('inicial_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->whereBetween('invoices.created_at', [$request['inicial_date'], now()])
+            ->where('invoices.status', 'like', 'PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
+        if($request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->where('invoices.created_at', '<=', $request['final_date'])
+            ->where('invoices.status', 'like', 'PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.credit.credit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
     }
 
-    public function view_debit()
+    public function view_debit(Request $request)
     {
         $this->company_validate();
-        $invoices_query = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('invoices', 'users.id', '=', 'invoices.id_user')
-        ->select('invoices.*')
-        ->where('companies.id', 'like', $this->company->id)
-        ->where('invoices.status', 'like', 'NOT PAID')
-        ->orderByDesc('invoices.created_at')->get();
         $invoices = [];
-        $i=0;
-        foreach($invoices_query as $invoice_query){
-            $invoice = new stdClass;
-            $invoice->id = $invoice_query->id;
-            $invoice->created_at = $invoice_query->created_at;
-            $invoice->price = $invoice_query->price;
-            $invoice->code = substr($invoice_query->code, 10, 11);
-            if($invoice_query->client_type === 'SINGULAR'){
-                $client = DB::table('clients_singular')->find($invoice_query->id_client);
-                $invoice->client_name = $client->name . ' ' . $client->surname;
+        if(!$request->filled('inicial_date') && !$request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->where('invoices.status', 'like', 'NOT PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
             }
-            if($invoice_query->client_type === 'ENTERPRISE'){
-                $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
-                $invoice->client_name = $client->name;
-            }
-            $invoices[$i] = $invoice;
-            $i++;
+            return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
         }
-        return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
-        'logo' => $this->company_logo]);
+        if($request->filled('inicial_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->whereBetween('invoices.created_at', [$request['inicial_date'], now()])
+            ->where('invoices.status', 'like', 'NOT PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
+        if($request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->where('invoices.created_at', '<=', $request['final_date'])
+            ->where('invoices.status', 'like', 'NOT PAID')
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.debit.debit', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
+    }
+
+    public function view_report(Request $request)
+    {
+        $this->company_validate();
+        $invoices = [];
+        if(!$request->filled('inicial_date') && !$request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.report.report', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
+        if($request->filled('inicial_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->whereBetween('invoices.created_at', [$request['inicial_date'], now()])
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.report.report', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
+        if($request->filled('final_date')){
+            $invoices_query = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'users.id', '=', 'invoices.id_user')
+            ->select('invoices.*')
+            ->where('companies.id', 'like', $this->company->id)
+            ->where('invoices.created_at', '<=', $request['final_date'])
+            ->orderByDesc('invoices.created_at')->get();
+            $i=0;
+            foreach($invoices_query as $invoice_query){
+                $invoice = new stdClass;
+                $invoice->id = $invoice_query->id;
+                $invoice->created_at = $invoice_query->created_at;
+                $invoice->price = $invoice_query->price;
+                $invoice->code = substr($invoice_query->code, 10, 11);
+                if($invoice_query->client_type === 'SINGULAR'){
+                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name . ' ' . $client->surname;
+                }
+                if($invoice_query->client_type === 'ENTERPRISE'){
+                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                    $invoice->client_name = $client->name;
+                }
+                $invoices[$i] = $invoice;
+                $i++;
+            }
+            return view ('home.pages.report.report', $this->user, ['invoices' => $invoices,
+                'logo' => $this->company_logo]);
+        }
     }
 
     public function view_service()

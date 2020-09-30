@@ -57,6 +57,16 @@ Route::put('/company/payment', 'Company\CompanyController@payment')->name('compa
 Route::get('/about', 'HomeController@view_about')->name('view_about');
 Route::get('/credit', 'HomeController@view_credit')->name('view_credit');
 Route::get('/debit', 'HomeController@view_debit')->name('view_debit');
+Route::get('/report', 'HomeController@view_report')->name('view_report');
+
+Route::post('/credit', 'HomeController@view_credit')->name('get_credit');
+Route::post('/debit', 'HomeController@view_debit')->name('get_debit');
+Route::post('/report', 'HomeController@view_report')->name('get_report');
+
+Route::get('/credit/{id}', 'Invoice\InvoiceController@see_invoice')->name('credit_invoice');
+Route::get('/debit/{id}', 'Invoice\InvoiceController@see_invoice')->name('debit_invoice');
+Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
+
 
 //invoice
 Route::put('/debit/payment', 'Invoice\InvoiceController@invoice_payment')->name('invoice_payment');

@@ -81,7 +81,7 @@
                 <div class="row">
                     <div class="col s12 m12 l12">
                         <button type="submit" class="waves-effect waves-light btn-small">
-                            {{ __('Salvar') }}
+                            {{ __('Adicionar') }}
                             <i class="material-icons right">archive</i>
                         </button>
                         <button type="reset" class="waves-effect waves-light btn-small">
@@ -272,10 +272,12 @@
             if (click.value == 'SERVICE') {
                 document.getElementById('sale_type_label').innerText = 'Serviço';
                 document.getElementById('name').setAttribute('list', 'list_services')
+                document.getElementById('name').value = null;
             }
             if (click.value == 'PRODUCT') {
                 document.getElementById('sale_type_label').innerText = 'Produto';
                 document.getElementById('name').setAttribute('list', 'list_products')
+                document.getElementById('name').value = null;
             }
         }
 

@@ -60,9 +60,7 @@
         }
 
         @media (max-width: 992px) {
-            #content {
-
-            }
+            #content {}
         }
 
         @media (min-width: 992px) {
@@ -111,16 +109,13 @@
             }
         }
 
-
-
-
     </style>
     @yield('style')
 </head>
 
 <body>
     <header>
-        <ul style="width: 225px; height:100%;" id="slide-out" class="sidenav sidenav-fixed grey lighten-5">
+        <ul style="width: 250px; height:100%;" id="slide-out" class="sidenav sidenav-fixed grey lighten-5">
             <li>
                 <div style="padding-top: 48px; padding-bottom: 0px; height: 115px" class="user-view">
                     <div class="background" style="height: 115px;">
@@ -132,43 +127,87 @@
                 </div>
             </li>
             <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/sales');" href="">
-                    {{ __('Vendas') }} <i class="small material-icons">add_shopping_cart</i>
+                <a class="nav-link black-text sidenav-close dropdown-trigger" href="#" data-target='dropdown1'>
+                    {{ __('Vendas') }} <i class="small material-icons">local_grocery_store</i>
                 </a>
-
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li>
+                        <a href="#">
+                            {{ __('Vendas') }} <i class="small material-icons">local_grocery_store</i>
+                        </a>
+                    </li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li>
+                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/sales');" href="">
+                            {{ __('Criar') }} <i class="small material-icons">add_shopping_cart</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/credit');" href="">
+                            {{ __('Pagas') }} <i class="small material-icons">credit_card</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/debit');" href="">
+                            {{ __('Não pagas') }} <i class="small material-icons">event_busy</i>
+                        </a>
+                    </li>
+                </ul>
             </li>
-
             <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');" href="">
+                <a class="nav-link black-text sidenav-close dropdown-trigger" href="#" data-target='dropdown3'>
+                    {{ __('Produtos/Serviços') }} <i class="small material-icons">shop_two</i>
+                </a>
+                <ul id='dropdown3' class='dropdown-content'>
+                    <li>
+                        <a href="#">
+                            {{ __('Produtos/Serviços') }} <i class="small material-icons">shop_two</i>
+                        </a>
+                    </li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li>
+                        <a class="nav-link black-text sidenav-close"
+                            onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
+                            {{ __('Produtos') }} <i class="small material-icons">shopping_basket</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link black-text sidenav-close"
+                            onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                            {{ __('Serviços') }} <i class="small material-icons">shop</i>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="nav-link black-text sidenav-close dropdown-trigger" href="#" data-target='dropdown2'>
                     {{ __('Clientes') }} <i class="small material-icons">supervisor_account</i>
                 </a>
+                <ul id='dropdown2' class='dropdown-content'>
+                    <li>
+                        <a href="#">
+                            {{ __('Clientes') }} <i class="small material-icons">supervisor_account</i>
+                        </a>
+                    </li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li>
+                        <a class="nav-link black-text sidenav-close"
+                            onclick="window.history.replaceState(null, 'Thimiriza', '/clients_singular');" href="">
+                            {{ __('Singulares') }} <i class="small material-icons">person</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link black-text sidenav-close"
+                            onclick="window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');" href="">
+                            {{ __('Empresariais') }} <i class="small material-icons">business_center</i>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
-                    {{ __('Produtos') }} <i class="small material-icons">shopping_basket</i>
-                </a>
-            </li>
-            <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
-                    {{ __('Serviços') }} <i class="small material-icons">build</i>
-                </a>
-            </li>
-            <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/credit');" href="">
-                    {{ __('Créditos') }} <i class="small material-icons">credit_card</i>
-
-                </a>
-            </li>
-            <li>
-                <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/debit');" href="">
-                    {{ __('Débitos') }} <i class="small material-icons">event_busy</i>
-
+                    onclick="window.history.replaceState(null, 'Thimiriza', '/report');" href="">
+                    {{ __('Relatórios') }} <i class="small material-icons">assignment</i>
                 </a>
             </li>
             <li>
@@ -187,7 +226,6 @@
                 <a class="nav-link black-text sidenav-close"
                     onclick="window.history.replaceState(null, 'Thimiriza', '/about');" href="">
                     {{ __('Sobre Nós') }} <i class="small material-icons">work</i>
-
                 </a>
             </li>
             <form method="POST" id="loggoutForm" action="{{ route('end_session') }}">
@@ -196,7 +234,6 @@
                     @method('POST')
                     <a class="nav-link black-text sidenav-close" id="submit_btn" href="#">
                         {{ __('Sair') }} <i class="small material-icons">power_settings_new</i>
-
                     </a>
                 </li>
             </form>
@@ -225,13 +262,9 @@
     <script>
         $(document).ready(function() {
             $('select').formSelect();
-        });
-
-        $(document).ready(function() {
-            $('.sidenav').sidenav();
-        });
-        $(document).ready(function() {
+            $('.dropdown-trigger').dropdown();
             $('.modal').modal();
+            $('.sidenav').sidenav();
         });
 
         document.getElementById("submit_btn").onclick = function() {

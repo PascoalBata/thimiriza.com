@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SystemMail\SystemMailController;
-use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -503,16 +502,20 @@ class SaleController extends Controller
                     $iva = $price_inc * $sale->iva;
                     $discount = $price_inc * $sale->discount;
                     $price_sale = $price_inc - $discount + $iva;
-                    $details_2 = '<table cellspacing="1">'
-                    . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
-                    . '<td style="text-align:center;">' . $quantity . '</td>'
-                    . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
-                    . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
-                    . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
-                    . '</table>';
-                    $pdf->writeHTML($details_2, true, false, true, false, '');
+                    if($product->quantity > 0){
+                        if($product->quantity > $quantity){
+                            $details_2 = '<table cellspacing="1">'
+                            . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
+                            . '<td style="text-align:center;">' . $quantity . '</td>'
+                            . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
+                            . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
+                            . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
+                            . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
+                            . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
+                            . '</table>';
+                            $pdf->writeHTML($details_2, true, false, true, false, '');
+                        }
+                    }
                 }
                 if($sale->type === 'SERVICE'){
                     $service = DB::table('services')->find($sale->id_product_service);
@@ -540,14 +543,23 @@ class SaleController extends Controller
                 $iva_total = $iva_total + $iva;
                 $discount_total = $discount_total + $discount;
             }
-            $details_3 = "<hr/>"
-            . "<table>"
-            . "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>Total:</td><td>$price_total MT</td></tr>"
-            . "</table>";
             $pdf->SetFont('times', 'B', 10);
             $pdf->lastPage();
             $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
             $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
+            $pdf_output= $pdf;
+            $file = $pdf->Output('Cotação.pdf', 'S');
+            $mail_controller = new SystemMailController;
+            $mail_controller->quote_email(
+                $data['client_email'],
+                $data['client_name'],
+                $file,
+                'QUOTE_CODE',
+                $price_total,
+                $data['company_name']
+            );
+            ob_end_clean();
+            $pdf_output->Output('Cotação.pdf', 'I');
         }
         //INVOICE
         if($type === 'INVOICE'){
@@ -693,22 +705,29 @@ class SaleController extends Controller
                         $iva = $price_inc * $sale->iva;
                         $discount = $price_inc * $sale->discount;
                         $price_sale = $price_inc - $discount + $iva;
-                        if(DB::table('moves')
-                        ->insert([[
-                                'sale_type' => $sale->type,
-                                'id_product_service' => $sale->id_product_service,
-                                'product_service' => $name,
-                                'description' => $description,
-                                'price' => $price_sale,
-                                'quantity' => $quantity,
-                                'discount' => $discount,
-                                'iva' => $iva,
-                                'id_invoice' => $invoice->id,
-                                'created_at' => now()
-                            ]])){
-
-                        }else{
-                            //remove all recorded products on moves
+                        $new_product_quantity = $product->quantity - $quantity;
+                        if($product->quantity > 0){
+                            if($product->quantity >= $quantity){
+                                if(DB::table('moves')
+                                ->insert([[
+                                        'sale_type' => $sale->type,
+                                        'id_product_service' => $sale->id_product_service,
+                                        'product_service' => $name,
+                                        'description' => $description,
+                                        'price' => $price_sale,
+                                        'quantity' => $quantity,
+                                        'discount' => $discount,
+                                        'iva' => $iva,
+                                        'id_invoice' => $invoice->id,
+                                        'created_at' => now()
+                                    ]])){
+                                        DB::table('products')
+                                        ->where('id', $product->id)
+                                        ->update(['quantity'=> $new_product_quantity]);
+                                }else{
+                                    //remove all recorded products on moves
+                                }
+                            }
                         }
                     }
                     if($sale->type === 'SERVICE'){
@@ -748,13 +767,20 @@ class SaleController extends Controller
             $pdf->SetFont('times', 'B', 10);
             $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
             $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
+            $pdf_output= $pdf;
+            $file = $pdf->Output('Factura.pdf', 'S');
+            $mail_controller = new SystemMailController;
+            $mail_controller->invoice_email(
+                $data['client_email'],
+                $data['client_name'],
+                $file,
+                substr($invoice_code, 10 ,11),
+                $price_total,
+                $data['company_name']
+            );
+            ob_end_clean();
+            $pdf_output->Output('Factura.pdf', 'I');
         }
-        $pdf_output= $pdf;
-        $file = $pdf->Output('Factura.pdf', 'S');
-        $mail_controller = new SystemMailController;
-        $mail_controller->quote_email($data['client_email'], $data['client_name'], $file);
-        ob_end_clean();
-        $pdf_output->Output('Factura.pdf', 'I');
     }
     //generate invoice_code
     private function invoice_code()
@@ -802,7 +828,7 @@ class MYPDF extends TCPDF {
         parent::Close();
     }
 
-// Page header
+    // Page header
     public function Header() {
         $this->SetY(17);
         $this->SetFont('times', 'B', 12);

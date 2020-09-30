@@ -10,27 +10,27 @@
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
             <div class="col s12 m12 l12">
-                <h1 class="display-4 black-text"><strong>{{ __('Créditos') }}</strong></h1>
+                <h1 class="display-4 black-text"><strong>{{ __('Facturas Pagas') }}</strong></h1>
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
-            <form method="POST" name="saleForm" action="{{ route('store_sale') }}">
+            <form method="POST" name="saleForm" action="{{ route('get_credit') }}">
                 @method('POST')
                 @csrf
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
-                        <label for="discount" class="black-text active">{{ __('A partir de') }}</label>
-                        <input id="discount" placeholder="" type="date" class="black-text" name="discount" value="{{ old('discount') }}">
+                        <label for="inicial_date" class="black-text active">{{ __('A partir de') }}</label>
+                        <input id="inicial_date" placeholder="" type="date" class="black-text" name="inicial_date" value="{{ old('inicial_date') }}">
                     </div>
                     <div class="input-field col s12 m6 l6">
-                        <label for="discount" class="black-text active">{{ __('Até') }}</label>
-                        <input id="discount" placeholder="" type="date" class="black-text" name="discount" value="{{ old('discount') }}">
+                        <label for="final_date" class="black-text active">{{ __('Até') }}</label>
+                        <input id="final_date" placeholder="" type="date" class="black-text" name="final_date" value="{{ old('final_date') }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col s12 m12 l12">
                         <button type="submit" class="waves-effect waves-light btn-small">
-                            {{ __('Salvar') }}
+                            {{ __('Seguir') }}
                             <i class="material-icons right">archive</i>
                         </button>
                         <button type="reset" class="waves-effect waves-light btn-small">
@@ -85,8 +85,8 @@
             </table>
         </div>
     </div>
-    
-    
+
+
 @endsection
 @section('script')
     <script>
