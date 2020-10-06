@@ -67,6 +67,9 @@ Route::get('/credit/{id}', 'Invoice\InvoiceController@see_invoice')->name('credi
 Route::get('/debit/{id}', 'Invoice\InvoiceController@see_invoice')->name('debit_invoice');
 Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
 
+Route::get('/report/print/{invoices}', 'Report\ReportController@print_report')->name('print_report');
+Route::get('/debit/print/{invoices}', 'Report\ReportController@print_debit')->name('print_debit');
+Route::get('/credit/print/{invoices}', 'Report\ReportController@print_credit')->name('print_credit');
 
 //invoice
 Route::put('/debit/payment', 'Invoice\InvoiceController@invoice_payment')->name('invoice_payment');

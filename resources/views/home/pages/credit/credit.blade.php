@@ -58,16 +58,19 @@
                     @php
                     $total = 0;
                     $facturas = 0;
+                    $limit_date = $invoices[0]->created_at;
+                    $inicial_date = $invoices[0]->created_at;
                     @endphp
                     @foreach ($invoices as $invoice)
                         <tr>
-                            <td>{{ $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ $invoice->code, 10, 11 }}</td>
+                            <td>{{ $inicial_date = $invoice->created_at }}</td>
+                            <td style="text-align: center;">{{ $invoice->code }}</td>
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_sale_item_modal"
-                                    onclick="payInvoice(this, {{ $invoice->id }})">{{__('ver')}}</a>
+                                <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                                    onclick="window.open('credit/{{ $invoice->id }}');">
+                                    {{__('ver')}}</a>
                             </td>
                         </tr>
                         @php
@@ -83,6 +86,13 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                        onclick="window.open('credit/print/{{ strtotime($inicial_date) . strtotime($limit_date) }}');">
+                        {{ ('Imprimir') }}</a>
+                </div>
+            </div>
         </div>
     </div>
 

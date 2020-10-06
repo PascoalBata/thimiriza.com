@@ -58,18 +58,21 @@
                     @php
                     $total = 0;
                     $facturas = 0;
+                    $limit_date = $invoices[0]->created_at;
+                    $inicial_date = $invoices[0]->created_at;
                     @endphp
                     @foreach ($invoices as $invoice)
                         <tr>
-                            <td>{{ $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ $invoice->code, 10, 11 }}</td>
+                            <td>{{ $inicial_date = $invoice->created_at }}</td>
+                            <td style="text-align: center;">{{ $invoice->code }}</td>
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: right;">
                                 <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small" href="#invoice_payment_modal"
                                     onclick="payInvoice(this, {{ $invoice->id }})">{{__('Pagar')}}</a>
-                                <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small" href="#invoice_payment_modal"
-                                    onclick="payInvoice(this, {{ $invoice->id }})">{{__('ver')}}</a>
+                                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                                    onclick="window.open('debit/{{ $invoice->id }}');">
+                                    {{__('ver')}}</a>
                             </td>
                         </tr>
                         @php
@@ -85,6 +88,13 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col s12 m12 l12">
+                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                        onclick="window.open('debit/print/{{ strtotime($inicial_date) . strtotime($limit_date) }}');">
+                        {{ ('Imprimir') }}</a>
+                </div>
+            </div>
         </div>
     </div>
     <div id="invoice_payment_modal" tabindex="-1" class="modal">
