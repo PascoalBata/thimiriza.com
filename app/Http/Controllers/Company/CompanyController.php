@@ -55,11 +55,8 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        //
-        //$empresa_dados = $request->all();
         $package_id = '2';
         $company_status = "ON";
-        $company_code = $this->company_code();
         $company_name = $request->input('name');
         $company_email = $request->input('email');
         $company_phone = $request->input('phone');
@@ -69,7 +66,6 @@ class CompanyController extends Controller
         $company_nuit = $request->input('nuit');
 
         $company = new Company;
-        $company->code = $company_code;
         $company->name  = $company_name;
         $company->type  = $company_type;
         $company->nuit  = $company_nuit;
@@ -88,7 +84,6 @@ class CompanyController extends Controller
             $userController = new RegisterController;
             $userController->create_admin([
             'id_company'=>$id,
-            'code' => $company_code,
             'name'=> $company_name,
             'surname' => 'N/A',
             'gender' => 'N/A',
@@ -267,33 +262,5 @@ class CompanyController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    private function company_code()
-    {
-        $companies = DB::table('companies')->orderByRaw('created_at DESC')->first();
-        if (DB::table('companies')->count() == 0) {
-            return $this->next_code('');
-        }
-        $company_code = $companies->code;
-        return $this->next_code($company_code);
-    }
-
-    private function next_code($last)
-    {
-        $new_id = date('y') . '/' . date('m') ."A0001";
-        if ($last == "") {
-            return $new_id;
-        }
-        $last++;
-        $new_id = $last;
-        /*
-        if (substr($last, 6, 4) == "0000") {
-            $letters = substr($last, 5, 1);
-            $numbers = "0001";
-            $new_id = $letters . $numbers;
-        }
-        */
-        return $new_id;
     }
 }
