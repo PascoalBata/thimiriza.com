@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Sale;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SystemMail\SystemMailController;
+use App\Models\Company;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 use TCPDF;
 
 class SaleController extends Controller
@@ -28,7 +32,110 @@ class SaleController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        $isAdmin = true;
+        if($user->privilege !== 'ADMIN'){
+            $isAdmin = false;
+        }
+        $services = DB::table('companies')
+        ->join('services', 'companies.id', '=', 'services.id_company')
+        ->select('services.*')->get();
+        $products = DB::table('companies')
+        ->join('products', 'companies.id', '=', 'products.id_company')
+        ->select('products.*')->get();
+        $clients_enterprise = DB::table('companies')
+        ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
+        ->select('clients_enterprise.*')->get();
+        $clients_singular = DB::table('companies')
+        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
+        ->select('clients_singular.*')->get();
+        $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity', 'iva', 'discount')
+        ->where('created_by', 'like', $user->id)->get();
+        $sales = [];
+        $i = 0;
+        $hasSales = false;
+        $actual_client = '';
+        foreach ($sales_query as $sale_query){
+            $sale = new stdClass;
+            if($sale_query->type === 'PRODUCT'){
+                $product = DB::table('products')->select('products.name', 'products.description', 'products.price')
+                ->find($sale_query->id_product_service);
+                $sale->id = $sale_query->id;
+                $sale->sale_type = 'PRODUCT';
+                $sale->name = $product->name;
+                $sale->description = $product->description;
+                $sale->price_unit = $product->price;
+                if($sale_query->type_client === 'ENTERPRISE'){
+                    $sale->client_type = 'ENTERPRISE';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' === ' . $client->email;
+                }
+                if($sale_query->type_client === 'SINGULAR'){
+                    $sale->client_type = 'SINGULAR';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                }
+                $sale->discount = $sale_query->discount;
+                $sale->quantity = $sale_query->quantity;
+                $price = $product->price * $sale_query->quantity;
+                $sale->discount_price = $sale_query->discount * $price;
+                $sale->iva = $sale_query->iva * $price;
+                $sale->price = $price + $sale->iva - $sale->discount_price;
+            }
+            if($sale_query->type === 'SERVICE'){
+                $service = DB::table('services')->select('services.name', 'services.description', 'services.price')
+                ->find($sale_query->id_product_service);
+                $sale->id = $sale_query->id;
+                $sale->sale_type = 'PRODUCT';
+                $sale->name = $service->name;
+                $sale->description = $service->description;
+                $sale->price_unit = $service->price;
+                if($sale_query->type_client === 'ENTERPRISE'){
+                    $sale->client_type = 'ENTERPRISE';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' === ' . $client->email;
+                }
+                if($sale_query->type_client === 'SINGULAR'){
+                    $sale->client_type = 'SINGULAR';
+                    $sale->id_client = $sale_query->id_client;
+                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                }
+                $sale->discount = $sale_query->discount;
+                $sale->quantity = $sale_query->quantity;
+                $price = $service->price * $sale_query->quantity;
+                $sale->discount_price = $sale_query->discount * $price;
+                $sale->iva = $sale_query->iva * $price;
+                $sale->price = $price + $sale->iva - $sale->discount_price;
+            }
+            $sales[$i] = $sale;
+            $i++;
+        }
+        if($i > 0){
+            $hasSales = true;
+        }else{
+            $hasSales = false;
+        }
+        return view ('pt.home.pages.sale.sale', $user,
+        [
+            'company_type' => $company_validate['company_type'],
+            'logo' => $company_validate['company_logo'],
+            'deadline_payment' =>  $company_validate['expire_msg'],
+            'sales' => $sales,
+            'services' => $services,
+            'products' => $products,
+            'clients_enterprise' => $clients_enterprise,
+            'clients_singular' => $clients_singular,
+            'hasSales' => $hasSales,
+            'actual_client' => $actual_client,
+            'isAdmin' => $isAdmin,
+            'enable_sales' => $company_validate['make_sales']
+        ]);
     }
 
     /**
@@ -423,7 +530,8 @@ class SaleController extends Controller
         }
         return redirect()->route('view_sale');
     }
-
+}
+/*
     private function invoice_generator(Array $data, $type){
         $company_name = $data['company_name'];
         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -884,3 +992,4 @@ class MYPDF extends TCPDF {
         $this->nib = $nib;
     }
 }
+*/

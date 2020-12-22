@@ -20,8 +20,6 @@ class CreatePackagesTable extends Migration
             $table->integer('users');
             $table->double('price');
             $table->timestamps();
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
         });
     }
 

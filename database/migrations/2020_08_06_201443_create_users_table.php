@@ -15,7 +15,6 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
             $table->string('name');
             $table->string('surname');
             $table->string('phone');
@@ -29,10 +28,11 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->BigInteger('created_by'); //id_user
+            $table->BigInteger('updated_by')->nullable(); //id_user
             $table->timestamps();
+
             $table->foreign('id_company')->references('id')->on('companies');
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
         });
     }
 

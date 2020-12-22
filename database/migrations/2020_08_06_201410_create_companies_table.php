@@ -32,10 +32,9 @@ class CreateCompaniesTable extends Migration
             $table->timestamp('payment_date')->default(now());
             $table->timestamp('email_verified_at')->useCurrent();
             $table->rememberToken();
+            $table->BigInteger('updated_by')->nullable(); //id_user
             $table->timestamps();
             $table->foreign('id_package')->references('id')->on('packages');
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
         });
     }
 

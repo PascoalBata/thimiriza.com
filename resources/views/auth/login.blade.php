@@ -13,7 +13,7 @@
                 @csrf
                 <div class="row">
                     <div class="input-field col s12 m12 l12">
-                        <label for="email" class="black-text">{{ __('Utilizador ID ou E-mail') }}</label>
+                        <label for="email" class="black-text">{{ __('E-mail') }}</label>
                         <input id="email" type="text" class="black-text @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                         @error('email')
                             <span class="red-text" role="alert">
@@ -49,8 +49,8 @@
                     </div>
                 </div>
                 <div>
-                    @if (Route::has('new_company'))
-                        <a href="{{ route('new_company') }}">
+                    @if (Route::has('create_company'))
+                        <a href="{{ route('create_company') }}">
                             {{ __('Criar conta') }}
                         </a>
                     @endif

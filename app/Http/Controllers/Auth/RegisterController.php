@@ -65,15 +65,12 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        //return dd($data);
-        /*
         return User::create([
-            'id' => $this->user_id(),
             'name' => $data['name'],
             'surname' => $data['surname'],
             'gender' => $data['gender'],
             'birthdate' => $data['birthdate'],
-            'privilege' => 'PARCIAL',
+            'privilege' => $data['privilege'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'nuit' => $data['nuit'],
@@ -81,7 +78,6 @@ class RegisterController extends Controller
             'id_company' => $data['id'],
             'password' => Hash::make($data['password'])
         ]);
-        */
     }
 
     /**
@@ -90,20 +86,4 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\User
      */
-    public function create_admin(array $data)
-    {
-        return User::create([
-            'code' => $data['code'] . 'Admin',
-            'name' => $data['name'],
-            'surname' => $data['surname'],
-            'gender' => $data['gender'],
-            'birthdate' => $data['birthdate'],
-            'privilege' => $data['privilege'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'address' => $data['address'],
-            'id_company' => $data['id_company'],
-            'password' => Hash::make($data['password'])
-        ]);
-    }
 }

@@ -6,22 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Models\Company;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
-    private $request;
-
-    public function __construct(Request $request)
+    public function __construct()
     {
-        $this->request = $request;
-        //$this->middleware('auth')->only(['update', 'destroy', 'edit', 'show', 'index']);
-        //$this->middleware('auth')->except(['create', 'store']);
+        $this->middleware(['auth', 'verified']);
     }
+
 
     /**
      * Display a listing of the resource.
@@ -43,7 +41,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //returns a create company view
+        //returns a create company view for new accounts
         return view('pt.Company.pages.register');
     }
 
@@ -55,46 +53,40 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
+        $company = new Company;
         $package_id = '2';
         $company_status = "ON";
-        $company_name = $request->input('name');
-        $company_email = $request->input('email');
-        $company_phone = $request->input('phone');
-        $company_address = $request->input('address');
-        $company_type = $request->input('type');
-        $company_password = $request->input('password');
-        $company_nuit = $request->input('nuit');
-
-        $company = new Company;
-        $company->name  = $company_name;
-        $company->type  = $company_type;
-        $company->nuit  = $company_nuit;
-        $company->phone  = $company_phone;
-        $company->address  = $company_address;
-        $company->email  = $company_email;
+        $company->name  = $request->input('name');
+        $company->type  = $request->input('type');
+        $company->nuit  = $request->input('nuit');
+        $company->phone  = $request->input('phone');
+        $company->address  = $request->input('address');
+        $company->email  = $request->input('email');
         $company->status  = $company_status;
         $company->id_package = $package_id;
         $company->payment_date = now();
         $company->created_at = now();
         if(!$company->save()){
-            return redirect()->route('new_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
+            return redirect()->route('create_company')->with('status', 'O registo falhou! Por favor, tente novamente.');
         }else{
-            $company_query = DB::table('companies')->select('id')->where('email', 'like', $company_email)->first();
-            $id = $company_query->id;
-            $userController = new RegisterController;
-            $userController->create_admin([
-            'id_company'=>$id,
-            'name'=> $company_name,
+            //$company_query = DB::table('companies')->select('id')->where('email', 'like', $request->input('email'))->first();
+            if(User::create([
+            'id_company'=>$company->id,
+            'name'=> $request->input('name'),
             'surname' => 'N/A',
             'gender' => 'N/A',
-            'privilege' => 'TOTAL',
+            'privilege' => 'ADMIN',
             'birthdate' => now(),
-            'email'=> $company_email,
-            'phone'=> $company_phone,
-            'address'=> $company_address,
-            'password'=> $company_password]);
-            //Send an email
-            return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
+            'email'=> $request->input('email'),
+            'phone'=> $request->input('phone'),
+            'address'=> $request->input('address'),
+            'password'=> Hash::make($request->input('password')),
+            'created_by'=> '0'])){
+                //Send an email
+                return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
+            }
+            Company::destroy($company->id);
+            return redirect()->route('root')->with('status', 'O registo falhou porque esse utilizador ja existe.');
         }
     }
 
@@ -262,5 +254,49 @@ class CompanyController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function validate_company($id){
+        $enable_sales = true;
+        $company = Company::where('id', 'like', $id)->first();
+        $company_logo = url('storage/' . $company->logo);
+        //$this->company_logo = '..' . Storage::url($this->company->logo);
+        //dd($this->company_logo);
+        //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
+        $expire = date('Y/m/d', strtotime('+1 month', strtotime($company->payment_date))) . PHP_EOL;
+        $expire_days_left = intval((strtotime($expire) - strtotime(now()))/86400)+1;
+        $expire_msg = 'Validade: ';
+        if($company->id_package === 2){
+            $expire_msg = 'Possui apenas ' . $expire_days_left . ' dias de uso gratuito.';
+        }
+        if($company->id_package !== 0 && $company->id_package !== 2){
+            $expire_msg = 'Validade: ' . $expire;
+        }
+        if($company->bank_account_owner === '' || $company->bank_account_number === ''
+        || $company->bank_account_name === '' || $company->bank_account_nib === ''){
+            $enable_sales = false;
+        }
+        if($company->logo === null || trim($company->logo) === ''){
+            $company_logo = url('storage/companies/default/logo/default.png');
+            $enable_sales = false;
+        }
+        if($expire_days_left <= 0){
+            if($company->id_package !== 1){
+                DB::table('companies')
+                    ->where('id', $company->id)
+                    ->update(array(
+                        'id_package' => 1
+                    ));
+            }
+            $expire_msg = 'Conta expirou!';
+            $enable_sales = false;
+        }
+        return [
+            'make_sales' => $enable_sales,
+            'expire_msg' => $expire_msg,
+            'expire_days_left' => $expire_days_left,
+            'company_logo' => $company_logo,
+            'company_type' => $company->type
+        ];
     }
 }

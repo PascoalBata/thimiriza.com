@@ -22,19 +22,12 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('root');
 
+//end session
 Route::post('/loggout', 'User\UserController@end_session')->name('end_session');
 
-//Company
-Route::get('registo', 'Company\CompanyController@create')->name('new_company');
-Route::post('registo', 'Company\CompanyController@store')->name('save_new_company');
-
-//Aplicar um Middware de Authentication
-Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
-Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
-Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
-Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
-Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
-
+//Company create
+Route::get('new_company', 'Company\CompanyController@create')->name('create_company');
+Route::post('new_company', 'Company\CompanyController@store')->name('store_company');
 
 //Authentication
 Auth::routes();
@@ -42,10 +35,18 @@ Auth::routes();
 //Verification email
 Auth::routes(['verify' => true]);
 
+//Aplicar Middware de Authentication
+Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
+Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
+Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
+Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
+Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
+
+
 Route::get('home', 'HomeController@index')->name('home');
 
 //home_views
-Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
+//Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
 Route::get('/products', 'HomeController@view_product')->name('view_product');
 Route::get('/services', 'HomeController@view_service')->name('view_service');
 Route::get('/clients_singular', 'HomeController@view_client_singular')->name('view_client_singular');
@@ -97,6 +98,7 @@ Route::put('/products/update_price', 'Product\ProductController@update_price')->
 Route::delete('/products/delete_product', 'Product\ProductController@destroy')->name('remove_product');
 
 //sale
+Route::get('/sales', 'Sale\SaleController@create')->name('create_sale');
 Route::put('/sales', 'Sale\SaleController@store')->name('edit_sale');
 Route::put('/sales/update', 'Sale\SaleController@edit_sale_item')->name('edit_sale_item');
 Route::delete('/sales/remove', 'Sale\SaleController@remove_sale_item')->name('remove_sale_item');

@@ -1,4 +1,4 @@
-@extends('home.layouts.app')
+@extends('pt.home.layouts.app')
 
 @section('username', $name)
 @section('user_email', $email)
@@ -83,7 +83,7 @@
                         <i class="material-icons right"></i>
                     </button>
                     <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_clients_enterprise">{{__('Clientes')}}</a>
-                </div>                        
+                </div>
             </div>
         </form>
     </div>
@@ -117,7 +117,7 @@
                                 <a class="modal-trigger waves-effect waves-light btn-small" href="#edit_client_enterprise_modal" onclick="editClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">editar</a>
                                 <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_client_enterprise_modal" onclick="removeClientEnterprise(this, {{$client_enterprise->id}})" style="width: 100%;">remover</a>
                             </td>
-                        </tr>                        
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -278,7 +278,7 @@
     $(document).ready(function(){
         $('.modal').modal();
     });
-    
+
     function changeClient(value){
         if(value === 'ENTERPRISE'){
             window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');

@@ -7,7 +7,7 @@
             <h4 class="center-align">{{ __('Registo de Empresa') }}</h4>
             <div class="container row">
                 <div class="col s12 m12 l12">
-                    <form method="POST" action="{{ route('save_new_company') }}">
+                    <form method="POST" action="{{ route('store_company') }}">
                         @csrf
                         <div class="row">
                             <div class="input-field col s12 m6 l6">

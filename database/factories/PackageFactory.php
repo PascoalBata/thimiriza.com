@@ -9,8 +9,8 @@ $factory->define(Package::class, function (Faker $faker) {
     return [
         'name' => 'THIMIRIZA-OFF',
         'months' => 1,
-        'users' => 5,
+        'users' => 0,
         'price' => 0,
-        'created_at' => now(),
+        'created_at' => now()
     ];
 });
