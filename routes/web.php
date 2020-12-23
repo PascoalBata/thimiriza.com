@@ -22,15 +22,15 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('root');
 
-//end session
-Route::post('/loggout', 'User\UserController@end_session')->name('end_session');
-
 //Company create
 Route::get('new_company', 'Company\CompanyController@create')->name('create_company');
 Route::post('new_company', 'Company\CompanyController@store')->name('store_company');
 
 //Authentication
 Auth::routes();
+
+//end session
+Route::post('/loggout', 'User\UserController@end_session')->name('end_session');
 
 //Verification email
 Auth::routes(['verify' => true]);

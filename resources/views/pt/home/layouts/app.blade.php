@@ -138,17 +138,17 @@
                     </li>
                     <li class="divider" tabindex="-1"></li>
                     <li>
-                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/sales');" href="">
+                        <a href="{{route('create_sale')}}">
                             {{ __('Criar') }} <i class="small material-icons">add_shopping_cart</i>
                         </a>
                     </li>
                     <li>
-                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/credit');" href="">
+                        <a href="{{route('view_credit')}}">
                             {{ __('Pagas') }} <i class="small material-icons">credit_card</i>
                         </a>
                     </li>
                     <li>
-                        <a onclick="window.history.replaceState(null, 'Thimiriza', '/debit');" href="">
+                        <a href="{{route('view_debit')}}">
                             {{ __('Não pagas') }} <i class="small material-icons">event_busy</i>
                         </a>
                     </li>
@@ -167,13 +167,13 @@
                     <li class="divider" tabindex="-1"></li>
                     <li>
                         <a class="nav-link black-text sidenav-close"
-                            onclick="window.history.replaceState(null, 'Thimiriza', '/products');" href="">
+                        href="{{route('view_product')}}">
                             {{ __('Produtos') }} <i class="small material-icons">shopping_basket</i>
                         </a>
                     </li>
                     <li>
                         <a class="nav-link black-text sidenav-close"
-                            onclick="window.history.replaceState(null, 'Thimiriza', '/services');" href="">
+                        href="{{route('view_service')}}">
                             {{ __('Serviços') }} <i class="small material-icons">shop</i>
                         </a>
                     </li>
@@ -192,13 +192,13 @@
                     <li class="divider" tabindex="-1"></li>
                     <li>
                         <a class="nav-link black-text sidenav-close"
-                            onclick="window.history.replaceState(null, 'Thimiriza', '/clients_singular');" href="">
+                        href="{{route('view_client_singular')}}">
                             {{ __('Singulares') }} <i class="small material-icons">person</i>
                         </a>
                     </li>
                     <li>
                         <a class="nav-link black-text sidenav-close"
-                            onclick="window.history.replaceState(null, 'Thimiriza', '/clients_enterprise');" href="">
+                        href="{{route('view_client_enterprise')}}">
                             {{ __('Empresariais') }} <i class="small material-icons">business_center</i>
                         </a>
                     </li>
@@ -206,25 +206,25 @@
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/report');" href="">
+                href="{{route('view_report')}}">
                     {{ __('Relatórios') }} <i class="small material-icons">assignment</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/users');" href="">
+                href="{{route('view_user')}}">
                     {{ __('Utilizadores') }} <i class="small material-icons">group_add</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/company');" href="">
+                href="{{route('view_company')}}">
                     {{ __('Empresa') }} <i class="small material-icons">account_balance</i>
                 </a>
             </li>
             <li>
                 <a class="nav-link black-text sidenav-close"
-                    onclick="window.history.replaceState(null, 'Thimiriza', '/about');" href="">
+                href="{{route('view_about')}}">
                     {{ __('Sobre Nós') }} <i class="small material-icons">work</i>
                 </a>
             </li>

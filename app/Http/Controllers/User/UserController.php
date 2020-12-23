@@ -298,24 +298,4 @@ class UserController extends Controller
         //
     }
 
-    //Generate User ID
-    private function user_code()
-    {
-        $users_code = DB::table('users')->orderByRaw('created_at DESC')->first();
-        $company_code = substr($users_code->code, 0, 10);
-        if (DB::table('users')->count() == 1) {
-            return $company_code . '00001';
-        }
-        $user_code = $users_code->code;
-        return $company_code . '' . $this->next_code($user_code);
-    }
-
-    private function next_code($last)
-    {
-        if (substr($last, 10, 5) == "Admin") {
-            return substr($last, 0, 10) . "00001";
-        }
-        return $last++;
-    }
-
 }
