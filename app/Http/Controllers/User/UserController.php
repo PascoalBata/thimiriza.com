@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
@@ -16,10 +17,17 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index()
     {
-        //
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        if($user['privilege'] === "TOTAL" || $user['privilege'] == "ADMIN"){
+            $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
+            return view ('pt.home.pages.user.user', $user, ['users' => $users, 'logo' => $company_validate['company_logo']]);
+        }
+        return redirect()->route('index_sale')->with('sale_notification', 'A sua conta nao possui permissão para realizar esta acção');
     }
 
     public function root(Request $request)
@@ -120,7 +128,7 @@ class UserController extends Controller
             $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
             if($user_query->surname == "N/A"){
                 return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
-            }          
+            }
             if(DB::table('users')
             ->where('id', $id)
             ->update(array(

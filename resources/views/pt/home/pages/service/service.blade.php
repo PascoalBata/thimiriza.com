@@ -1,4 +1,4 @@
-@extends('home.layouts.app')
+@extends('pt.home.layouts.app')
 
 @section('username', $name)
 @section('user_email', $email)
@@ -55,7 +55,7 @@
                         <i class="material-icons right"></i>
                     </button>
                     <a class="waves-effect waves-light btn-small modal-trigger" href="#modal_services">{{__('Serviços')}}</a>
-                </div>                        
+                </div>
             </div>
         </form>
     </div>
@@ -85,7 +85,7 @@
                                 <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small" href="#edit_service_modal" onclick="editService(this, {{$service->id}}, {{$service->price}})">editar</a>
                                 <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_service_modal" onclick="removeService(this, {{$service->id}})">remover</a>
                             </td>
-                        </tr>                        
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>

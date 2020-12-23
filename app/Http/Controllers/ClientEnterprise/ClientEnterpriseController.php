@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ClientEnterprise;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Models\Client_Enterprise;
 use Illuminate\Http\Request;
@@ -17,7 +18,15 @@ class ClientEnterpriseController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        $clients_enterprise = DB::table('companies')
+        ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
+        ->select('clients_enterprise.*')
+        ->where('companies.id', 'like', $user->id_company)->paginate(30);
+        return view ('pt.home.pages.client_enterprise.client_enterprise', $user, ['clients_enterprise' => $clients_enterprise,
+        'logo' => $company_validate['company_logo']]);
     }
 
     /**
@@ -42,7 +51,7 @@ class ClientEnterpriseController extends Controller
             $user = Auth::user();
             $code = $this->client_code($user->code);
             if(!$this->client_exists($request['name'], $request['email'], $request['nuit'], $code)){
-                $client_enterprise = new Client_Enterprise; 
+                $client_enterprise = new Client_Enterprise;
                 $client_enterprise->code = $code;
                 $client_enterprise->name = $request['name'];
                 $client_enterprise->email = $request['email'];
@@ -124,8 +133,8 @@ class ClientEnterpriseController extends Controller
         }
         return route('root');
     }
-        
-    
+
+
 
     public function update_email(Request $request)
     {
@@ -324,7 +333,7 @@ class ClientEnterpriseController extends Controller
         $last = substr($last, 16, 6);
         $last++;
         $new_id = 'CE'.$last;
-        
+
         /*
         if (substr($last, 16, 4) == "0000") {
             $letters = substr($last, 14, 2);

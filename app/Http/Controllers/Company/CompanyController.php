@@ -15,12 +15,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'verified']);
-    }
-
-
     /**
      * Display a listing of the resource.
      *
@@ -100,6 +94,38 @@ class CompanyController extends Controller
     {
         //
 
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show_company()
+    {
+        $user = Auth::user();
+        $company_validate = $this->validate_company($user->id_company);
+        $company = Company::where('id', 'like', $user->id_company)->first();
+            return view ('pt.home.pages.company.company', $user,
+            [
+                'company' => $company,
+                'privileges' => $user['privilege'],
+                'logo' => $company_validate['company_logo']
+            ]);
+        //return $this->view_sale();
+        //return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
+    }
+
+    /**
+     * Display information about the software owners.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show_about()
+    {
+        $user = Auth::user();
+        $company_validate = $this->validate_company($user->id_company);
+        return view ('pt.home.pages.about.about', $user, ['logo' => $company_validate['company_logo']]);
     }
 
     /**

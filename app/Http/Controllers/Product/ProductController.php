@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Product;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -17,7 +18,16 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        $products = DB::table('companies')
+        ->join('products', 'companies.id', '=', 'products.id_company')
+        ->select('products.*')
+        ->where('companies.id', 'like', $user->id_company)->paginate(30);
+        return view ('pt.home.pages.product.product', $user, ['products' => $products,
+        'logo' => $company_validate['company_logo'],
+        'company_type' => $company_validate['company_type']]);
     }
 
     /**
@@ -27,7 +37,7 @@ class ProductController extends Controller
      */
     public function create(Request $request)
     {
-        
+
     }
 
     /**
@@ -40,14 +50,15 @@ class ProductController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $code = $this->product_code($user->code);
-            if(!$this->product_exists($request['name'], $request['description'], $code)){
-                $product = new Product; 
-                $product->code = $code;
+            if(!$this->product_exists($request['name'], $request['description'])){
+                $product = new Product;
                 $product->name = $request['name'];
                 $product->description = $request['description'];
                 $product->price = $request['price'];
                 $product->quantity = $request['quantity'];
+                $product->iva = $request['product_iva'];
+                $product->created_by = '('. $user->id . ')' . $user->name . $user->surname;
+                dd($product);
                 $product->id_user = Auth::id();
                 if($product->save()){
                     return redirect()->route('view_product')->with('product_notification', 'Produto registado com sucesso.');
@@ -223,58 +234,15 @@ class ProductController extends Controller
         return route('root');
     }
 
-    private function product_exists($name, $description, $user_code){
-        $company_code = substr($user_code, 0, 10);
+    private function product_exists($name, $description){
         if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('products', 'users.id', '=', 'products.id_user')
+        ->join('products', 'companies.id', '=', 'products.id_company')
         ->select('products.code')
-        ->where('companies.code', 'like', $company_code)
         ->where('products.name', 'like', $name)
         ->where('products.description', 'like', $description)
         ->count() > 0) {
             return true;
         }
         return false;
-    }
-
-    //Generate product_code
-    private function product_code($user_code)
-    {
-        $company_code = substr($user_code, 0, 10);
-        if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('products', 'users.id', '=', 'products.id_user')
-        ->select('products.code')
-        ->where('companies.code', 'like', $company_code)->count() == 0) {
-            return $company_code . date('y') . date('m') . $this->next_code('');
-        }
-        $products_code = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('products', 'users.id', '=', 'products.id_user')
-        ->select('products.code')
-        ->where('companies.code', 'like', $company_code)->orderByRaw('products.created_at DESC')->first();
-        $product_code = $products_code->code;
-        return $company_code . date('y') . date('m') . $this->next_code($product_code);
-    }
-
-    private function next_code($last)
-    {
-        $new_id = "PAA0001";
-        if ($last == "") {
-            return $new_id;
-        }
-        $last = substr($last, 15, 6);
-        $last++;
-        $new_id = 'P'.$last;
-        
-        /*
-        if (substr($last, 16, 4) == "0000") {
-            $letters = substr($last, 14, 2);
-            $numbers = "0001";
-            $new_id = $letters . $numbers;
-        }
-        */
-        return $new_id;
     }
 }

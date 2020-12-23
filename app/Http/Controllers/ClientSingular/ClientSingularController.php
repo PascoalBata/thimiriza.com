@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ClientSingular;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Models\Client_Singular;
 use Illuminate\Http\Request;
@@ -17,7 +18,15 @@ class ClientSingularController extends Controller
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        $clients_singular = DB::table('companies')
+        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
+        ->select('clients_singular.*')
+        ->where('companies.id', 'like', $user->id_company)->paginate(30);
+        return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
+        'logo' => $company_validate['company_logo']]);
     }
 
     /**
@@ -42,7 +51,7 @@ class ClientSingularController extends Controller
             $user = Auth::user();
             $code = $this->client_code($user->code);
             if(!$this->client_exists($request['email'], $request['nuit'], $code)){
-                $client_enterprise = new Client_Singular(); 
+                $client_enterprise = new Client_Singular();
                 $client_enterprise->code = $code;
                 $client_enterprise->name = $request['name'];
                 $client_enterprise->surname = $request['surname'];
@@ -102,7 +111,7 @@ class ClientSingularController extends Controller
             $user_id = $user->id;
             $id = $request['id'];
             $name = $request['name'];
-            $surname = $request['surname'];          
+            $surname = $request['surname'];
             if(DB::table('clients_singular')
             ->where('id', $id)
             ->update(array(
@@ -134,7 +143,7 @@ class ClientSingularController extends Controller
             ->where('companies.code', 'like', $company_code)
             ->where('clients_enterprise.email', 'like', $email)->count() >= 1 ){
                 return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Email já pertence um Cliente.');
-            }else{        
+            }else{
                 if(DB::table('clients_singular')
                 ->where('id', $id)
                 ->update(array(
@@ -166,7 +175,7 @@ class ClientSingularController extends Controller
             ->where('companies.code', 'like', $company_code)
             ->where('clients_enterprise.phone', 'like', $phone)->count() >= 1 ){
                 return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Telefone já pertence um Cliente.');
-            }else{        
+            }else{
                 if(DB::table('clients_singular')
                 ->where('id', $id)
                 ->update(array(
@@ -228,7 +237,7 @@ class ClientSingularController extends Controller
             $user = Auth::user();
             $user_id = $user->id;
             $id = $request['id'];
-            $address = $request['address'];               
+            $address = $request['address'];
             if(DB::table('clients_singular')
             ->where('id', $id)
             ->update(array(
@@ -304,7 +313,7 @@ class ClientSingularController extends Controller
         $last = substr($last, 16, 6);
         $last++;
         $new_id = 'CS'.$last;
-        
+
         /*
         if (substr($last, 16, 4) == "0000") {
             $letters = substr($last, 14, 2);

@@ -57,6 +57,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @if (count($invoices) > 0)
                     @php
                     $total = 0;
                     $facturas = 0;
@@ -86,13 +87,16 @@
                         <td></td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }} {{__('MT') }}</td>
                     </tr>
+                    @endif
                 </tbody>
             </table>
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                        onclick="window.open('report/print/{{ strtotime($inicial_date)  . strtotime($limit_date) }}');">
-                        {{ ('Imprimir') }}</a>
+                    @if (count($invoices) > 0)
+                        <a class="modal-trigger waves-effect waves-light btn-small"
+                        href="{{ route('print_report',strtotime($inicial_date)  . strtotime($limit_date)) }}">
+                            {{ ('Imprimir') }}</a>
+                    @endif
                 </div>
             </div>
         </div>

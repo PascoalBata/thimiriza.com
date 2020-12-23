@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Service;
 
+use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -17,8 +18,15 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::paginate();
-       
+        $user = Auth::user();
+        $company_controller = new CompanyController;
+        $company_validate = $company_controller->validate_company($user->id_company);
+        $services = DB::table('companies')
+        ->join('services', 'companies.id', '=', 'services.id_company')
+        ->select('services.*')
+        ->where('companies.id', 'like', $user->id_company)->paginate(30);
+        return view ('pt.home.pages.service.service', $user, ['services' => $services,
+        'logo' => $company_validate['company_logo']]);
     }
 
     /**
@@ -43,7 +51,7 @@ class ServiceController extends Controller
             $user = Auth::user();
             $code = $this->service_code($user->code);
             if(!$this->service_exists($request['name'], $request['description'], $code)){
-                $service = new Service; 
+                $service = new Service;
                 $service->code = $code;
                 $service->name = $request['name'];
                 $service->description = $request['description'];
@@ -248,7 +256,7 @@ class ServiceController extends Controller
         $last = substr($last, 15, 6);
         $last++;
         $new_id = 'S'.$last;
-        
+
         /*
         if (substr($last, 16, 4) == "0000") {
             $letters = substr($last, 14, 2);

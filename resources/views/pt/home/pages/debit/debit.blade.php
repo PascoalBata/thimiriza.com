@@ -55,6 +55,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @if (count($invoices) > 0)
                     @php
                     $total = 0;
                     $facturas = 0;
@@ -68,11 +69,11 @@
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: right;">
-                                <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small" href="#invoice_payment_modal"
+                                <a style="width: 25%;" class="modal-trigger waves-effect waves-light btn-small"
+                                href="#invoice_payment_modal"
                                     onclick="payInvoice(this, {{ $invoice->id }})">{{__('Pagar')}}</a>
-                                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                                    onclick="window.open('debit/{{ $invoice->id }}');">
-                                    {{__('ver')}}</a>
+                                    <a class="modal-trigger waves-effect waves-light btn-small"
+                                    href="{{ route('debit_invoice', $invoice->id) }}">{{__('ver')}}</a>
                             </td>
                         </tr>
                         @php
@@ -86,13 +87,16 @@
                         <td></td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}{{ __('MT') }}</td>
                     </tr>
+                    @endif
                 </tbody>
             </table>
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                        onclick="window.open('debit/print/{{ strtotime($inicial_date) . strtotime($limit_date) }}');">
-                        {{ ('Imprimir') }}</a>
+                    @if (count($invoices) > 0)
+                        <a class="modal-trigger waves-effect waves-light btn-small" href=""
+                            onclick="{{route('print_debit', strtotime($inicial_date) . strtotime($limit_date))}}">
+                            {{ ('Imprimir') }}</a>
+                    @endif
                 </div>
             </div>
         </div>

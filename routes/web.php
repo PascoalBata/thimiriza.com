@@ -47,18 +47,18 @@ Route::get('home', 'HomeController@index')->name('home');
 
 //home_views
 //Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
-Route::get('/products', 'HomeController@view_product')->name('view_product');
-Route::get('/services', 'HomeController@view_service')->name('view_service');
-Route::get('/clients_singular', 'HomeController@view_client_singular')->name('view_client_singular');
-Route::get('/clients_enterprise', 'HomeController@view_client_enterprise')->name('view_client_enterprise');
-Route::get('/users', 'HomeController@view_user')->name('view_user');
-Route::get('/company', 'HomeController@view_company')->name('view_company');
+
+Route::get('/services', 'Service\ServiceController@index')->name('view_service');
+Route::get('/clients_singular', 'ClientSingular\ClientSingularController@index')->name('view_client_singular');
+Route::get('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@index')->name('view_client_enterprise');
+Route::get('/users', 'User\UserController@index')->name('view_user');
+Route::get('/company', 'company\CompanyController@show_company')->name('view_company');
 Route::put('/company', 'Company\CompanyController@update_company')->name('edit_company');
 Route::put('/company/payment', 'Company\CompanyController@payment')->name('company_payment');
-Route::get('/about', 'HomeController@view_about')->name('view_about');
-Route::get('/credit', 'HomeController@view_credit')->name('view_credit');
-Route::get('/debit', 'HomeController@view_debit')->name('view_debit');
-Route::get('/report', 'HomeController@view_report')->name('view_report');
+Route::get('/about', 'Company\CompanyController@show_about')->name('view_about');
+Route::get('/credit', 'Sale\SaleController@index_credit')->name('view_credit');
+Route::get('/debit', 'Sale\SaleController@index_debit')->name('view_debit');
+Route::get('/report', 'Sale\SaleController@index_report')->name('view_report');
 
 Route::post('/credit', 'HomeController@view_credit')->name('get_credit');
 Route::post('/debit', 'HomeController@view_debit')->name('get_debit');
@@ -77,7 +77,6 @@ Route::put('/debit/payment', 'Invoice\InvoiceController@invoice_payment')->name(
 
 //store
 Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');
-Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
 Route::post('/clients_singular', 'ClientSingular\ClientSingularController@store')->name('store_client_singular');
 Route::post('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@store')->name('store_client_enterprise');
@@ -91,6 +90,8 @@ Route::put('/services/update_price', 'Service\ServiceController@update_price')->
 Route::delete('/services/delete_service', 'Service\ServiceController@destroy')->name('remove_service');
 
 //product
+Route::get('/products', 'Product\ProductController@index')->name('view_product');
+Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::put('/products/update_name', 'Product\ProductController@update_name')->name('edit_product_name');
 Route::put('/products/update_description', 'Product\ProductController@update_description')->name('edit_product_description');
 Route::put('/products/update_quantity', 'Product\ProductController@update_quantity')->name('edit_product_quantity');
