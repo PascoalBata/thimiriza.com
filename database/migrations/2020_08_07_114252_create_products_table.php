@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->double('price');
-            $table->double('iva');
+            $table->string('iva');
             $table->string('quantity');
             $table->unsignedBigInteger('id_company');
             $table->BigInteger('created_by'); //id_user

@@ -58,8 +58,8 @@
                     <div class="input-field col s12 m6 l6">
                         <p>
                             <label class="black-text">
-                              <input type="checkbox" id="product_iva" name="product_iva"/>
-                              <span>Incluir IVA</span>
+                                <input type="checkbox" id="product_iva" name="product_iva"/>
+                                <span>{{__('Incluir IVA')}}</span>
                             </label>
                           </p>
                     </div>
@@ -108,12 +108,10 @@
                                         {{ __('MT') }}</td>
                                     <td style="text-align: right;">
                                         <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small"
-                                            href="#edit_product_modal"
-                                            onclick="editProduct(this, {{ $product->id }}, {{ $product->price }})">editar</a>
+                                            href="#edit_product_modal">editar</a>
                                         <a style="width: 100%;"
                                             class="modal-trigger waves-effect waves-light btn-small red darken-3"
-                                            href="#remove_product_modal"
-                                            onclick="removeProduct(this, {{ $product->id }})">remover</a>
+                                            href="#remove_product_modal">remover</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -125,77 +123,54 @@
         </div>
     </div>
     <div id="edit_product_modal" tabindex="-1" class="modal modal-fixed-footer">
+        <product_edit-component>
+            <script type="text/javascript" src="js/app.js"></script>
+        </product_edit-component>
         <div class="modal-content">
             <h4>{{ __('Actualizar Produto') }}</h4>
             <p>Altere somente os campos que pretende actualizar.</p>
             <form method="POST" id="editProductNameForm" name="editProductNameForm"
-                action="{{ route('edit_product_name') }}">
+                action="{{ route('edit_product') }}">
                 @method('PUT')
                 @csrf
                 <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
                 <div class="row">
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s12 m5 l5">
                         <label for="name" class="black-text">{{ __('Nome') }}</label>
                         <input id="name" type="text" class="black-text" name="name" value="{{ old('name') }}" autofocus>
                     </div>
-                    <div class="input-field col s12 m6 l6">
-                        <button type="submit" class="waves-effect waves-light btn-small ">
-                            {{ __('Salvar') }}
-                            <i class="material-icons left"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <form method="POST" id="editProductDescriptionForm" name="editProductDescriptionForm"
-                action="{{ route('edit_product_description') }}">
-                @method('PUT')
-                @csrf
-                <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
-                <div class="row">
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s12 m5 l5">
                         <label for="description" class="black-text">{{ __('Descrição') }}</label>
                         <input id="description" type="text" class="black-text" name="description"
                             value="{{ old('description') }}" autofocus>
                     </div>
-                    <div class="input-field col s12 m6 l6">
-                        <button type="submit" class="waves-effect waves-light btn-small ">
-                            {{ __('Salvar') }}
-                            <i class="material-icons left"></i>
-                        </button>
-                    </div>
                 </div>
-            </form>
-            <form method="POST" id="editProductQuantityForm" name="editProductQuantityForm"
-                action="{{ route('edit_product_quantity') }}">
-                @method('PUT')
-                @csrf
-                <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
                 <div class="row">
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s12 m5 l5">
                         <label for="quantity" class="black-text">{{ __('Preço') }}</label>
                         <input id="quantity" type="number" class="black-text" name="quantity" value="{{ old('quantity') }}"
                             autofocus>
                     </div>
-                    <div class="input-field col s12 m6 l6">
-                        <button type="submit" class="waves-effect waves-light btn-small ">
-                            {{ __('Salvar') }}
-                            <i class="material-icons left"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <form method="POST" id="editProductPriceForm" name="editProductPriceForm"
-                action="{{ route('edit_product_price') }}">
-                @method('PUT')
-                @csrf
-                <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
-                <div class="row">
-                    <div class="input-field col s12 m6 l6">
+                    <div class="input-field col s12 m5 l5">
                         <label for="price" class="black-text">{{ __('Preço') }}</label>
                         <input id="price" type="number" class="black-text" name="price" value="{{ old('price') }}"
                             autofocus>
                     </div>
-                    <div class="input-field col s12 m6 l6">
+                </div>
+                <div class="row">
+                    @if ($company_type === 'NORMAL')
+                        <div class="input-field col s12 m6 l6">
+                            <p>
+                                <label class="black-text">
+                                    <input type="checkbox" id="product_iva" name="product_iva"/>
+                                    <span>{{__('Incluir IVA')}}</span>
+                                </label>
+                            </p>
+                        </div>
+                    @endif
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m5 l5">
                         <button type="submit" class="waves-effect waves-light btn-small ">
                             {{ __('Salvar') }}
                             <i class="material-icons left"></i>
@@ -234,18 +209,8 @@
     </div>
 @endsection
 @section('script')
+
     <script>
-        function editProduct(button, id, price) {
-            var tr = button.parentElement.parentElement;
-            editProductNameForm.id.value = id;
-            editProductDescriptionForm.id.value = id;
-            editProductPriceForm.id.value = id;
-            editProductQuantityForm.id.value = id;
-            editProductNameForm.name.value = tr.cells[0].innerHTML;
-            editProductDescriptionForm.description.value = tr.cells[1].innerHTML;
-            editProductQuantityForm.quantity.value = tr.cells[2].innerHTML;
-            editProductPriceForm.price.value = price;
-        }
 
         function removeProduct(button, id) {
             var tr = button.parentElement.parentElement;
@@ -266,6 +231,7 @@
         });
 
     </script>
+
     @if (session('product_notification'))
         <div class="alert alert-success">
             <script>

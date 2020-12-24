@@ -57,9 +57,8 @@ class ProductController extends Controller
                 $product->price = $request['price'];
                 $product->quantity = $request['quantity'];
                 $product->iva = $request['product_iva'];
-                $product->created_by = '('. $user->id . ')' . $user->name . $user->surname;
-                dd($product);
-                $product->id_user = Auth::id();
+                $product->created_by = $user->id;
+                $product->id_company = $user->id_company;
                 if($product->save()){
                     return redirect()->route('view_product')->with('product_notification', 'Produto registado com sucesso.');
                 }
