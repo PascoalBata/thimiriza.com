@@ -18,16 +18,21 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        $products = DB::table('companies')
-        ->join('products', 'companies.id', '=', 'products.id_company')
-        ->select('products.*')
-        ->where('companies.id', 'like', $user->id_company)->paginate(30);
-        return view ('pt.home.pages.product.product', $user, ['products' => $products,
-        'logo' => $company_validate['company_logo'],
-        'company_type' => $company_validate['company_type']]);
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $products = DB::table('companies')
+            ->join('products', 'companies.id', '=', 'products.id_company')
+            ->select('products.*')
+            ->where('companies.id', 'like', $user->id_company)->paginate(30);
+            return view ('pt.home.pages.product.product', $user, ['products' => $products,
+            'logo' => $company_validate['company_logo'],
+            'company_type' => $company_validate['company_type'],
+            'is_edit' => false,
+            'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -57,6 +62,9 @@ class ProductController extends Controller
                 $product->price = $request['price'];
                 $product->quantity = $request['quantity'];
                 $product->iva = $request['product_iva'];
+                if($request['product_iva'] === null){
+                    $product->iva = 'off';
+                }
                 $product->created_by = $user->id;
                 $product->id_company = $user->id_company;
                 if($product->save()){
@@ -88,7 +96,31 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $products = DB::table('companies')
+            ->join('products', 'companies.id', '=', 'products.id_company')
+            ->select('products.*')
+            ->where('companies.id', 'like', $user->id_company)->paginate(30);
+            $product = DB::table('products')->find($id);
+            if($product === null){
+                return view ('pt.home.pages.product.product', $user, ['products' => $products,
+                'logo' => $company_validate['company_logo'],
+                'company_type' => $company_validate['company_type'],
+                'product' => $product,
+                'is_edit' => false,
+                'is_destroy' => false]);
+            }
+            return view ('pt.home.pages.product.product', $user, ['products' => $products,
+            'logo' => $company_validate['company_logo'],
+            'company_type' => $company_validate['company_type'],
+            'selected_product' => $product,
+            'is_edit' => true,
+            'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**

@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Sale extends Model
 {
     //
-    protected $table = 'sales'; 
+    use SoftDeletes;
+    protected $table = 'sales';
 }

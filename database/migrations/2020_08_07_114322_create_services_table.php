@@ -22,7 +22,7 @@ class CreateServicesTable extends Migration
             $table->BigInteger('created_by'); //id_user
             $table->BigInteger('updated_by')->nullable();; //id_user
             $table->timestamps();
-
+            $table->softDeletes();
             $table->foreign('id_company')->references('id')->on('companies');
         });
     }

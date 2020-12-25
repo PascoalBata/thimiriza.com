@@ -92,10 +92,8 @@ Route::delete('/services/delete_service', 'Service\ServiceController@destroy')->
 //product
 Route::get('/products', 'Product\ProductController@index')->name('view_product');
 Route::post('/products', 'Product\ProductController@store')->name('store_product');
-Route::put('/products/update_name', 'Product\ProductController@update_name')->name('edit_product');
-Route::put('/products/update_description', 'Product\ProductController@update_description')->name('edit_product_description');
-Route::put('/products/update_quantity', 'Product\ProductController@update_quantity')->name('edit_product_quantity');
-Route::put('/products/update_price', 'Product\ProductController@update_price')->name('edit_product_price');
+Route::get('/products/{id}', 'Product\ProductController@edit')->name('edit_product');
+Route::put('/products/{id}', 'Product\ProductController@update')->name('update_product');
 Route::delete('/products/delete_product', 'Product\ProductController@destroy')->name('remove_product');
 
 //sale

@@ -34,6 +34,7 @@ class CreateCompaniesTable extends Migration
             $table->rememberToken();
             $table->BigInteger('updated_by')->nullable(); //id_user
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('id_package')->references('id')->on('packages');
         });
     }

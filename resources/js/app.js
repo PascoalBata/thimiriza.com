@@ -26,7 +26,7 @@ Vue.component(
 
 Vue.component(
     'product_edit-component',
-    require('./components/product/Product_edit.vue').default
+    require('./components/product/Product_edit.vue')
 );
 
 /**

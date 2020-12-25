@@ -25,7 +25,6 @@ class CreateMovesTable extends Migration
             $table->double('iva');
             $table->unsignedBigInteger('id_invoice');
             $table->timestamps();
-
             $table->foreign('id_invoice')->references('id')->on('invoices');
         });
     }
