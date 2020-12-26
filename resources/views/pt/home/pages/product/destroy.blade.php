@@ -2,7 +2,7 @@
     <form method="POST" id="removeProductForm" name="removeProductForm" action="{{ route('destroy_product', $selected_product->id) }}">
         <div class="modal-content">
             <h4>{{ __('Remover Produto') }}</h4>
-            <p>{{ __('Tem certeza que deseja remover este produto?') }}</p>
+            <p>{{ __('Deseja remover este produto?') }}</p>
             @method('DELETE')
             @csrf
             <div class="row">

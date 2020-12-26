@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,14 +21,20 @@ class UserController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        if($user['privilege'] === "TOTAL" || $user['privilege'] == "ADMIN"){
-            $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
-            return view ('pt.home.pages.user.user', $user, ['users' => $users, 'logo' => $company_validate['company_logo']]);
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            if($user['privilege'] === "TOTAL" || $user['privilege'] == "ADMIN"){
+                $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
+                return view ('pt.home.pages.user.user', $user, ['users' => $users,
+                'logo' => $company_validate['company_logo'],
+                'is_edit' => false,
+                'is_destroy' => false]);
+            }
+            return redirect()->route('index_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
-        return redirect()->route('index_sale')->with('sale_notification', 'A sua conta nao possui permissão para realizar esta acção');
+        return route('root');
     }
 
     public function root(Request $request)
@@ -62,13 +69,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //return dd($request->all());
         if(Auth::check()){
             $user = Auth::user();
-            $code = $this->user_code();
             $id_company = $user->id_company;
+
              if(User::create([
-                'code' => $code,
                 'name' => $request['name'],
                 'surname' => $request['surname'],
                 'gender' => $request['gender'],
@@ -79,11 +84,12 @@ class UserController extends Controller
                 'nuit' => $request['nuit'],
                 'address' => $request['address'],
                 'id_company' => $id_company,
+                'created_by' => $user->id,
                 'password' => Hash::make($request['password'])
             ])){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador registadp com sucesso.');
+                return redirect()->route('view_user')->with('operation_status', 'Utilizador registado com sucesso.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante o registo.');
+            return redirect()->route('view_user')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
         }
         return route('root');
     }
@@ -107,7 +113,25 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        if(Auth::check()){
+            $auth_user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($auth_user->id_company);
+            $users = User::where('id_company', $auth_user->id_company)->paginate(30);
+            $user = DB::table('users')->find($id);
+            if($user === null){
+                return view ('pt.home.pages.user.user', $auth_user, ['users' => $users,
+                'logo' => $company_validate['company_logo'],
+                'is_edit' => false,
+                'is_destroy' => false]);
+            }
+            return view ('pt.home.pages.user.user', $auth_user, ['users' => $users,
+                'logo' => $company_validate['company_logo'],
+                'selected_user' => $user,
+                'is_edit' => true,
+                'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -117,172 +141,170 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update_name(Request $request)
+    public function update_name(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $name = $request['name'];
-            $surname = $request['surname'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'name' => $name,
-                'surname' => $surname,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Nome) actualizado com sucesso.');
+            $user->name = $request['edit_name'];
+            $user->surname = $request['edit_surname'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Nome do utilizador actualizado com sucesso.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o nome do utilizador.');
         }
         return route('root');
     }
 
-    public function update_gender(Request $request)
+    public function update_password(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $gender = $request['gender'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'gender' => $gender,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Género) actualizado com sucesso.');
+            if(!password_verify($request['edit_actual_password'], $user->password)){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou a senha actual.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            if($request['edit_new_password'] !== $request['edit_confirm_password']){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'As senhas (nova e de confirmação) são diferentes.');
+            }
+            $user->password = Hash::make($request['edit_new_passord']);
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Senha do utilizador actualizada com sucesso.');
+            }
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar a senha.');
         }
         return route('root');
     }
 
-    public function update_birthdate(Request $request)
+    public function update_gender(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $birthdate = $request['birthdate'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'birthdate' => $birthdate,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Data de nascimento) actualizado com sucesso.');
+            $user->gender = $request['edit_gender'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Género do utilizador actualizado com sucesso.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o género do utilizador.');
         }
         return route('root');
     }
 
-    public function update_privilege(Request $request)
+    public function update_birthdate(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $privilege = $request['privilege'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'privilege' => $privilege,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Previlégio) actualizado com sucesso.');
+            if(intval(strtotime(now())) - (strtotime($request['edit_birthdate'])) < 568155232){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Não foi possível actualizar a data de nascimento do utilizador. Idade menor de 18 anos.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            if(intval(strtotime(now())) - (strtotime($request['edit_birthdate'])) > 2209151275){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Não foi possível actualizar a data de nascimento do utilizador. Idade maior de 70 anos.');
+            }
+            $user->birthdate = $request['edit_birthdate'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Data de nascimento do utilizador actualizado com sucesso.');
+            }
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar a data de nascimento do utilizador.');
         }
         return route('root');
     }
 
-    public function update_address(Request $request)
+    public function update_privilege(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $address = $request['address'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'address' => $address,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Endereço) actualizado com sucesso.');
+            if($auth_user->id === $id){
+                $user->privilege = $request['edit_privilege'];
+                $user->updated_by = $auth_user->id;
+                if($user->save()){
+                    return redirect()->route('edit_user')->with('operation_status', 'Previlégios do utilizador actualizados com sucesso.');
+                }
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            $user->privilege = $request['edit_privilege'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Previlgios do utilizador actualizados com sucesso.');
+            }
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar os previlégios do utilizador.');
         }
         return route('root');
     }
 
-    public function update_phone(Request $request)
+    public function update_address(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $phone = $request['phone'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'phone' => $phone,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Telefone) actualizado com sucesso.');
+            $user->address = $request['edit_address'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Endereço do utilizador actualizados com sucesso.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o endereço do utilizador.');
         }
         return route('root');
     }
 
-    public function update_email(Request $request)
+    public function update_phone(Request $request, $id)
     {
         if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $email = $request['email'];
-            $user_query = DB::table('users')->select('surname')->where('id', 'like', $id)->first();
-            if($user_query->surname == "N/A"){
-                return redirect()->route('view_user')->with('user_notification', 'Não pode actualizar dados do Utilizador administrador.');
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
             }
-            if(DB::table('users')
-            ->where('id', $id)
-            ->update(array(
-                'email' => $email,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_user')->with('user_notification', 'Utilizador (Email) actualizado com sucesso.');
+            $user->phone = $request['edit_phone'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Telefone do utilizador actualizados com sucesso.');
             }
-            return redirect()->route('view_user')->with('user_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o telefone do utilizador.');
+        }
+        return route('root');
+    }
+
+    public function update_email(Request $request, $id)
+    {
+        if(Auth::check()){
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user->privilege == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Não pode actualizar dados do Utilizador administrador.');
+            }
+            if(User::where('email', $request['edit_email'])){
+                $company = Company::find($user->id_company);
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Este Email já possui uma conta na empresa ' . $company->name);
+            }
+            $user->email = $request['edit_email'];
+            $user->updated_by = $auth_user->id;
+            if($user->save()){
+                return redirect()->route('edit_user', $id )->with('operation_status', 'Email do utilizador actualizados com sucesso.');
+            }
+            return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o Email do utilizador.');
         }
         return route('root');
     }
@@ -293,9 +315,23 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        //
+        if(Auth::check()){
+            $auth_user = Auth::user();
+            $user = User::find($id);
+            if($user['privilege'] == "ADMIN"){
+                return redirect()->route('view_user')->with('operation_status', 'Sem sucesso! Este utilizador não pode ser removido.');
+            }else{
+                if(User::find($id)->delete()){
+                    $user->updated_by = $auth_user->id;
+                    $user->save();
+                    return redirect()->route('view_user')->with('operation_status', 'Utilizador removido sucesso.');
+                }
+                return redirect()->route('view_user')->with('operation_status', 'Sem sucesso! Este utilizador não existe.');
+            }
+        }
+        return route('root');
     }
 
 }

@@ -1,7 +1,7 @@
-<div id="table_products_modal" class="modal bottom-sheet">
+<div id="products_table_modal" class="modal bottom-sheet">
     <div class="modal-content">
         <h4>{{ __('Produtos') }}</h4>
-        <div class="row" id="service_table" style="display: block;">
+        <div class="row" id="products_table" style="display: block;">
             <div class="col s12 m12 l12">
                 <table class="highlight">
                     <thead>
@@ -23,26 +23,26 @@
                                 <td style="text-align: center;">{{ $product->description }}</td>
                                 <td style="text-align: center;">{{ $product->quantity }}</td>
                                 <td style="text-align: center;">
-                                    @if ($product->iva === 'on')
                                     <label class="black-text">
-                                        <input disabled type="checkbox" class="filled-in" checked id="product_iva" name="product_iva"/>
+                                        <input disabled type="checkbox" class="filled-in"
+                                        @if ($product->iva === 'on')
+                                            checked
+                                        @endif
+                                        />
                                         <span></span>
                                     </label>
-                                    @else
-                                    <label class="black-text">
-                                        <input disabled type="checkbox" class="filled-in" id="product_iva" name="product_iva"/>
-                                        <span></span>
-                                    </label>
-                                    @endif
                                 </td>
                                 <td style="text-align: center;">{{ number_format($product->price, 2, ',', '.') }}
                                     {{ __('MT') }}</td>
                                 <td style="text-align: right;">
-                                    <a style="width: 100%;" class="modal-trigger waves-effect waves-light btn-small"
+                                    <a style="width: 100%;" class="waves-effect waves-light btn-small"
                                         href="{{ route('edit_product', $product->id) }}">editar</a>
-                                    <a style="width: 100%;"
-                                        class="modal-trigger waves-effect waves-light btn-small red darken-3"
-                                        href="#destroy_product_modal">remover</a>
+                                    <form method="POST" action="{{ route('destroy_product', $product->id) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button style="width: 100%;" type="submit"
+                                            class="waves-effect waves-light btn-small red darken-3">remover</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

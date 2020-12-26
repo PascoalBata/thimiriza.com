@@ -18,15 +18,18 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        $services = DB::table('companies')
-        ->join('services', 'companies.id', '=', 'services.id_company')
-        ->select('services.*')
-        ->where('companies.id', 'like', $user->id_company)->paginate(30);
-        return view ('pt.home.pages.service.service', $user, ['services' => $services,
-        'logo' => $company_validate['company_logo']]);
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $services = Service::where('id_company', $user->id_company)->paginate(30);
+            return view ('pt.home.pages.service.service', $user, ['services' => $services,
+            'logo' => $company_validate['company_logo'],
+            'company_type' => $company_validate['company_type'],
+            'is_edit' => false,
+            'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -49,20 +52,23 @@ class ServiceController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $code = $this->service_code($user->code);
-            if(!$this->service_exists($request['name'], $request['description'], $code)){
+            if(!$this->service_exists($request['name'], $request['description'])){
                 $service = new Service;
-                $service->code = $code;
                 $service->name = $request['name'];
                 $service->description = $request['description'];
                 $service->price = $request['price'];
-                $service->id_user = Auth::id();
-                if($service->save()){
-                    return redirect()->route('view_service')->with('service_notification', 'Serviço registado com sucesso.');
+                $service->iva = $request['service_iva'];
+                if($request['service_iva'] === null){
+                    $service->iva = 'off';
                 }
-                return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante o registo.');
+                $service->created_by = $user->id;
+                $service->id_company = $user->id_company;
+                if($service->save()){
+                    return redirect()->route('view_service')->with('operation_status', 'Serviço registado com sucesso.');
+                }
+                return redirect()->route('view_service')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
             }
-            return redirect()->route('view_service')->with('service_notification', 'Falhou! Esse serviço já existe.');
+            return redirect()->route('view_service')->with('operation_status', 'Falhou! Esse serviço já existe.');
         }
         return route('root');
     }
@@ -84,9 +90,30 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit($id)
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $services = Service::where('id_company', $user->id_company)->paginate(30);
+            $service = DB::table('services')->find($id);
+            if($service === null){
+                return view ('pt.home.pages.service.service', $user, ['services' => $services,
+                'logo' => $company_validate['company_logo'],
+                'company_type' => $company_validate['company_type'],
+                'service' => $service,
+                'is_edit' => false,
+                'is_destroy' => false]);
+            }
+            return view ('pt.home.pages.service.service', $user, ['services' => $services,
+            'logo' => $company_validate['company_logo'],
+            'company_type' => $company_validate['company_type'],
+            'selected_service' => $service,
+            'is_edit' => true,
+            'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -98,101 +125,27 @@ class ServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-    }
-
-    public function update_name(Request $request)
-    {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $user_code = $user->code;
-            $id = $request['id'];
-            $name = $request['name'];
-            $company_code = substr($user_code, 0, 10);
-            $services = DB::table('services')
-            ->select('name', 'description')
-            ->where('id', 'like', $id)->first();
-            if(DB::table('companies')
-            ->join('users', 'companies.id', '=', 'users.id_company')
-            ->join('services', 'users.id', '=', 'services.id_user')
-            ->select('services.name', 'services.description')
-            ->where('companies.code', 'like', $company_code)
-            ->where('services.name', 'like', $name)
-            ->where('services.description', 'like', $services->description)->count() >= 1){
-                return redirect()->route('view_service')->with('service_notification', 'Falhou! Existe um Serviço com esse nome e descricao.');
-            }else{
-                if(DB::table('services')
-                ->where('id', $id)
-                ->update(array(
-                    'name' => $name,
-                    'id_user' => $user_id,
-                    'updated_at' => now()
-                ))){
-                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Nome) actualizado com sucesso.');
-                }
+            $service = Service::find($id);
+            $service->name = $request['edit_name'];
+            $service->description = $request['edit_description'];
+            $service->price = $request['edit_price'];
+            $service->iva = $request['edit_service_iva'];
+            $service->updated_by = $user->id;
+            if($request['edit_service_iva'] === null){
+            $service->iva = 'off';
             }
-            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
-        }
-        return route('root');
-    }
-
-    public function update_description(Request $request)
-    {
-        if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $user_code = $user->code;
-            $id = $request['id'];
-            $description = $request['description'];
-            $company_code = substr($user_code, 0, 10);
-            $services = DB::table('services')
-            ->select('name', 'description')
-            ->where('id', 'like', $id)->first();
-            if(DB::table('companies')
-            ->join('users', 'companies.id', '=', 'users.id_company')
-            ->join('services', 'users.id', '=', 'services.id_user')
-            ->select('services.name', 'services.description')
-            ->where('companies.code', 'like', $company_code)
-            ->where('services.name', 'like', $services->name)
-            ->where('services.description', 'like', $description)->count() >= 1){
-                return redirect()->route('view_service')->with('service_notification', 'Falhou! Existe um Serviço com esse nome e descricao.');
-            }else{
-                if(DB::table('services')
-                ->where('id', $id)
-                ->update(array(
-                    'description' => $description,
-                    'id_user' => $user_id,
-                    'updated_at' => now()
-                ))){
-                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Descricao) actualizado com sucesso.');
-                }
+            $service->created_by = $user->id;
+            $service->id_company = $user->id_company;
+            if($service->save()){
+            return redirect()->route('view_service')->with('operation_status', 'Serviço actualizado com sucesso.');
             }
-            return redirect()->route('view_service')->with('service_status', 'Falhou! Ocorreu um erro durante a actualizacao.');
+            return redirect()->route('view_service')->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do serviço.');
         }
         return route('root');
     }
 
-    public function update_price(Request $request)
-    {
-        if(Auth::check()){
-            $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $price = $request['price'];
-            if(DB::table('services')
-                ->where('id', $id)
-                ->update(array(
-                'price' => $price,
-                'id_user' => $user_id,
-                'updated_at' => now()
-            ))){
-                    return redirect()->route('view_service')->with('service_notification', 'Serviço (Preco) actualizado com sucesso.');
-                }
-            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a actualizacao.');
-        }
-        return route('root');
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -200,70 +153,30 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         if(Auth::check()){
-            $id = $request['id'];
-            if(DB::table('services')->where('id', 'like', $id)->delete()){
-                return redirect()->route('view_service')->with('service_notification', 'Servico removido com sucesso.');
+            $user = Auth::user();
+            $service = Service::find($id);
+            if(Service::find($id)->delete()){
+                $service->updated_by = $user->id;
+                $service->save();
+                return redirect()->route('view_service')->with('operation_status', 'Serviço removido sucesso.');
             }
-            return redirect()->route('view_service')->with('service_notification', 'Falhou! Ocorreu um erro durante a remocao do servico.');
+            return redirect()->route('view_service')->with('operation_status', 'Sem sucesso! Esse serviço não existe.');
         }
         return route('root');
     }
 
-    private function service_exists($name, $description, $user_code){
-        $company_code = substr($user_code, 0, 10);
+    private function service_exists($name, $description){
         if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('services', 'users.id', '=', 'services.id_user')
-        ->select('services.code')
-        ->where('companies.code', 'like', $company_code)
+        ->join('services', 'companies.id', '=', 'services.id_company')
+        ->select('*')
         ->where('services.name', 'like', $name)
         ->where('services.description', 'like', $description)
         ->count() > 0) {
             return true;
         }
         return false;
-    }
-
-    //Generate product_code
-    private function service_code($user_code)
-    {
-        $company_code = substr($user_code, 0, 10);
-        if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('services', 'users.id', '=', 'services.id_user')
-        ->select('services.code')
-        ->where('companies.code', 'like', $company_code)->count() == 0) {
-            return $company_code . date('y') . date('m') . $this->next_code('');
-        }
-        $services_code = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('services', 'users.id', '=', 'services.id_user')
-        ->select('services.code')
-        ->where('companies.code', 'like', $company_code)->orderByRaw('services.created_at DESC')->first();
-        $service_code = $services_code->code;
-        return $company_code . date('y') . date('m') . $this->next_code($service_code);
-    }
-
-    private function next_code($last)
-    {
-        $new_id = "SAA0001";
-        if ($last == "") {
-            return $new_id;
-        }
-        $last = substr($last, 15, 6);
-        $last++;
-        $new_id = 'S'.$last;
-
-        /*
-        if (substr($last, 16, 4) == "0000") {
-            $letters = substr($last, 14, 2);
-            $numbers = "0001";
-            $new_id = $letters . $numbers;
-        }
-        */
-        return $new_id;
     }
 }
