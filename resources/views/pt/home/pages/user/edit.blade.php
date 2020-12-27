@@ -1,7 +1,7 @@
 <div id="edit_user_modal" tabindex="-1" class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4>{{ __('Actualizar Utilizador') }}</h4>
-            <form method="POST" id="editUserNameForm" name="editUserNameForm" action="{{ route('edit_user_name', $selected_user->id) }}">
+            <form method="POST" id="editUserNameForm" name="editUserNameForm" action="{{ route('update_user_name', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </form>
-            <form method="POST" id="editUserEmailForm" name="editUserEmailForm" action="{{ route('edit_user_email', $selected_user->id) }}">
+            <form method="POST" id="editUserEmailForm" name="editUserEmailForm" action="{{ route('update_user_email', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -40,13 +40,13 @@
                     </div>
                 </div>
             </form>
-            <form method="POST" id="editUserPhoneForm" name="editUserPhoneForm" action="{{ route('edit_user_phone', $selected_user->id) }}">
+            <form method="POST" id="editUserPhoneForm" name="editUserPhoneForm" action="{{ route('update_user_phone', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
                     <div class="input-field col s12 m7 l7">
                         <label for="edit_phone" class="black-text">{{ __('Telefone') }}</label>
-                        <input required id="edit_phone" type="number" class="black-text" name="edit_phone" value="{{ $selected_user->phone }}"
+                        <input required id="edit_phone" type="number" class="black-text" name="update_phone" value="{{ $selected_user->phone }}"
                             autofocus>
                     </div>
                     <div class="input-field col s12 m5 l5">
@@ -58,7 +58,7 @@
                 </div>
             </form>
             <form method="POST" id="editUserBirthdateForm" name="editUserBirthdateForm"
-                action="{{ route('edit_user_birthdate', $selected_user->id) }}">
+                action="{{ route('update_user_birthdate', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -76,7 +76,7 @@
                 </div>
             </form>
             <form method="POST" id="editUserAddressForm" name="editUserAddressForm"
-                action="{{ route('edit_user_address', $selected_user->id) }}">
+                action="{{ route('update_user_address', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -93,7 +93,7 @@
                     </div>
                 </div>
             </form>
-            <form method="POST" id="editUserGenderForm" name="editUserGenderForm" action="{{ route('edit_user_gender', $selected_user->id) }}">
+            <form method="POST" id="editUserGenderForm" name="editUserGenderForm" action="{{ route('update_user_gender', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -117,7 +117,7 @@
                 </div>
             </form>
             <form method="POST" id="editUserPrivilegeForm" name="editUserPrivilegeForm"
-                action="{{ route('edit_user_privilege', $selected_user->id) }}">
+                action="{{ route('update_user_privilege', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">
@@ -140,7 +140,7 @@
                     </div>
                 </div>
             </form>
-            <form method="POST" id="editUserPasswordForm" name="editUserPasswordForm" action="{{ route('edit_user_password', $selected_user->id) }}">
+            <form method="POST" id="editUserPasswordForm" name="editUserPasswordForm" action="{{ route('update_user_password', $selected_user->id) }}">
                 @method('PUT')
                 @csrf
                 <div class="row">

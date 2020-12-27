@@ -115,21 +115,24 @@ class UserController extends Controller
     {
         if(Auth::check()){
             $auth_user = Auth::user();
-            $company_controller = new CompanyController;
-            $company_validate = $company_controller->validate_company($auth_user->id_company);
-            $users = User::where('id_company', $auth_user->id_company)->paginate(30);
-            $user = DB::table('users')->find($id);
-            if($user === null){
+            if($auth_user['privilege'] === "TOTAL" || $auth_user['privilege'] == "ADMIN"){
+                $company_controller = new CompanyController;
+                $company_validate = $company_controller->validate_company($auth_user->id_company);
+                $users = User::where('id_company', $auth_user->id_company)->paginate(30);
+                $user = DB::table('users')->find($id);
+                if($user === null){
+                    return view ('pt.home.pages.user.user', $auth_user, ['users' => $users,
+                    'logo' => $company_validate['company_logo'],
+                    'is_edit' => false,
+                    'is_destroy' => false]);
+                }
                 return view ('pt.home.pages.user.user', $auth_user, ['users' => $users,
-                'logo' => $company_validate['company_logo'],
-                'is_edit' => false,
-                'is_destroy' => false]);
+                    'logo' => $company_validate['company_logo'],
+                    'selected_user' => $user,
+                    'is_edit' => true,
+                    'is_destroy' => false]);
             }
-            return view ('pt.home.pages.user.user', $auth_user, ['users' => $users,
-                'logo' => $company_validate['company_logo'],
-                'selected_user' => $user,
-                'is_edit' => true,
-                'is_destroy' => false]);
+            return redirect()->route('index_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
         return route('root');
     }

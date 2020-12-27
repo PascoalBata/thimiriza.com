@@ -18,15 +18,17 @@ class ClientSingularController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        $clients_singular = DB::table('companies')
-        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
-        ->select('clients_singular.*')
-        ->where('companies.id', 'like', $user->id_company)->paginate(30);
-        return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
-        'logo' => $company_validate['company_logo']]);
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $clients_singular = Client_Singular::where('id_company', 'like', $user->id_company)->paginate(30);
+            return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
+            'logo' => $company_validate['company_logo'],
+            'is_edit' => false,
+            'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -49,18 +51,17 @@ class ClientSingularController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $code = $this->client_code($user->code);
-            if(!$this->client_exists($request['email'], $request['nuit'], $code)){
-                $client_enterprise = new Client_Singular();
-                $client_enterprise->code = $code;
-                $client_enterprise->name = $request['name'];
-                $client_enterprise->surname = $request['surname'];
-                $client_enterprise->email = $request['email'];
-                $client_enterprise->address = $request['address'];
-                $client_enterprise->nuit = $request['nuit'];
-                $client_enterprise->phone = $request['phone'];
-                $client_enterprise->id_user = Auth::id();
-                if($client_enterprise->save()){
+            if(!$this->client_exists($request['email'], $request['nuit'])){
+                $client_singular = new Client_Singular;
+                $client_singular->name = $request['name'];
+                $client_singular->surname = $request['surname'];
+                $client_singular->email = $request['email'];
+                $client_singular->address = $request['address'];
+                $client_singular->nuit = $request['nuit'];
+                $client_singular->phone = $request['phone'];
+                $client_singular->id_company = $user->id_company;
+                $client_singular->created_by = $user->id;
+                if($client_singular->save()){
                     return redirect()->route('view_client_singular')->with('view_client_singular_register_status', 'cliente registado com sucesso.');
                 }
                 return redirect()->route('view_client_singular')->with('view_client_singular_register_status', 'Falhou! Ocorreu um erro durante o registo.');
@@ -89,7 +90,25 @@ class ClientSingularController extends Controller
      */
     public function edit($id)
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $clients_singular = Client_Singular::where('id_company', $user->id_company)->paginate(30);
+            $client_singular = DB::table('clients_singular')->find($id);
+            if($user === null){
+                return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
+                    'logo' => $company_validate['company_logo'],
+                    'is_edit' => true,
+                    'is_destroy' => false]);
+            }
+            return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
+                'logo' => $company_validate['company_logo'],
+                'selected_client_singular' => $client_singular,
+                'is_edit' => true,
+                'is_destroy' => false]);
+        }
+        return route('root');
     }
 
     /**
@@ -104,7 +123,7 @@ class ClientSingularController extends Controller
         //
     }
 
-    public function update_name(Request $request)
+    public function update_name(Request $request, $id)
     {
         if(Auth::check()){
             $user = Auth::user();
@@ -127,28 +146,23 @@ class ClientSingularController extends Controller
         return route('root');
     }
 
-    public function update_email(Request $request)
+    public function update_email(Request $request, $id)
     {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $user_code = $user->code;
             $id = $request['id'];
             $email = $request['email'];
-            $company_code = substr($user_code, 0, 10);
             if(DB::table('companies')
-            ->join('users', 'companies.id', '=', 'users.id_company')
             ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
             ->select('clients_enterprise.name')
-            ->where('companies.code', 'like', $company_code)
             ->where('clients_enterprise.email', 'like', $email)->count() >= 1 ){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Email já pertence um Cliente.');
+                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Email actualmente pertence a um Cliente Empresarial.');
             }else{
                 if(DB::table('clients_singular')
                 ->where('id', $id)
                 ->update(array(
                     'email' => $email,
-                    'id_user' => $user_id,
+                    'updated_by' => $user->id,
                     'updated_at' => now()
                 ))){
                     return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Email) actualizado com sucesso.');
@@ -159,20 +173,15 @@ class ClientSingularController extends Controller
         return route('root');
     }
 
-    public function update_phone(Request $request)
+    public function update_phone(Request $request, $id)
     {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $user_code = $user->code;
             $id = $request['id'];
             $phone = $request['phone'];
-            $company_code = substr($user_code, 0, 10);
             if(DB::table('companies')
-            ->join('users', 'companies.id', '=', 'users.id_company')
-            ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
+            ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
             ->select('clients_enterprise.name')
-            ->where('companies.code', 'like', $company_code)
             ->where('clients_enterprise.phone', 'like', $phone)->count() >= 1 ){
                 return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Telefone já pertence um Cliente.');
             }else{
@@ -180,7 +189,8 @@ class ClientSingularController extends Controller
                 ->where('id', $id)
                 ->update(array(
                     'phone' => $phone,
-                    'id_user' => $user_id
+                    'updated_by' => $user->id,
+                    'updated_at' => now()
                 ))){
                     return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Telefone) actualizado com sucesso.');
                 }
@@ -190,28 +200,20 @@ class ClientSingularController extends Controller
         return route('root');
     }
 
-    public function update_nuit(Request $request)
+    public function update_nuit(Request $request, $id)
     {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $user_code = $user->code;
-            $id = $request['id'];
             $nuit = $request['nuit'];
-            $company_code = substr($user_code, 0, 10);
             if(DB::table('companies')
-            ->join('users', 'companies.id', '=', 'users.id_company')
-            ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
+            ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
             ->select('clients_enterprise.name')
-            ->where('companies.code', 'like', $company_code)
             ->where('clients_enterprise.nuit', 'like', $nuit)->count() >= 1 ){
                 return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este NUIT já pertence um Cliente Empresarial.');
             }else{
                 if(DB::table('companies')
-                ->join('users', 'companies.id', '=', 'users.id_company')
-                ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
+                ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
                 ->select('clients_singular.name')
-                ->where('companies.code', 'like', $company_code)
                 ->where('clients_singular.nuit', 'like', $nuit)->count() >= 1 )
                 {
                     return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este NUIT já pertence um Cliente Singular.');
@@ -220,7 +222,8 @@ class ClientSingularController extends Controller
                     ->where('id', $id)
                     ->update(array(
                         'nuit' => $nuit,
-                        'id_user' => $user_id
+                        'updated_by' => $user->id,
+                        'updated_at' => now()
                     ))){
                         return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (NUIT) actualizado com sucesso.');
                     }
@@ -231,18 +234,17 @@ class ClientSingularController extends Controller
         return route('root');
     }
 
-    public function update_address(Request $request)
+    public function update_address(Request $request, $id)
     {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
             $address = $request['address'];
             if(DB::table('clients_singular')
             ->where('id', $id)
             ->update(array(
                 'address' => $address,
-                'id_user' => $user_id
+                'updated_by' => $user->id,
+                'updated_at' => now()
             ))){
                 return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Endereço) actualizado com sucesso.');
             }
@@ -257,7 +259,7 @@ class ClientSingularController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         if(Auth::check()){
             $id = $request['id'];
@@ -269,58 +271,15 @@ class ClientSingularController extends Controller
         return route('root');
     }
 
-    private function client_exists($nuit, $user_code, $email){
-        $company_code = substr($user_code, 0, 10);
+    public function client_exists($nuit, $email){
         if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
-        ->select('clients_singular.code')
-        ->where('companies.code', 'like', $company_code)
+        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
+        ->select('clients_singular.*')
         ->where('clients_singular.nuit', 'like', $nuit)
         ->where('clients_singular.email', 'like', $email)
         ->count() > 0) {
             return true;
         }
         return false;
-    }
-
-    //Generate product_code
-    private function client_code($user_code)
-    {
-        $company_code = substr($user_code, 0, 10);
-        if (DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
-        ->select('clients_singular.code')
-        ->where('companies.code', 'like', $company_code)->count() == 0) {
-            return $company_code . date('y') . date('m') . $this->next_code('');
-        }
-        $clients_code = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('clients_singular', 'users.id', '=', 'clients_singular.id_user')
-        ->select('clients_singular.code')
-        ->where('companies.code', 'like', $company_code)->orderByRaw('clients_singular.created_at DESC')->first();
-        $client_code = $clients_code->code;
-        return $company_code . date('y') . date('m') . $this->next_code($client_code);
-    }
-
-    private function next_code($last)
-    {
-        $new_id = "CSAA0001";
-        if ($last == "") {
-            return $new_id;
-        }
-        $last = substr($last, 16, 6);
-        $last++;
-        $new_id = 'CS'.$last;
-
-        /*
-        if (substr($last, 16, 4) == "0000") {
-            $letters = substr($last, 14, 2);
-            $numbers = "0001";
-            $new_id = $letters . $numbers;
-        }
-        */
-        return $new_id;
     }
 }

@@ -52,21 +52,21 @@ Route::get('home', 'HomeController@index')->name('home');
 //sevice
 Route::get('/services', 'Service\ServiceController@index')->name('view_service');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
-Route::get('/services/{id}', 'Service\ServiceController@edit')->name('edit_service');
-Route::put('/services/{id}', 'Service\ServiceController@update')->name('update_service');
+Route::get('/services/update/{id}', 'Service\ServiceController@edit')->name('edit_service');
+Route::put('/services/update/{id}', 'Service\ServiceController@update')->name('update_service');
 Route::delete('/services/destroy/{id}', 'Service\ServiceController@destroy')->name('destroy_service');
 
 //product
 Route::get('/products', 'Product\ProductController@index')->name('view_product');
 Route::post('/products', 'Product\ProductController@store')->name('store_product');
-Route::get('/products/{id}', 'Product\ProductController@edit')->name('edit_product');
-Route::put('/products/{id}', 'Product\ProductController@update')->name('update_product');
+Route::get('/products/update/{id}', 'Product\ProductController@edit')->name('edit_product');
+Route::put('/products/update/{id}', 'Product\ProductController@update')->name('update_product');
 Route::delete('/products/destroy/{id}', 'Product\ProductController@destroy')->name('destroy_product');
 
 
 
 
-Route::get('/clients_singular', 'ClientSingular\ClientSingularController@index')->name('view_client_singular');
+
 Route::get('/clients_enterprise', 'ClientEnterprise\ClientEnterpriseController@index')->name('view_client_enterprise');
 
 Route::get('/company', 'company\CompanyController@show_company')->name('view_company');
@@ -110,12 +110,14 @@ Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
 Route::delete('/sales/clear', 'Sale\SaleController@clean_sale')->name('clean_sale');
 
 //client_singular
-Route::put('/clients_singular/update_name', 'ClientSingular\ClientSingularController@update_name')->name('edit_client_singular_name');
-Route::put('/clients_singular/update_email', 'ClientSingular\ClientSingularController@update_email')->name('edit_client_singular_email');
-Route::put('/clients_singular/update_nuit', 'ClientSingular\ClientSingularController@update_nuit')->name('edit_client_singular_nuit');
-Route::put('/clients_singular/update_phone', 'ClientSingular\ClientSingularController@update_phone')->name('edit_client_singular_phone');
-Route::put('/clients_singular/update_address', 'ClientSingular\ClientSingularController@update_address')->name('edit_client_singular_address');
-Route::delete('/clients_singular/delete_client_singular', 'ClientSingular\ClientSingularController@destroy')->name('remove_client_singular');
+Route::get('/clients_singular', 'ClientSingular\ClientSingularController@index')->name('view_client_singular');
+Route::get('/clients_singular/{id}', 'ClientSingular\ClientSingularController@edit')->name('edit_client_singular');
+Route::put('/clients_singular/update_name/{id}', 'ClientSingular\ClientSingularController@update_name')->name('edit_client_singular_name');
+Route::put('/clients_singular/update_email/{id}', 'ClientSingular\ClientSingularController@update_email')->name('edit_client_singular_email');
+Route::put('/clients_singular/update_nuit/{id}', 'ClientSingular\ClientSingularController@update_nuit')->name('edit_client_singular_nuit');
+Route::put('/clients_singular/update_phone/{id}', 'ClientSingular\ClientSingularController@update_phone')->name('edit_client_singular_phone');
+Route::put('/clients_singular/update_address/{id}', 'ClientSingular\ClientSingularController@update_address')->name('edit_client_singular_address');
+Route::delete('/clients_singular/remove_client_singular/{id}', 'ClientSingular\ClientSingularController@destroy')->name('destroy_client_singular');
 
 //client_enterprise
 Route::put('/clients_enterprise/update_name', 'ClientEnterprise\ClientEnterpriseController@update_name')->name('edit_client_enterprise_name');
@@ -123,18 +125,18 @@ Route::put('/clients_enterprise/update_email', 'ClientEnterprise\ClientEnterpris
 Route::put('/clients_enterprise/update_nuit', 'ClientEnterprise\ClientEnterpriseController@update_nuit')->name('edit_client_enterprise_nuit');
 Route::put('/clients_enterprise/update_phone', 'ClientEnterprise\ClientEnterpriseController@update_phone')->name('edit_client_enterprise_phone');
 Route::put('/clients_enterprise/update_address', 'ClientEnterprise\ClientEnterpriseController@update_address')->name('edit_client_enterprise_address');
+Route::delete('/clients_enterprise/delete_client_enterprise', 'ClientEnterprise\ClientEnterpriseController@destroy')->name('remove_client_enterprise');
 
 //user
 Route::get('/users', 'User\UserController@index')->name('view_user');
 Route::get('/users/{id}', 'User\UserController@edit')->name('edit_user');
-Route::put('/users/edit_name/{id}', 'User\UserController@update_name')->name('edit_user_name');
-Route::put('/users/edit_email/{id}', 'User\UserController@update_email')->name('edit_user_email');
-Route::put('/users/edit_phone/{id}', 'User\UserController@update_phone')->name('edit_user_phone');
-Route::put('/users/edit_priviliege/{id}', 'User\UserController@update_privilege')->name('edit_user_privilege');
-Route::put('/users/edit_address/{id}', 'User\UserController@update_address')->name('edit_user_address');
-Route::put('/users/edit_gender/{id}', 'User\UserController@update_gender')->name('edit_user_gender');
-Route::put('/users/edit_birthdate/{id}', 'User\UserController@update_birthdate')->name('edit_user_birthdate');
-Route::put('/users/edit_password/{id}', 'User\UserController@update_password')->name('edit_user_password');
+Route::put('/users/update_name/{id}', 'User\UserController@update_name')->name('update_user_name');
+Route::put('/users/update_email/{id}', 'User\UserController@update_email')->name('update_user_email');
+Route::put('/users/update_phone/{id}', 'User\UserController@update_phone')->name('update_user_phone');
+Route::put('/users/update_priviliege/{id}', 'User\UserController@update_privilege')->name('update_user_privilege');
+Route::put('/users/update_address/{id}', 'User\UserController@update_address')->name('update_user_address');
+Route::put('/users/update_gender/{id}', 'User\UserController@update_gender')->name('update_user_gender');
+Route::put('/users/update_birthdate/{id}', 'User\UserController@update_birthdate')->name('update_user_birthdate');
+Route::put('/users/update_password/{id}', 'User\UserController@update_password')->name('update_user_password');
 Route::delete('/users/remove_user/{id}', 'User\UserController@destroy')->name('destroy_user');
-Route::delete('/clients_enterprise/delete_client_enterprise', 'ClientEnterprise\ClientEnterpriseController@destroy')->name('remove_client_enterprise');
 
