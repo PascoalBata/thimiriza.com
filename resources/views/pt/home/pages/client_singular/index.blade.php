@@ -25,8 +25,13 @@
                             <td style="text-align: center;">{{$client_singular->nuit}}</td>
                             <td style="text-align: center;">{{$client_singular->address}}</td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href="{{route('edit_client_singular', $client_singular->id)}}" style="width: 100%;">editar</a>
-                                <a class="modal-trigger waves-effect waves-light btn-small red darken-3" href="#remove_client_singular_modal" onclick="removeClientSingular(this, {{$client_singular->id}})" style="width: 100%;">remover</a>
+                                <a class="waves-effect waves-light btn-small" href="{{route('edit_client_singular', $client_singular->id)}}" style="width: 100%;">editar</a>
+                                <form method="POST" action="{{ route('destroy_client_singular', $client_singular->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button style="width: 100%;" type="submit"
+                                        class="waves-effect waves-light btn-small red darken-3">remover</button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach

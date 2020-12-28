@@ -8,11 +8,11 @@
             <div class="row">
                 <div class="input-field col s12 m3 l3">
                     <label for="name" class="black-text">{{ __('Nome') }}</label>
-                    <input required id="name"  type="text" class="black-text" name="name" value="{{ old('name') }}" autofocus>
+                    <input required id="name"  type="text" class="black-text" name="name" value="{{ $selected_client_singular->name }}" autofocus>
                 </div>
                 <div class="input-field col s12 m3 l3">
                     <label for="surname" class="black-text">{{ __('Apeldio') }}</label>
-                    <input required id="surname"  type="text" class="black-text" name="surname" value="{{ old('surname') }}" autofocus>
+                    <input required id="surname"  type="text" class="black-text" name="surname" value="{{ $selected_client_singular->surname }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                      <button type="submit" class="waves-effect waves-light btn-small " >
@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="email" class="black-text">{{ __('Email') }}</label>
-                    <input required id="email"  type="email" class="black-text" name="email" value="{{ old('email') }}" autofocus>
+                    <input required id="email"  type="email" class="black-text" name="email" value="{{ $selected_client_singular->email }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <button type="submit" class="waves-effect waves-light btn-small " >
@@ -44,7 +44,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                    <input required id="phone"  type="text" class="black-text" name="phone" value="{{ old('phone') }}" autofocus>
+                    <input required id="phone"  type="text" class="black-text" name="phone" value="{{ $selected_client_singular->phone }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <button type="submit" class="waves-effect waves-light btn-small " >
@@ -60,7 +60,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="nuit" class="black-text">{{ __('NUIT') }}</label>
-                    <input required id="nuit"  type="number" class="black-text" name="nuit" value="{{ old('nuit') }}" autofocus>
+                    <input required id="nuit"  type="number" class="black-text" name="nuit" value="{{ $selected_client_singular->nuit }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <button type="submit" class="waves-effect waves-light btn-small " >
@@ -76,7 +76,7 @@
             <div class="row">
                 <div class="input-field col s12 m6 l6">
                     <label for="address" class="black-text">{{ __('Endereço') }}</label>
-                    <input required id="address"  type="text" class="black-text" name="address" value="{{ old('address') }}" autofocus>
+                    <input required id="address"  type="text" class="black-text" name="address" value="{{ $selected_client_singular->address }}" autofocus>
                 </div>
                 <div class="input-field col s12 m6 l6">
                     <button type="submit" class="waves-effect waves-light btn-small " >

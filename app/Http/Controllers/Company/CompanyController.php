@@ -195,7 +195,7 @@ class CompanyController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            if($user->privilege == "TOTAL"){
+            if($user->privilege == "TOTAL" || $user->privilege == "ADMIN"){
                     $user_id = $user->id;
                 //if($request->filled('name')){
                     //update name

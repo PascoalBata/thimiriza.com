@@ -5,7 +5,12 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SystemMail\SystemMailController;
+use App\Models\Client_Enterprise;
+use App\Models\Client_Singular;
 use App\Models\Company;
+use App\Models\Product;
+use App\Models\Sale;
+use App\Models\Service;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -333,20 +338,11 @@ class SaleController extends Controller
         if($user->privilege !== 'ADMIN'){
             $isAdmin = false;
         }
-        $services = DB::table('companies')
-        ->join('services', 'companies.id', '=', 'services.id_company')
-        ->select('services.*')->get();
-        $products = DB::table('companies')
-        ->join('products', 'companies.id', '=', 'products.id_company')
-        ->select('products.*')->get();
-        $clients_enterprise = DB::table('companies')
-        ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
-        ->select('clients_enterprise.*')->get();
-        $clients_singular = DB::table('companies')
-        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
-        ->select('clients_singular.*')->get();
-        $sales_query = DB::table('sales')->select('id', 'type', 'id_product_service', 'type_client', 'id_client', 'quantity', 'iva', 'discount')
-        ->where('created_by', 'like', $user->id)->get();
+        $services = Service::where('id_company', $user->id_company)->get();
+        $products = Product::where('id_company', $user->id_company)->get();
+        $clients_enterprise = Client_Enterprise::where('id_company', $user->id_company)->get();
+        $clients_singular = Client_Singular::where('id_company', $user->id_company)->get();
+        $sales_query = Sale::where('created_by', $user->id)->get();
         $sales = [];
         $i = 0;
         $hasSales = false;
@@ -354,8 +350,7 @@ class SaleController extends Controller
         foreach ($sales_query as $sale_query){
             $sale = new stdClass;
             if($sale_query->type === 'PRODUCT'){
-                $product = DB::table('products')->select('products.name', 'products.description', 'products.price')
-                ->find($sale_query->id_product_service);
+                $product = Product::find($sale_query->id_product_service);
                 $sale->id = $sale_query->id;
                 $sale->sale_type = 'PRODUCT';
                 $sale->name = $product->name;
@@ -364,13 +359,13 @@ class SaleController extends Controller
                 if($sale_query->type_client === 'ENTERPRISE'){
                     $sale->client_type = 'ENTERPRISE';
                     $sale->id_client = $sale_query->id_client;
-                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $client = Client_Enterprise::find($sale_query->id_client);
                     $actual_client = $client->name . ' === ' . $client->email;
                 }
                 if($sale_query->type_client === 'SINGULAR'){
                     $sale->client_type = 'SINGULAR';
                     $sale->id_client = $sale_query->id_client;
-                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $client = Client_Singular::find($sale_query->id_client);
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
                 $sale->discount = $sale_query->discount;
@@ -381,8 +376,7 @@ class SaleController extends Controller
                 $sale->price = $price + $sale->iva - $sale->discount_price;
             }
             if($sale_query->type === 'SERVICE'){
-                $service = DB::table('services')->select('services.name', 'services.description', 'services.price')
-                ->find($sale_query->id_product_service);
+                $service = Service::find($sale_query->id_product_service);
                 $sale->id = $sale_query->id;
                 $sale->sale_type = 'PRODUCT';
                 $sale->name = $service->name;
@@ -391,13 +385,13 @@ class SaleController extends Controller
                 if($sale_query->type_client === 'ENTERPRISE'){
                     $sale->client_type = 'ENTERPRISE';
                     $sale->id_client = $sale_query->id_client;
-                    $client = DB::table('clients_enterprise')->select('name', 'email')->find($sale_query->id_client);
+                    $client = Client_Enterprise::find($sale_query->id_client);
                     $actual_client = $client->name . ' === ' . $client->email;
                 }
                 if($sale_query->type_client === 'SINGULAR'){
                     $sale->client_type = 'SINGULAR';
                     $sale->id_client = $sale_query->id_client;
-                    $client = DB::table('clients_singular')->select('name', 'surname', 'email')->find($sale_query->id_client);
+                    $client = Client_Singular::find($sale_query->id_client);
                     $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
                 }
                 $sale->discount = $sale_query->discount;
@@ -443,7 +437,7 @@ class SaleController extends Controller
         //
         if(Auth::check()){
             $user = Auth::user();
-            $company = DB::table('companies')->select('type')->where('id', 'like', $user->id_company)->first();
+            $company = Company::find($user->id_company);
             $client = explode(' === ', $request['client'], 2);
             $client_name = $client[0];
             $client_email = $client[1];
@@ -456,14 +450,17 @@ class SaleController extends Controller
             $iva = 0;
             $type_client = 'ENTERPRISE';
             if($company->type === 'NORMAL'){
-                $iva = 0.17;
+                $iva = 0.17; //17%
+            }
+            if($company->type === 'ISPC'){
+                $iva = 0; //0%
             }
 
             $client = DB::table('clients_enterprise')
                 ->select('*')
                 ->where('email', 'like', $client_email)
-                ->where('name', 'like', $client_name);
-            if(!$client->exists()){
+                ->where('name', 'like', $client_name)->get();
+            if(!$client->count() > 0){
                 $client = DB::table('clients_singular')
                     ->select('*')
                     ->where('email', 'like', $client_email);
@@ -474,58 +471,55 @@ class SaleController extends Controller
             }
             $client = $client->first();
             if($sale_type === 'PRODUCT'){
-                $products = DB::table('companies')
-                ->join('users', 'companies.id', '=', 'users.id_company')
-                ->join('products', 'users.id', '=', 'products.id_user')
-                ->select('products.*')
-                ->where('companies.id', 'like', $user->id_company)
+                $products = Product::where('id_company', 'like', $user->id_company)
                 ->where('products.name', 'like', $sale_name)
-                ->where('products.description', 'like', $sale_description);
-                if($products->exists()){
+                ->where('products.description', 'like', $sale_description)->get();
+                if($products->count() > 0){
                     //product exists
-                    $products = $products->first();
-                    if($products->quantity < $quantity){
+                    $product = $products->first();
+                    if($product->quantity < $quantity){
                         return redirect()->route('view_sale')->with('sale_notification',
-                        'A quantidade requisitada excede o stock. Actualmente o stock possui .' . $products->quantity);
+                        'A quantidade requisitada excede o stock. Actualmente o stock possui .' . $product->quantity);
                     }else{
                         $update_status = false;
+                        if($product->iva === 'off'){
+                            $iva = 0;
+                        }
                         if(
                             DB::table('sales')
                             ->updateOrInsert(
-                                ['id_product_service' => $products->id, 'type' => $sale_type, 'iva' => $iva,
-                                'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id],
+                                ['id_product_service' => $product->id, 'type' => $sale_type, 'iva' => $iva, 'created_by' => $user->id,
+                                'type_client' => $type_client, 'id_client' => $client->id, 'id_company' => $user->id_company],
                                 ['discount' => $discount, 'quantity' => $quantity]
                             )
                         ){$update_status = true;}
                         if($update_status){
-                            return redirect()->route('view_sale')->with('sale_notification', 'Sucesso Produto.');
+                            return redirect()->route('view_sale')->with('sale_notification', 'Produto adicionado com sucesso.');
                         }
                     }
                 }
+                //product does not exist
                 return redirect()->route('view_sale')->with('sale_notification', 'Esse produto nao existe.');
             }
             if($sale_type === 'SERVICE'){
-                $services = DB::table('companies')
-                ->join('users', 'companies.id', '=', 'users.id_company')
-                ->join('services', 'users.id', '=', 'services.id_user')
-                ->select('services.*')
-                ->where('companies.id', 'like', $user->id_company)
+                $services = Service::where('id_company', 'like', $user->id_company)
                 ->where('services.name', 'like', $sale_name)
-                ->where('services.description', 'like', $sale_description);
-                if($services->exists()){
+                ->where('services.description', 'like', $sale_description)->get();
+                if($services->count() > 0){
                     //service exists
                     $services = $services->first();
                     if(
                         DB::table('sales')
                         ->updateOrInsert(
-                            ['id_product_service' => $services->id, 'type' => $sale_type, 'iva' => $iva,
-                            'type_client' => $type_client, 'id_client' => $client->id, 'id_user' => $user->id,],
+                            ['id_product_service' => $services->id, 'type' => $sale_type, 'iva' => $iva, 'created_by' => $user->id,
+                            'type_client' => $type_client, 'id_client' => $client->id, 'id_company' => $user->id_company,],
                             ['quantity' => $quantity, 'discount' => $discount]
                         )
                     ){
                         return redirect()->route('view_sale')->with('sale_notification', 'Sucesso Service.');
                     }
                 }
+                //service does no exist
                 return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nao existe.');
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
@@ -545,51 +539,36 @@ class SaleController extends Controller
             $sale_name_description = explode(' === ', $request['name'], 2);
             $sale_name = $sale_name_description[0];
             $sale_description = $sale_name_description[1];
-            $quantity = $request['quantity'];
-            $client = DB::table('clients_enterprise')
-                ->select('*')
-                ->where('email', 'like', $client_email)
-                ->where('name', 'like', $client_name);
-            if($client->exists()){
+            $client = Client_Enterprise::where('email', 'like', $client_email)
+                ->where('name', 'like', $client_name)->get();
+            if($client->count() > 0){
                 //client_enterprise exists
-
             }else{
                 $client = DB::table('clients_singular')
                     ->select('*')
                     ->where('email', 'like', $client_email);
                 if($client->exists()){
                     //client_singular exists
-
                 }else{
                     return redirect()->route('view_sale')->with('sale_notification', 'Esse cliente nao existe.');
                 }
             }
 
-
-
             if($sale_type === 'PRODUCT'){
-                $products = DB::table('companies')
-                ->join('users', 'companies.id', '=', 'users.id_company')
-                ->join('products', 'users.id', '=', 'products.id_user')
-                ->select('products.*')
-                ->where('companies.id', 'like', $user->id_company)
-                ->where('products.name', 'like', $sale_name)
-                ->where('products.description', 'like', $sale_description);
-                if($products->exists()){
+                $products = Product::where('id_company', 'like', $user->id_company)
+                ->where('name', 'like', $sale_name)
+                ->where('description', 'like', $sale_description)->get();
+                if($products->count() > 0){
                     //product exists
                     return redirect()->route('view_sale')->with('sale_notification', 'Prosseguir venda do produto.');
                 }
                 return redirect()->route('view_sale')->with('sale_notification', 'Esse produto nao existe.');
             }
             if($sale_type === 'SERVICE'){
-                $products = DB::table('companies')
-                ->join('users', 'companies.id', '=', 'users.id_company')
-                ->join('services', 'users.id', '=', 'services.id_user')
-                ->select('products.*')
-                ->where('companies.id', 'like', $user->id_company)
-                ->where('services.name', 'like', $sale_name)
-                ->where('services.description', 'like', $sale_description);
-                if($products->exists()){
+                $services = Service::where('id_company', 'like', $user->id_company)
+                ->where('name', 'like', $sale_name)
+                ->where('description', 'like', $sale_description);
+                if($services->count() > 0){
                     //service exists
                     return redirect()->route('view_sale')->with('sale_notification', 'Prosseguir venda do servico.');
                 }
@@ -680,22 +659,17 @@ class SaleController extends Controller
 
     public function quote(Request $request){
         $user = Auth::user();
-        $sale = DB::table('sales')->where('id_user', 'like', $user->id);
-        $company = DB::table('companies')->find($user->id_company);
+        $sale = Sale::where('created_by', 'like', $user->id)->get();
+        $company = Company::find($user->id_company);
         if($sale->exists()){
             $sale = $sale->first();
             $client_id = $sale->id_client;
-            //$product_service_id = $sale->id_product_service;
             $client_name = '';
             $client_email = '';
             $client_type = $sale->type_client;
             $client_address = '';
             $client_nuit ='';
-            //$product_service_name='';
-            //$description='';
-            //$price = 0;
             $status = 'NOT PAID';
-            $user_id = $user->id;
             $user_name = '';
             if($user->email !== $company->email){
                 $user_name = $user->name . ' ' . $user->surname;
@@ -704,7 +678,7 @@ class SaleController extends Controller
             }
 
             if($sale->type_client === 'SINGULAR'){
-                $client = DB::table('clients_singular')->find($client_id);
+                $client = Client_Singular::find($client_id);
                 $client_name = $client->name . ' ' . $client->surname;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
@@ -712,13 +686,12 @@ class SaleController extends Controller
             }
 
             if($sale->type_client === 'ENTERPRISE'){
-                $client = DB::table('clients_enterprise')->find($client_id);
+                $client = Client_Enterprise::find($client_id);
                 $client_name = $client->name;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
                 $client_email = $client->email;
             }
-            //$company_logo = url('storage/' . $company->logo);
             $this->invoice_generator([
                 'user_id' => $user->id,
                 'client_type' => $client_type,
@@ -746,8 +719,11 @@ class SaleController extends Controller
     public function clean_sale(Request $request){
         if(Auth::check()){
             $user = Auth::user();
-            if(DB::table('sales')->where('id_user', 'like', $user->id)->delete()){
-
+            if(Sale::where('created_by', $user->id)->count() === 0){
+                return redirect()->route('view_sale');
+            }
+            if(DB::table('sales')->where('created_by', 'like', $user->id)->delete()){
+                return redirect()->route('view_sale');
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
         }
@@ -756,23 +732,18 @@ class SaleController extends Controller
 
     public function sell(Request $request){
         $user = Auth::user();
-        $sale = DB::table('sales')->where('id_user', 'like', $user->id);
-        $company = DB::table('companies')->find($user->id_company);
+        $sale = Sale::where('created_by', 'like', $user->id)->get();
+        $company = Company::find($user->id_company);
         $requisites = true;
         if($sale->exists()){
             $sale = $sale->first();
             $client_id = $sale->id_client;
-            //$product_service_id = $sale->id_product_service;
             $client_name = '';
             $client_email = '';
             $client_type = $sale->type_client;
             $client_address = '';
             $client_nuit ='';
-            //$product_service_name='';
-            //$description='';
-            //$price = 0;
             $status = 'NOT PAID';
-            $user_id = $user->id;
             $user_name = '';
             if($user->email !== $company->email){
                 $user_name = $user->name . ' ' . $user->surname;
@@ -781,14 +752,14 @@ class SaleController extends Controller
             }
 
             if($sale->type_client === 'SINGULAR'){
-                $client = DB::table('clients_singular')->find($client_id);
+                $client = Client_Singular::find($client_id);
                 $client_name = $client->name . ' ' . $client->surname;
                 $client_nuit = $client->nuit;
                 $client_address = $client->address;
                 $client_email = $client->email;
             }else{
                 if($sale->type_client === 'ENTERPRISE'){
-                    $client = DB::table('clients_enterprise')->find($client_id);
+                    $client = Client_Enterprise::find($client_id);
                     $client_name = $client->name;
                     $client_nuit = $client->nuit;
                     $client_address = $client->address;
@@ -797,7 +768,6 @@ class SaleController extends Controller
                     $requisites = false;
                 }
             }
-            //$company_logo = url('storage/' . $company->logo);
             if($requisites){
                 $this->invoice_generator([
                     'user_id' => $user->id,
@@ -824,8 +794,7 @@ class SaleController extends Controller
         }
         return redirect()->route('view_sale');
     }
-}
-/*
+
     private function invoice_generator(Array $data, $type){
         $company_name = $data['company_name'];
         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -884,8 +853,7 @@ class SaleController extends Controller
                 . '</html>';
             $pdf->writeHTML($details, true, false, true, false, '');
             $pdf->SetFont('times', '', 10);
-            $sales = DB::table('sales')->select('*')
-            ->where('id_user', 'like', $data['user_id'])->get();
+            $sales = Sale::where('created_by', $data['user_id'])->get();
             $price_total = 0;
             $iva_total = 0;
             $price_inc_total = 0;
@@ -895,7 +863,7 @@ class SaleController extends Controller
                 $iva = 0;
                 $price_inc = 0;
                 if($sale->type === 'PRODUCT'){
-                    $product = DB::table('products')->find($sale->id_product_service);
+                    $product = Product::find($sale->id_product_service)->get();
                     $name = $product->name;
                     $description = $product->description;
                     $quantity = $sale->quantity;
@@ -920,7 +888,7 @@ class SaleController extends Controller
                     }
                 }
                 if($sale->type === 'SERVICE'){
-                    $service = DB::table('services')->find($sale->id_product_service);
+                    $service = DB::table('services')->find($sale->id_product_service)->get();
                     $name = $service->name;
                     $description = $service->description;
                     $quantity = $sale->quantity;
@@ -964,8 +932,8 @@ class SaleController extends Controller
             $pdf_output->Output('Cotação.pdf', 'I');
         }
         //INVOICE
+        /*
         if($type === 'INVOICE'){
-            $invoice_code = $this->invoice_code();
             $pdf->setType($type);
             $pdf->SetTitle("Factura");
             $pdf->SetSubject("Factura");
@@ -1020,8 +988,7 @@ class SaleController extends Controller
                 . '</html>';
             $pdf->writeHTML($details, true, false, true, false, '');
             $pdf->SetFont('times', '', 10);
-            $sales = DB::table('sales')->select('*')
-            ->where('id_user', 'like', $data['user_id'])->get();
+            $sales = Sale::where('created_by', $data['user_id'])->get();
             $price_total = 0;
             $iva_total = 0;
             $price_inc_total = 0;
@@ -1034,7 +1001,7 @@ class SaleController extends Controller
                 $quantity = 0;
                 $discount = 0;
                 if($sale->type === 'PRODUCT'){
-                    $product = DB::table('products')->find($sale->id_product_service);
+                    $product = Product::find($sale->id_product_service)->get();
                     $name = $product->name;
                     $description = $product->description;
                     $quantity = $sale->quantity;
@@ -1055,7 +1022,7 @@ class SaleController extends Controller
                     $pdf->writeHTML($details_2, true, false, true, false, '');
                 }
                 if($sale->type === 'SERVICE'){
-                    $service = DB::table('services')->find($sale->id_product_service);
+                    $service = Service::find($sale->id_product_service)->get();
                     $name = $service->name;
                     $description = $service->description;
                     $quantity = $sale->quantity;
@@ -1182,32 +1149,7 @@ class SaleController extends Controller
             );
             ob_end_clean();
             $pdf_output->Output('Factura.pdf', 'I');
-        }
-    }
-    //generate invoice_code
-    private function invoice_code()
-    {
-        $user = Auth::user();
-        $invoices = DB::table('invoices')
-        ->join('users', 'invoices.id_user', '=', 'users.id')
-        ->join('companies', 'users.id_company', '=', 'companies.id')
-        ->select('invoices.code')
-        ->where('companies.id', 'like', $user->id_company)
-        ->orderByRaw('invoices.created_at DESC');
-        $company = DB::table('users')
-        ->join('companies', 'users.id_company', '=', 'companies.id')
-        ->select('companies.code')
-        ->where('users.id', 'like', $user->id)->first();
-        if ($invoices->count() == 0) {
-            return $company->code . 'F' . date('y') . date('m') . '000001';
-        }
-        return $this->next_code($invoices->first()->code);
-    }
-
-    private function next_code($last)
-    {
-        $last++;
-        return $last;
+        }*/
     }
 }
 
@@ -1286,4 +1228,3 @@ class MYPDF extends TCPDF {
         $this->nib = $nib;
     }
 }
-*/

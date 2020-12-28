@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ClientSingular;
 
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
+use App\Models\Client_Enterprise;
 use App\Models\Client_Singular;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,11 +63,11 @@ class ClientSingularController extends Controller
                 $client_singular->id_company = $user->id_company;
                 $client_singular->created_by = $user->id;
                 if($client_singular->save()){
-                    return redirect()->route('view_client_singular')->with('view_client_singular_register_status', 'cliente registado com sucesso.');
+                    return redirect()->route('view_client_singular')->with('operation_status', 'cliente registado com sucesso.');
                 }
-                return redirect()->route('view_client_singular')->with('view_client_singular_register_status', 'Falhou! Ocorreu um erro durante o registo.');
+                return redirect()->route('view_client_singular')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
             }
-            return redirect()->route('view_client_singular')->with('view_client_singular_register_status', 'Falhou! Esse Cliente já existe.');
+            return redirect()->route('view_client_singular')->with('operation_status', 'Falhou! Esse Cliente já existe.');
         }
         return route('root');
     }
@@ -127,21 +128,15 @@ class ClientSingularController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $user_id = $user->id;
-            $id = $request['id'];
-            $name = $request['name'];
-            $surname = $request['surname'];
-            if(DB::table('clients_singular')
-            ->where('id', $id)
-            ->update(array(
-                'name' => $name,
-                'surname' => $surname,
-                'id_user' => $user_id,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Empresarial (Nome) actualizado com sucesso.');
+            $client_singular = Client_Singular::find($id);
+            $client_singular->name = $request['name'];
+            $client_singular->surname = $request['surname'];
+            $client_singular->created_by = $user->id;
+            $client_singular->created_at = now();
+            if($client_singular->save()){
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Empresarial (Nome) actualizado com sucesso.');
             }
-            return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
         return route('root');
     }
@@ -150,25 +145,19 @@ class ClientSingularController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $id = $request['id'];
             $email = $request['email'];
-            if(DB::table('companies')
-            ->join('clients_enterprise', 'users.id', '=', 'clients_enterprise.id_user')
-            ->select('clients_enterprise.name')
-            ->where('clients_enterprise.email', 'like', $email)->count() >= 1 ){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Email actualmente pertence a um Cliente Empresarial.');
+            $client_singular = Client_Singular::find($id);
+            if(Client_Enterprise::where('email', $email)->where('id_company', $user->id_company)->count() > 0){
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Este Email actualmente pertence a um Cliente Empresarial.');
             }else{
-                if(DB::table('clients_singular')
-                ->where('id', $id)
-                ->update(array(
-                    'email' => $email,
-                    'updated_by' => $user->id,
-                    'updated_at' => now()
-                ))){
-                    return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Email) actualizado com sucesso.');
+                $client_singular->email = $email;
+                $client_singular->created_by = $user->id;
+                $client_singular->created_at = now();
+                if($client_singular->save()){
+                    return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Singular (Email) actualizado com sucesso.');
                 }
             }
-            return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
         return route('root');
     }
@@ -177,25 +166,14 @@ class ClientSingularController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $id = $request['id'];
-            $phone = $request['phone'];
-            if(DB::table('companies')
-            ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
-            ->select('clients_enterprise.name')
-            ->where('clients_enterprise.phone', 'like', $phone)->count() >= 1 ){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este Telefone já pertence um Cliente.');
-            }else{
-                if(DB::table('clients_singular')
-                ->where('id', $id)
-                ->update(array(
-                    'phone' => $phone,
-                    'updated_by' => $user->id,
-                    'updated_at' => now()
-                ))){
-                    return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Telefone) actualizado com sucesso.');
-                }
+            $client_singular = Client_Singular::find($id);
+            $client_singular->phone = $request['phone'];
+            $client_singular->created_by = $user->id;
+            $client_singular->created_at = now();
+            if($client_singular->save()){
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Singular (Telefone) actualizado com sucesso.');
             }
-            return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
         return route('root');
     }
@@ -205,31 +183,23 @@ class ClientSingularController extends Controller
         if(Auth::check()){
             $user = Auth::user();
             $nuit = $request['nuit'];
-            if(DB::table('companies')
-            ->join('clients_enterprise', 'companies.id', '=', 'clients_enterprise.id_company')
-            ->select('clients_enterprise.name')
-            ->where('clients_enterprise.nuit', 'like', $nuit)->count() >= 1 ){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este NUIT já pertence um Cliente Empresarial.');
+            $client_singular = Client_Singular::find($id);
+            if(Client_Enterprise::where('nuit', $nuit)->where('id_company', $user->id_company)->count() > 0){
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Este NUIT pertence um Cliente Empresarial.');
             }else{
-                if(DB::table('companies')
-                ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
-                ->select('clients_singular.name')
-                ->where('clients_singular.nuit', 'like', $nuit)->count() >= 1 )
+                if(Client_Singular::where('nuit', $nuit)->where('id_company', $user->id_company)->count() > 0)
                 {
-                    return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Este NUIT já pertence um Cliente Singular.');
+                    return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Este NUIT já pertence um Cliente Singular.');
                 }else{
-                    if(DB::table('clients_singular')
-                    ->where('id', $id)
-                    ->update(array(
-                        'nuit' => $nuit,
-                        'updated_by' => $user->id,
-                        'updated_at' => now()
-                    ))){
-                        return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (NUIT) actualizado com sucesso.');
+                    $client_singular->nuit = $nuit;
+                    $client_singular->created_by = $user->id;
+                    $client_singular->created_at = now();
+                    if($client_singular->save()){
+                        return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Singular (NUIT) actualizado com sucesso.');
                     }
                 }
             }
-            return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
         return route('root');
     }
@@ -238,17 +208,14 @@ class ClientSingularController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $address = $request['address'];
-            if(DB::table('clients_singular')
-            ->where('id', $id)
-            ->update(array(
-                'address' => $address,
-                'updated_by' => $user->id,
-                'updated_at' => now()
-            ))){
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular (Endereço) actualizado com sucesso.');
+            $client_singular = Client_Singular::find($id);
+            $client_singular->address = $request['address'];
+            $client_singular->created_by = $user->id;
+            $client_singular->created_at = now();
+            if($client_singular->save()){
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Singular (Endereço) actualizado com sucesso.');
             }
-            return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante a actualização.');
+            return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
         return route('root');
     }
@@ -262,21 +229,17 @@ class ClientSingularController extends Controller
     public function destroy(Request $request, $id)
     {
         if(Auth::check()){
-            $id = $request['id'];
-                if(DB::table('clients_singular')->where('id', 'like', $id)->delete()){
-                    return redirect()->route('view_client_singular')->with('client_singular_notification', 'Cliente Singular removido com sucesso.');
+                if(Client_Singular::find($id)->delete()){
+                    return redirect()->route('view_client_singular', $id)->with('operation_status', 'Cliente Singular removido com sucesso.');
                 }
-                return redirect()->route('view_client_singular')->with('client_singular_notification', 'Falhou! Ocorreu um erro durante o processo da remoção.');
+                return redirect()->route('view_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
         return route('root');
     }
 
     public function client_exists($nuit, $email){
-        if (DB::table('companies')
-        ->join('clients_singular', 'companies.id', '=', 'clients_singular.id_company')
-        ->select('clients_singular.*')
-        ->where('clients_singular.nuit', 'like', $nuit)
-        ->where('clients_singular.email', 'like', $email)
+        if (Client_Singular::where('nuit', $nuit)
+        ->where('email', $email)
         ->count() > 0) {
             return true;
         }

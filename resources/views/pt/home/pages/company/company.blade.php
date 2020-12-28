@@ -114,7 +114,7 @@
                 </div>
             </div>
         </div>
-        @if ($privileges === 'TOTAL')
+        @if ($privileges === 'TOTAL' || $privileges === 'ADMIN')
             <div class="row">
                 <div class="row">
                     <div class="col s12 m12 l12">
@@ -169,7 +169,7 @@
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                        <input id="phone" type="number" class="black-text" name="phone" value="{{ $company->phone }}"
+                        <input id="phone" type="tel" class="black-text" name="phone" value="{{ $company->phone }}"
                             required>
                     </div>
                 </div>
@@ -272,12 +272,7 @@
     @if (session('company_notification'))
         <div class="alert alert-success">
             <script>
-                M.toast({
-                    html: '{{ session('company_notification') }}',
-                    classes: 'rounded',
-                    displayLength: 1000
-                });
-
+                M.toast({html: '{{ session('company_notification') }}', classes: 'rounded', displayLength: 1000});
             </script>
         </div>
     @endif

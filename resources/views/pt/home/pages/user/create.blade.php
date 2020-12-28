@@ -48,7 +48,7 @@
             </div>
             <div class="input-field col s12 m6 l6">
                 <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                <input id="phone" type="number" data-target="20" class="black-text" name="phone"
+                <input id="phone" type="tel" data-target="20" class="black-text" name="phone"
                     value="{{ old('phone') }}" required>
                 @error('email')
                 <span class="red-text" role="alert">
@@ -58,7 +58,15 @@
             </div>
         </div>
         <div class="row">
-            <div class="input-field col s12 m12 l12">
+            <div class="input-field col s12 m6 l6">
+                <select id="privilege" name="privilege">
+                    <optgroup label="{{ __('Previlégio') }}">
+                        <option value="HOMEM">Parcial</option>
+                        <option value="MULHER">Total</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="input-field col s12 m6 l6">
                 <label for="address" class="black-text">{{ __('Endereço/Morada') }}</label>
                 <input id="address" type="text" class="black-text" name="address" value="{{ old('address') }}"
                     required>

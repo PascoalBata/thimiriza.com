@@ -19,14 +19,6 @@
 
 @section('script')
     <script>
-        function displayClientEnterpriseTable() {
-            if (document.getElementById('clients_singular_table').style.display === 'none') {
-                document.getElementById('clients_singular_table').style.display = 'block';
-            } else {
-                document.getElementById('clients_singular_table').style.display = 'none';
-            }
-        }
-
         $(document).ready(function() {
             $('.modal').modal();
         });

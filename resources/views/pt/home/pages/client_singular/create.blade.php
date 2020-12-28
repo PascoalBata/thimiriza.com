@@ -50,7 +50,7 @@
             </div>
             <div class="input-field col s12 m6 l6">
                 <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                <input id="phone" type="number" class="black-text" name="phone" value="{{ old('phone') }}" required>
+                <input id="phone" type="tel" class="black-text" name="phone" value="{{ old('phone') }}" required>
                 @error('email')
                     <span class="red-text" role="alert">
                         <strong>{{ $message }}</strong>
@@ -82,7 +82,8 @@
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
-                <a class="waves-effect waves-light btn-small" href="#table_clients_singular_modal">{{__('Clientes')}}</a>
+                <a class="waves-effect waves-light btn-small modal-trigger"
+                href="#table_clients_singular_modal">{{__('Clientes')}}</a>
             </div>
         </div>
     </form>

@@ -138,7 +138,7 @@
                     </li>
                     <li class="divider" tabindex="-1"></li>
                     <li>
-                        <a href="{{route('create_sale')}}">
+                        <a href="{{route('view_sale')}}">
                             {{ __('Criar') }} <i class="small material-icons">add_shopping_cart</i>
                         </a>
                     </li>

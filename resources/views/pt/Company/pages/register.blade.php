@@ -39,7 +39,7 @@
                                 @enderror
                             </div>
                             <div class="input-field col s12 m6 l6">
-                                <input id="phone" type="number" class="black-text validate" name="phone" value="{{ old('phone') }}" required>
+                                <input id="phone" type="tel" class="black-text validate" name="phone" value="{{ old('phone') }}" required>
                                 <label for="phone" class="black-text">{{ __('Telefone') }}</label>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">

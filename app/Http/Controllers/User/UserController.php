@@ -32,7 +32,7 @@ class UserController extends Controller
                 'is_edit' => false,
                 'is_destroy' => false]);
             }
-            return redirect()->route('index_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
+            return redirect()->route('view_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
         return route('root');
     }
@@ -72,13 +72,15 @@ class UserController extends Controller
         if(Auth::check()){
             $user = Auth::user();
             $id_company = $user->id_company;
-
+            if(User::where('email', $request['email'])->count() > 0){
+                return redirect()->route('view_user')->with('operation_status', 'O Email inserido actualmente pertence a um outro utilizador.');
+            }
              if(User::create([
                 'name' => $request['name'],
                 'surname' => $request['surname'],
                 'gender' => $request['gender'],
                 'birthdate' => $request['birthdate'],
-                'privilege' => 'PARCIAL',
+                'privilege' => $request['privilege'],
                 'email' => $request['email'],
                 'phone' => $request['phone'],
                 'nuit' => $request['nuit'],

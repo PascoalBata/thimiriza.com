@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "454a2336d1a8fc5ceee4d8c56ff8b465",
+    "content-hash": "9b1d819dc24605b3441123e4a32a96ba",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4546,6 +4546,10 @@
                 "pdf417",
                 "qrcode"
             ],
+            "support": {
+                "issues": "https://github.com/tecnickcom/TCPDF/issues",
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.3.5"
+            },
             "time": "2020-02-14T14:20:12+00:00"
         },
         {
@@ -7070,5 +7074,5 @@
         "php": "^8.0.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

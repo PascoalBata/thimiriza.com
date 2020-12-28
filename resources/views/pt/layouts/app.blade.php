@@ -5,12 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="description" content="Materialize is a modern responsive CSS framework based on Material Design by Google. ">
-    <!-- Others css-->
-    <!--
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-    -->
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="{{asset ('assets/css/materialize-css/materialize.min.css')}}"
         media="screen,projection">
