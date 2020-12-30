@@ -141,9 +141,9 @@ class ProductController extends Controller
             $product->created_by = $user->id;
             $product->id_company = $user->id_company;
             if($product->save()){
-            return redirect()->route('view_product')->with('operation_status', 'Produto actualizado com sucesso.');
+            return redirect()->route('edit_product', $id)->with('operation_status', 'Produto actualizado com sucesso.');
             }
-            return redirect()->route('view_product')->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do produto.');
+            return redirect()->route('edit_product', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do produto.');
         }
         return route('root');
     }

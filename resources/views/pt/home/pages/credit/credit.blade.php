@@ -65,7 +65,7 @@
                     @foreach ($invoices as $invoice)
                         <tr>
                             <td>{{ $inicial_date = $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ $invoice->code }}</td>
+                            <td style="text-align: center;">{{ $invoice->id }}</td>
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }}{{ __('MT') }}</td>
                             <td style="text-align: right;">

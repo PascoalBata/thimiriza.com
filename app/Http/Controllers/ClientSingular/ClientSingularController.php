@@ -100,7 +100,7 @@ class ClientSingularController extends Controller
             if($user === null){
                 return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,
                     'logo' => $company_validate['company_logo'],
-                    'is_edit' => true,
+                    'is_edit' => false,
                     'is_destroy' => false]);
             }
             return view ('pt.home.pages.client_singular.client_singular', $user, ['clients_singular' => $clients_singular,

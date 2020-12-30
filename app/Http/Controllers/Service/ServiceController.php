@@ -139,9 +139,9 @@ class ServiceController extends Controller
             $service->created_by = $user->id;
             $service->id_company = $user->id_company;
             if($service->save()){
-            return redirect()->route('view_service')->with('operation_status', 'Serviço actualizado com sucesso.');
+            return redirect()->route('view_service', $id)->with('operation_status', 'Serviço actualizado com sucesso.');
             }
-            return redirect()->route('view_service')->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do serviço.');
+            return redirect()->route('view_service', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do serviço.');
         }
         return route('root');
     }

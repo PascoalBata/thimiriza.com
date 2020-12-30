@@ -9,14 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.0",
-        "elibyy/tcpdf-laravel": "^8.0",
+        "barryvdh/laravel-dompdf": "^0.9.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
-        "laravel/ui": "^3.0",
-        "tecnickcom/tcpdf": "^6.3"
+        "laravel/ui": "^3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sale;
 
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PDF\PDFController;
 use App\Http\Controllers\SystemMail\SystemMailController;
 use App\Models\Client_Enterprise;
 use App\Models\Client_Singular;
@@ -11,12 +12,10 @@ use App\Models\Company;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Service;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
-use TCPDF;
 
 class SaleController extends Controller
 {
@@ -54,7 +53,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -83,7 +81,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -112,7 +109,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -153,7 +149,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -182,7 +177,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -211,7 +205,6 @@ class SaleController extends Controller
                 $invoice->id = $invoice_query->id;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;
@@ -331,99 +324,102 @@ class SaleController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        $isAdmin = true;
-        if($user->privilege !== 'ADMIN'){
-            $isAdmin = false;
-        }
-        $services = Service::where('id_company', $user->id_company)->get();
-        $products = Product::where('id_company', $user->id_company)->get();
-        $clients_enterprise = Client_Enterprise::where('id_company', $user->id_company)->get();
-        $clients_singular = Client_Singular::where('id_company', $user->id_company)->get();
-        $sales_query = Sale::where('created_by', $user->id)->get();
-        $sales = [];
-        $i = 0;
-        $hasSales = false;
-        $actual_client = '';
-        foreach ($sales_query as $sale_query){
-            $sale = new stdClass;
-            if($sale_query->type === 'PRODUCT'){
-                $product = Product::find($sale_query->id_product_service);
-                $sale->id = $sale_query->id;
-                $sale->sale_type = 'PRODUCT';
-                $sale->name = $product->name;
-                $sale->description = $product->description;
-                $sale->price_unit = $product->price;
-                if($sale_query->type_client === 'ENTERPRISE'){
-                    $sale->client_type = 'ENTERPRISE';
-                    $sale->id_client = $sale_query->id_client;
-                    $client = Client_Enterprise::find($sale_query->id_client);
-                    $actual_client = $client->name . ' === ' . $client->email;
-                }
-                if($sale_query->type_client === 'SINGULAR'){
-                    $sale->client_type = 'SINGULAR';
-                    $sale->id_client = $sale_query->id_client;
-                    $client = Client_Singular::find($sale_query->id_client);
-                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
-                }
-                $sale->discount = $sale_query->discount;
-                $sale->quantity = $sale_query->quantity;
-                $price = $product->price * $sale_query->quantity;
-                $sale->discount_price = $sale_query->discount * $price;
-                $sale->iva = $sale_query->iva * $price;
-                $sale->price = $price + $sale->iva - $sale->discount_price;
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $isAdmin = true;
+            if($user->privilege !== 'ADMIN'){
+                $isAdmin = false;
             }
-            if($sale_query->type === 'SERVICE'){
-                $service = Service::find($sale_query->id_product_service);
-                $sale->id = $sale_query->id;
-                $sale->sale_type = 'PRODUCT';
-                $sale->name = $service->name;
-                $sale->description = $service->description;
-                $sale->price_unit = $service->price;
-                if($sale_query->type_client === 'ENTERPRISE'){
-                    $sale->client_type = 'ENTERPRISE';
-                    $sale->id_client = $sale_query->id_client;
-                    $client = Client_Enterprise::find($sale_query->id_client);
-                    $actual_client = $client->name . ' === ' . $client->email;
-                }
-                if($sale_query->type_client === 'SINGULAR'){
-                    $sale->client_type = 'SINGULAR';
-                    $sale->id_client = $sale_query->id_client;
-                    $client = Client_Singular::find($sale_query->id_client);
-                    $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
-                }
-                $sale->discount = $sale_query->discount;
-                $sale->quantity = $sale_query->quantity;
-                $price = $service->price * $sale_query->quantity;
-                $sale->discount_price = $sale_query->discount * $price;
-                $sale->iva = $sale_query->iva * $price;
-                $sale->price = $price + $sale->iva - $sale->discount_price;
-            }
-            $sales[$i] = $sale;
-            $i++;
-        }
-        if($i > 0){
-            $hasSales = true;
-        }else{
+            $services = Service::where('id_company', $user->id_company)->get();
+            $products = Product::where('id_company', $user->id_company)->get();
+            $clients_enterprise = Client_Enterprise::where('id_company', $user->id_company)->get();
+            $clients_singular = Client_Singular::where('id_company', $user->id_company)->get();
+            $sales_query = Sale::where('created_by', $user->id)->get();
+            $sales = [];
+            $i = 0;
             $hasSales = false;
+            $actual_client = '';
+            foreach ($sales_query as $sale_query){
+                $sale = new stdClass;
+                if($sale_query->type === 'PRODUCT'){
+                    $product = Product::find($sale_query->id_product_service);
+                    $sale->id = $sale_query->id;
+                    $sale->sale_type = 'PRODUCT';
+                    $sale->name = $product->name;
+                    $sale->description = $product->description;
+                    $sale->price_unit = $product->price;
+                    if($sale_query->type_client === 'ENTERPRISE'){
+                        $sale->client_type = 'ENTERPRISE';
+                        $sale->id_client = $sale_query->id_client;
+                        $client = Client_Enterprise::find($sale_query->id_client);
+                        $actual_client = $client->name . ' === ' . $client->email;
+                    }
+                    if($sale_query->type_client === 'SINGULAR'){
+                        $sale->client_type = 'SINGULAR';
+                        $sale->id_client = $sale_query->id_client;
+                        $client = Client_Singular::find($sale_query->id_client);
+                        $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                    }
+                    $sale->discount = $sale_query->discount;
+                    $sale->quantity = $sale_query->quantity;
+                    $price = $product->price * $sale_query->quantity;
+                    $sale->discount_price = $sale_query->discount * $price;
+                    $sale->iva = $sale_query->iva * $price;
+                    $sale->price = $price + $sale->iva - $sale->discount_price;
+                }
+                if($sale_query->type === 'SERVICE'){
+                    $service = Service::find($sale_query->id_product_service);
+                    $sale->id = $sale_query->id;
+                    $sale->sale_type = 'PRODUCT';
+                    $sale->name = $service->name;
+                    $sale->description = $service->description;
+                    $sale->price_unit = $service->price;
+                    if($sale_query->type_client === 'ENTERPRISE'){
+                        $sale->client_type = 'ENTERPRISE';
+                        $sale->id_client = $sale_query->id_client;
+                        $client = Client_Enterprise::find($sale_query->id_client);
+                        $actual_client = $client->name . ' === ' . $client->email;
+                    }
+                    if($sale_query->type_client === 'SINGULAR'){
+                        $sale->client_type = 'SINGULAR';
+                        $sale->id_client = $sale_query->id_client;
+                        $client = Client_Singular::find($sale_query->id_client);
+                        $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                    }
+                    $sale->discount = $sale_query->discount;
+                    $sale->quantity = $sale_query->quantity;
+                    $price = $service->price * $sale_query->quantity;
+                    $sale->discount_price = $sale_query->discount * $price;
+                    $sale->iva = $sale_query->iva * $price;
+                    $sale->price = $price + $sale->iva - $sale->discount_price;
+                }
+                $sales[$i] = $sale;
+                $i++;
+            }
+            if($i > 0){
+                $hasSales = true;
+            }else{
+                $hasSales = false;
+            }
+            return view ('pt.home.pages.sale.sale', $user,
+            [
+                'company_type' => $company_validate['company_type'],
+                'logo' => $company_validate['company_logo'],
+                'deadline_payment' =>  $company_validate['expire_msg'],
+                'sales' => $sales,
+                'services' => $services,
+                'products' => $products,
+                'clients_enterprise' => $clients_enterprise,
+                'clients_singular' => $clients_singular,
+                'hasSales' => $hasSales,
+                'actual_client' => $actual_client,
+                'isAdmin' => $isAdmin,
+                'enable_sales' => $company_validate['make_sales']
+            ]);
         }
-        return view ('pt.home.pages.sale.sale', $user,
-        [
-            'company_type' => $company_validate['company_type'],
-            'logo' => $company_validate['company_logo'],
-            'deadline_payment' =>  $company_validate['expire_msg'],
-            'sales' => $sales,
-            'services' => $services,
-            'products' => $products,
-            'clients_enterprise' => $clients_enterprise,
-            'clients_singular' => $clients_singular,
-            'hasSales' => $hasSales,
-            'actual_client' => $actual_client,
-            'isAdmin' => $isAdmin,
-            'enable_sales' => $company_validate['make_sales']
-        ]);
+        return redirect()->route('root');
     }
 
     /**
@@ -524,7 +520,7 @@ class SaleController extends Controller
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function check(Request $request)
@@ -576,7 +572,7 @@ class SaleController extends Controller
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -642,7 +638,7 @@ class SaleController extends Controller
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a actualizacao do item.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function remove_sale_item(Request $request)
@@ -654,14 +650,15 @@ class SaleController extends Controller
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a remocao do item.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function quote(Request $request){
+        $pdf_controller = new PDFController;
         $user = Auth::user();
         $sale = Sale::where('created_by', 'like', $user->id)->get();
         $company = Company::find($user->id_company);
-        if($sale->exists()){
+        if($sale->count() > 0){
             $sale = $sale->first();
             $client_id = $sale->id_client;
             $client_name = '';
@@ -692,7 +689,7 @@ class SaleController extends Controller
                 $client_address = $client->address;
                 $client_email = $client->email;
             }
-            $this->invoice_generator([
+            $data = [
                 'user_id' => $user->id,
                 'client_type' => $client_type,
                 'client_name' => $client_name,
@@ -710,8 +707,11 @@ class SaleController extends Controller
                 'company_bank_account_number' => $company->bank_account_number,
                 'company_logo' => url('storage/' .$company->logo),
                 'user_name' => $user_name,
-                'status' => $status
-            ], 'QUOTE');
+                'status' => $status,
+                'type' => 'QUOTE'
+            ];
+
+            return $pdf_controller->invoice_generator($data,);
         }
         return redirect()->route('view_sale');
     }
@@ -719,7 +719,7 @@ class SaleController extends Controller
     public function clean_sale(Request $request){
         if(Auth::check()){
             $user = Auth::user();
-            if(Sale::where('created_by', $user->id)->count() === 0){
+            if(DB::table('sales')->select('*')->where('created_by', $user->id)->count() === 0){
                 return redirect()->route('view_sale');
             }
             if(DB::table('sales')->where('created_by', 'like', $user->id)->delete()){
@@ -731,11 +731,12 @@ class SaleController extends Controller
     }
 
     public function sell(Request $request){
+        $pdf_controller = new PDFController;
         $user = Auth::user();
         $sale = Sale::where('created_by', 'like', $user->id)->get();
         $company = Company::find($user->id_company);
         $requisites = true;
-        if($sale->exists()){
+        if($sale->count() > 0){
             $sale = $sale->first();
             $client_id = $sale->id_client;
             $client_name = '';
@@ -769,8 +770,7 @@ class SaleController extends Controller
                 }
             }
             if($requisites){
-                $this->invoice_generator([
-                    'user_id' => $user->id,
+                return $pdf_controller->invoice_generator([
                     'client_type' => $client_type,
                     'client_id' => $client_id,
                     'client_name' => $client_name,
@@ -788,443 +788,12 @@ class SaleController extends Controller
                     'company_bank_account_number' => $company->bank_account_number,
                     'company_logo' => url('storage/' .$company->logo),
                     'user_name' => $user_name,
-                    'status' => $status
-                ], 'INVOICE');
+                    'status' => $status,
+                    'type' => 'INVOICE'
+                    ]);
             }
         }
         return redirect()->route('view_sale');
     }
 
-    private function invoice_generator(Array $data, $type){
-        $company_name = $data['company_name'];
-        $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor($data['company_name'] . '/' . $data['user_name']);
-        if($type === 'QUOTE'){
-            $pdf->SetTitle("Cotação");
-            $pdf->SetSubject("Cotação");
-            $pdf->SetKeywords("Thimiriza, $company_name, Cotação");
-            $pdf->setType($type);
-            $info_1 = '<hr/><html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table>'
-                . '<tr><td><table>'
-                . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
-                . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
-                . '</table></td>'
-                . '<td></td>'
-                . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
-                . '<tr><td></td><td></td><td></td></tr>'
-                . '</table>'
-                . '</body>'
-                . '</html>';
-            $pdf->SetKeywords("Thimiriza, $company_name, Factura");
-            $pdf->SetMargins(10, 23, 10);
-            $bottom_margin = 60;
-            $pdf->SetAutoPageBreak(TRUE, $bottom_margin);
-            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-            $pdf->AddPage();
-            $pdf->SetFont('times', 'B', 10);
-            $pdf->writeHTML($info_1, true, false, true, false, '');
-            $pdf->SetFont('times', '', 10);
-            $info_2 = '<html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table>'
-                . '<tr><td>DE:</td><td>PARA:</td></tr>'
-                . '<tr><td><strong>' . $data['company_name'] . '</strong></td><td><strong>' . $data['client_name'] . '</strong></td></tr>'
-                . '<tr><td>NUIT: ' . $data['company_nuit'] . '</td><td>NUIT: ' . $data['client_nuit'] . '</td></tr>'
-                . '<tr><td>Endereço:</td><td>Endereço:</td></tr>'
-                . '<tr><td>' . $data['company_address'] . '</td><td>' . $data['client_address'] . '</td></tr>'
-                . '</table>'
-                . '</body>'
-                . '</html>';
-            $pdf->writeHTML($info_2, true, false, true, false, '');
-            $pdf->SetFont('times', 'B', 10);
-            $details = '<html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table cellspacing="1">'
-                . '<tr><th style="text-align:left;">NOME</th><th style="text-align:left;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESCONTO</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>'
-                . '</table>'
-                . '<hr/>'
-                . '</body>'
-                . '</html>';
-            $pdf->writeHTML($details, true, false, true, false, '');
-            $pdf->SetFont('times', '', 10);
-            $sales = Sale::where('created_by', $data['user_id'])->get();
-            $price_total = 0;
-            $iva_total = 0;
-            $price_inc_total = 0;
-            $discount_total = 0;
-            foreach($sales as $sale){
-                $price_sale = 0;
-                $iva = 0;
-                $price_inc = 0;
-                if($sale->type === 'PRODUCT'){
-                    $product = Product::find($sale->id_product_service)->get();
-                    $name = $product->name;
-                    $description = $product->description;
-                    $quantity = $sale->quantity;
-                    $price = $product->price;
-                    $price_inc = $product->price * $sale->quantity;
-                    $iva = $price_inc * $sale->iva;
-                    $discount = $price_inc * $sale->discount;
-                    $price_sale = $price_inc - $discount + $iva;
-                    if($product->quantity > 0){
-                        if($product->quantity > $quantity){
-                            $details_2 = '<table cellspacing="1">'
-                            . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
-                            . '<td style="text-align:center;">' . $quantity . '</td>'
-                            . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
-                            . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
-                            . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
-                            . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
-                            . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
-                            . '</table>';
-                            $pdf->writeHTML($details_2, true, false, true, false, '');
-                        }
-                    }
-                }
-                if($sale->type === 'SERVICE'){
-                    $service = DB::table('services')->find($sale->id_product_service)->get();
-                    $name = $service->name;
-                    $description = $service->description;
-                    $quantity = $sale->quantity;
-                    $price = $service->price;
-                    $price_inc = $service->price * $sale->quantity;
-                    $iva = $price_inc * $sale->iva;
-                    $discount = $price_inc * $sale->discount;
-                    $price_sale = $price_inc - $discount + $iva;
-                    $details_2 = '<table cellspacing="1">'
-                    . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
-                    . '<td style="text-align:center;">' . $quantity . '</td>'
-                    . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
-                    . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
-                    . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
-                    . '</table>';
-                    $pdf->writeHTML($details_2, true, false, true, false, '');
-                }
-                $price_total = $price_total + $price_sale;
-                $price_inc_total = $price_inc_total + $price_inc;
-                $iva_total = $iva_total + $iva;
-                $discount_total = $discount_total + $discount;
-            }
-            $pdf->SetFont('times', 'B', 10);
-            $pdf->lastPage();
-            $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
-            $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
-            $pdf_output= $pdf;
-            $file = $pdf->Output('Cotação.pdf', 'S');
-            $mail_controller = new SystemMailController;
-            $mail_controller->quote_email(
-                $data['client_email'],
-                $data['client_name'],
-                $file,
-                'QUOTE_CODE',
-                $price_total,
-                $data['company_name']
-            );
-            ob_end_clean();
-            $pdf_output->Output('Cotação.pdf', 'I');
-        }
-        //INVOICE
-        /*
-        if($type === 'INVOICE'){
-            $pdf->setType($type);
-            $pdf->SetTitle("Factura");
-            $pdf->SetSubject("Factura");
-            $pdf->SetKeywords("Thimiriza, $company_name, Factura");
-            $info_1 = '<hr/><html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table>'
-                . '<tr><td><table>'
-                . '<tr><td style="width: 100px;">Nº. da Factura:</td><td colspan="2" style="width: 250px;">' . date('y') .'/' . date('m') . substr($invoice_code, 10 ,11) . '</td></tr>'
-                . '<tr><td style="width: 100px;">Data:</td><td>' . now() . '</td></tr>'
-                . '<tr><td style="width: 100px;">Responsável:</td><td colspan="2" style="width: 230px;">' . $data['user_name'] . '</td></tr>'
-                . '</table></td>'
-                . '<td></td>'
-                . '<td rowspan="2"><table><tr><td></td></tr><tr><td><img src="' . $data['company_logo'] . '" border="0" height="90" width="135" align="bottom"/></td></tr></table></td></tr>'
-                . '<tr><td></td><td></td><td></td></tr>'
-                . '</table>'
-                . '</body>'
-                . '</html>';
-            $pdf->SetKeywords("Thimiriza, $company_name, Factura");
-            $pdf->SetMargins(10, 23, 10);
-            $bottom_margin = 60;
-            $pdf->SetAutoPageBreak(TRUE, $bottom_margin);
-            //$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-            $pdf->AddPage();
-            $pdf->SetFont('times', 'B', 10);
-            $pdf->writeHTML($info_1, true, false, true, false, '');
-            $pdf->SetFont('times', '', 10);
-            $info_2 = '<html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table>'
-                . '<tr><td>DE:</td><td>PARA:</td></tr>'
-                . '<tr><td><strong>' . $data['company_name'] . '</strong></td><td><strong>' . $data['client_name'] . '</strong></td></tr>'
-                . '<tr><td>NUIT: ' . $data['company_nuit'] . '</td><td>NUIT: ' . $data['client_nuit'] . '</td></tr>'
-                . '<tr><td>Endereço:</td><td>Endereço:</td></tr>'
-                . '<tr><td>' . $data['company_address'] . '</td><td>' . $data['client_address'] . '</td></tr>'
-                . '</table>'
-                . '</body>'
-                . '</html>';
-            $pdf->writeHTML($info_2, true, false, true, false, '');
-            $pdf->SetFont('times', 'B', 10);
-            $details = '<html>'
-                . '<head></head>'
-                . '<body>'
-                . '<table cellspacing="1">'
-                . '<tr><th style="text-align:left;">NOME</th><th style="text-align:left;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESCONTO</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>'
-                . '</table>'
-                . '<hr/>'
-                . '</body>'
-                . '</html>';
-            $pdf->writeHTML($details, true, false, true, false, '');
-            $pdf->SetFont('times', '', 10);
-            $sales = Sale::where('created_by', $data['user_id'])->get();
-            $price_total = 0;
-            $iva_total = 0;
-            $price_inc_total = 0;
-            $discount_total = 0;
-            $invoice = '';
-            foreach($sales as $sale){
-                $price_sale = 0;
-                $iva = 0;
-                $price_inc = 0;
-                $quantity = 0;
-                $discount = 0;
-                if($sale->type === 'PRODUCT'){
-                    $product = Product::find($sale->id_product_service)->get();
-                    $name = $product->name;
-                    $description = $product->description;
-                    $quantity = $sale->quantity;
-                    $price = $product->price;
-                    $price_inc = $product->price * $sale->quantity;
-                    $iva = $price_inc * $sale->iva;
-                    $discount = $price_inc * $sale->discount;
-                    $price_sale = $price_inc - $discount + $iva;
-                    $details_2 = '<table cellspacing="1">'
-                    . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
-                    . '<td style="text-align:center;">' . $quantity . '</td>'
-                    . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
-                    . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
-                    . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
-                    . '</table>';
-                    $pdf->writeHTML($details_2, true, false, true, false, '');
-                }
-                if($sale->type === 'SERVICE'){
-                    $service = Service::find($sale->id_product_service)->get();
-                    $name = $service->name;
-                    $description = $service->description;
-                    $quantity = $sale->quantity;
-                    $price = $service->price;
-                    $price_inc = $service->price * $sale->quantity;
-                    $iva = $price_inc * $sale->iva;
-                    $discount = $price_inc * $sale->discount;
-                    $price_sale = $price_inc - $discount + $iva;
-                    $details_2 = '<table cellspacing="1">'
-                    . '<tr><td style="text-align:left;">' . $name . '</td><td style="text-align:left;">' . $description . '</td>'
-                    . '<td style="text-align:center;">' . $quantity . '</td>'
-                    . '<td style="text-align:right;">' . number_format($price, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:center;">' . $sale->iva*100 . '%</td>'
-                    . '<td style="text-align:center;">' . $sale->discount*100 . '%</td>'
-                    . '<td style="text-align:right;">' . number_format($price_inc, 2, ",", ".") . ' MT</td>'
-                    . '<td style="text-align:right;">' . number_format($price_sale, 2, ",", ".") . ' MT</td></tr>'
-                    . '</table>';
-                    $pdf->writeHTML($details_2, true, false, true, false, '');
-                }
-                $price_total = $price_total + $price_sale;
-                $price_inc_total = $price_inc_total + $price_inc;
-                $iva_total = $iva_total + $iva;
-                $discount_total = $discount_total + $discount;
-            }
-            $invoice_date = now();
-            if(DB::table('invoices')
-                ->insert([
-                    [
-                        'code' => $invoice_code,
-                        'client_type' => $data['client_type'],
-                        'id_client' => $data['client_id'],
-                        'price' => $price_total,
-                        'status' => $data['status'],
-                        'id_user' => $data['user_id'],
-                        'created_at' => $invoice_date
-                    ]
-                ])
-            ){
-                $invoice = DB::table('invoices')->where('id_user', 'like', $data['user_id'])
-                ->where('created_at', 'like', $invoice_date)->where('code', 'like', $invoice_code)->first();
-                foreach($sales as $sale){
-                    if($sale->type === 'PRODUCT'){
-                        $product = DB::table('products')->find($sale->id_product_service);
-                        $name = $product->name;
-                        $description = $product->description;
-                        $quantity = $sale->quantity;
-                        $price = $product->price;
-                        $price_inc = $product->price * $sale->quantity;
-                        $iva = $price_inc * $sale->iva;
-                        $discount = $price_inc * $sale->discount;
-                        $price_sale = $price_inc - $discount + $iva;
-                        $new_product_quantity = $product->quantity - $quantity;
-                        if($product->quantity > 0){
-                            if($product->quantity >= $quantity){
-                                if(DB::table('moves')
-                                ->insert([[
-                                        'sale_type' => $sale->type,
-                                        'id_product_service' => $sale->id_product_service,
-                                        'product_service' => $name,
-                                        'description' => $description,
-                                        'price' => $price_sale,
-                                        'quantity' => $quantity,
-                                        'discount' => $discount,
-                                        'iva' => $iva,
-                                        'id_invoice' => $invoice->id,
-                                        'created_at' => now()
-                                    ]])){
-                                        DB::table('products')
-                                        ->where('id', $product->id)
-                                        ->update(['quantity'=> $new_product_quantity]);
-                                }else{
-                                    //remove all recorded products on moves
-                                }
-                            }
-                        }
-                    }
-                    if($sale->type === 'SERVICE'){
-                        $service = DB::table('services')->find($sale->id_product_service);
-                        $name = $service->name;
-                        $description = $service->description;
-                        $quantity = $sale->quantity;
-                        $price = $service->price;
-                        $price_inc = $service->price * $sale->quantity;
-                        $iva = $price_inc * $sale->iva;
-                        $discount = $price_inc * $sale->discount;
-                        $price_sale = $price_inc - $discount + $iva;
-                        if(DB::table('moves')
-                        ->insert([[
-                                'sale_type' => $sale->type,
-                                'id_product_service' => $sale->id_product_service,
-                                'product_service' => $name,
-                                'description' => $description,
-                                'price' => $price_sale,
-                                'quantity' => $quantity,
-                                'discount' => $discount,
-                                'iva' => $iva,
-                                'id_invoice' => $invoice->id,
-                                'created_at' => now()
-                            ]])){
-
-                        }else{
-                            //remove all recorded services on moves
-                        }
-                    }
-                }
-            }
-            $details_3 = "<hr/>"
-            . "<table>"
-            . "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>Total:</td><td>$price_total MT</td></tr>"
-            . "</table>";
-            $pdf->SetFont('times', 'B', 10);
-            $pdf->setData($price_total, $price_inc_total, $discount_total, $iva_total, $data['company_bank_account_name'], $data['company_bank_account_owner'], $data['company_bank_account_number'], $data['company_bank_account_nib']);
-            $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
-            $pdf_output= $pdf;
-            $file = $pdf->Output('Factura.pdf', 'S');
-            $mail_controller = new SystemMailController;
-            $mail_controller->invoice_email(
-                $data['client_email'],
-                $data['client_name'],
-                $file,
-                substr($invoice_code, 10 ,11),
-                $price_total,
-                $data['company_name']
-            );
-            ob_end_clean();
-            $pdf_output->Output('Factura.pdf', 'I');
-        }*/
-    }
-}
-
-class MYPDF extends TCPDF {
-
-    private $preco_total = 0;
-    private $preco_incidencia = 0;
-    private $desconto = 0;
-    private $iva = 0;
-    private $banco = '';
-    private $titular = '';
-    private $nr_conta = '';
-    private $nib = '';
-    private $type = '';
-    protected $last_page_flag = false;
-
-
-    public function Close() {
-        $this->last_page_flag = true;
-        parent::Close();
-    }
-
-    // Page header
-    public function Header() {
-        $this->SetY(17);
-        $this->SetFont('times', 'B', 12);
-        if($this->type === 'INVOICE'){
-            $this->Cell(0, 3, 'FACTURA', 0, false, 'L', 0, '', false, 'M', 'M');
-        }
-        if($this->type === 'QUOTE'){
-            $this->Cell(0, 3, 'COTAÇÃO', 0, false, 'L', 0, '', false, 'M', 'M');
-        }
-    }
-
-// Page footer
-    public function Footer() {
-        if ($this->last_page_flag) {
-            // Position at 15 mm from bottom
-            $this->SetY(-65);
-            // Set font
-            $this->SetFont('times', '', 10);
-            // Page number
-            $html = '<hr/><html>'
-                    . '<head></head>'
-                    . '<body>'
-                    . '<table>'
-                    . '<tr><td colspan="2">Banco: ' . $this->banco . '</td><td></td><td></td><td><strong>Incidência:</strong></td><td colspan="2" style="text-align: right;">' . number_format($this->preco_incidencia, 2, ",", ".") . ' MT</td></tr>'
-                    . '<tr><td colspan="2">Nome da conta: ' . $this->titular . '</td><td></td><td></td><td><strong>IVA:</strong></td><td colspan="2" style="text-align: right;">' . number_format($this->iva, 2, ",", ".") . ' MT</td></tr>'
-                    . '<tr><td colspan="2">Nº. da conta: ' . $this->nr_conta . '</td><td></td><td></td><td></td><td></td><td></td></tr>'
-                    . '<tr><td colspan="2">NIB: ' . $this->nib . '</td><td></td><td></td><td style="font-size: 20px;"><strong>Total:</strong></td><td colspan="2"><strong style="text-align: right; font-size: 20px;">' . number_format($this->preco_total, 2, ",", ".") . ' MT</strong></td></tr>'
-                    . '<tr><td colspan="2"></td><td></td><td></td><td></td><td></td><td></td></tr>'
-                    . '<tr><td colspan="4">Documento processado por computador (Thimiriza)</td><td></td><td></td><td></td><td><strong></strong></td><td></td></tr>'
-                    . '</table>'
-                    . '</body>'
-                    . '</html>';
-            $this->writeHTML($html, true, false, true, false, '');
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        }else{
-
-        }
-    }
-
-    public function setType($type){
-        $this->type = $type;
-    }
-
-    public function setData($preco_total, $preco_incidencia, $desconto, $iva, $banco, $titular, $nr_conta, $nib) {
-        $this->preco_total = $preco_total;
-        $this->preco_incidencia = $preco_incidencia;
-        $this->desconto = $desconto;
-        $this->iva = $iva;
-        $this->subtotal = ($this->preco_incidencia) - ($this->desconto) + ($this->iva);
-        $this->banco = $banco;
-        $this->titular = $titular;
-        $this->nr_conta = $nr_conta;
-        $this->nib = $nib;
-    }
 }

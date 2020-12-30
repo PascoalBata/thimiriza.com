@@ -19,7 +19,6 @@ Route::get('/', function () {
 */
 
 Route::get('/', function () {
-
     return view('auth.login');
 })->name('root');
 
@@ -54,9 +53,6 @@ Route::put('/company/payment', 'Company\CompanyController@payment')->name('compa
 //about
 Route::get('/about', 'Company\CompanyController@show_about')->name('view_about');
 
-//invoice
-Route::put('/debit/payment', 'Invoice\InvoiceController@invoice_payment')->name('invoice_payment');
-
 //report
 Route::get('/report', 'Sale\SaleController@index_report')->name('view_report');
 Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
@@ -74,6 +70,7 @@ Route::get('/debit', 'Sale\SaleController@index_debit')->name('view_debit');
 Route::get('/debit/{id}', 'Invoice\InvoiceController@see_invoice')->name('debit_invoice');
 Route::get('/debit/print/{invoices}', 'Report\ReportController@print_debit')->name('print_debit');
 Route::post('/debit', 'HomeController@view_debit')->name('get_debit');
+Route::put('/debit/payment/{id}', 'Invoice\InvoiceController@pay_invoice')->name('pay_invoice');
 
 //sale
 //Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
@@ -85,6 +82,10 @@ Route::delete('/sales/remove', 'Sale\SaleController@remove_sale_item')->name('re
 Route::post('/sales/sell', 'Sale\SaleController@sell')->name('sell');
 Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
 Route::delete('/sales/clear', 'Sale\SaleController@clean_sale')->name('clean_sale');
+
+//invoice_note
+Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@create')->name('view_invoice_note');
+Route::post('/invoice_notes', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
 
 //sevice
 Route::get('/services', 'Service\ServiceController@index')->name('view_service');

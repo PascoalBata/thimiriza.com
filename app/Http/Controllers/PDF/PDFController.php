@@ -1,0 +1,291 @@
+<?php
+
+namespace App\Http\Controllers\PDF;
+
+use App\Http\Controllers\Controller;
+use App\Models\Invoice;
+use App\Models\Move;
+use App\Models\Product;
+use App\Models\Sale;
+use App\Models\Service;
+use Illuminate\Support\Facades\Auth;
+use PDF;
+use stdClass;
+
+class PDFController extends Controller
+{
+    //PDF Invoice for sale
+    public function invoice_generator(Array $data){
+        if(Auth::check()){
+            $user = Auth::user();
+            $sales = Sale::where('created_by', $user->id)->get();
+            $price_total = 0;
+            $iva_total = 0;
+            $price_inc_total = 0;
+            $discount_total = 0;
+            $sale_items = [];
+            $i = 0;
+            if($data['type'] === 'INVOICE'){
+                $invoice = new Invoice;
+                $invoice->client_type = $data['client_type'];
+                $invoice->id_client = $data['client_id'];
+                $invoice->status = 'NOT PAID';
+                $invoice->id_company = $user->id_company;
+                $invoice->created_by = $user->id;
+                $invoice->updated_by = $user->id;
+                $invoice->created_at = now();
+                $invoice->price = 0;
+                if($invoice->save()){
+                    foreach($sales as $sale){
+                        $move = new Move;
+                        $price_sale = 0;
+                        $iva = 0;
+                        $price_incident = 0;
+                        if($sale->type === 'PRODUCT'){
+                            $product = Product::find($sale->id_product_service);
+                            if($product->quantity > 0){
+                                $name = $product->name;
+                                $description = $product->description;
+                                $quantity = $sale->quantity;
+                                $price = $product->price;
+                                $price_incident = $product->price * $sale->quantity;
+                                $iva = $price_incident * $sale->iva;
+                                $discount = $price_incident * $sale->discount;
+                                $price_sale = $price_incident - $discount + $iva;
+                                if($product->quantity > $quantity){
+                                    $move->sale_type = 'PRODUCT';
+                                    $move->id_product_service = $product->id;
+                                    $move->product_service = $name;
+                                    $move->description = $description;
+                                    $move->price = $price;
+                                    $move->quantity = $quantity;
+                                    $move->discount = $discount;
+                                    $move->iva = $iva;
+                                    $move->id_invoice = $invoice->id;
+                                    $move->save();
+                                    $sale_items [$i] = [
+                                        'name' => $name,
+                                        'description' => $description,
+                                        'quantity' => $quantity,
+                                        'price' => $price,
+                                        'iva' => $sale->iva * 100,
+                                        'discount' => $sale->discount * 100,
+                                        'price_incident' => $price_incident,
+                                        'price_sale' => $price_sale
+                                    ];
+                                }
+                            }
+                        }
+                        if($sale->type === 'SERVICE'){
+                            $service = Service::find($sale->id_product_service);
+                            $name = $service->name;
+                            $description = $service->description;
+                            $quantity = $sale->quantity;
+                            $price = $service->price;
+                            $price_incident = $service->price * $sale->quantity;
+                            $iva = $price_incident * $sale->iva;
+                            $discount = $price_incident * $sale->discount;
+                            $price_sale = $price_incident - $discount + $iva;
+                            $move->sale_type = 'SERVICE';
+                            $move->id_product_service = $service->id;
+                            $move->product_service = $name;
+                            $move->description = $description;
+                            $move->price = $price;
+                            $move->quantity = $quantity;
+                            $move->discount = $discount;
+                            $move->iva = $iva;
+                            $move->id_invoice = $invoice->id;
+                            $move->save();
+                            $sale_items [$i] = [
+                                'name' => $name,
+                                'description' => $description,
+                                'quantity' => $quantity,
+                                'price' => $price,
+                                'iva' => $sale->iva * 100,
+                                'discount' => $sale->discount * 100,
+                                'price_incident' => $price_incident,
+                                'price_sale' => $price_sale
+                            ];
+                        }
+                        $i++;
+                        $price_total = $price_total + $price_sale;
+                        $price_inc_total = $price_inc_total + $price_incident;
+                        $iva_total = $iva_total + $iva;
+                        $discount_total = $discount_total + $discount;
+                    }
+                    $invoice->price = $price_total;
+                    $invoice->save();
+                    $pdf_invoice = PDF::loadView('pt.pdf.quote', [
+                        'data' => $data,
+                        'sale_items' => $sale_items,
+                        'price_total' => $price_total,
+                        'price_incident_total' => $price_inc_total,
+                        'iva_total' => $iva_total,
+                        'invoice_id' => $invoice->id,
+                        ]);
+                        $pdf_invoice->setPaper('A4');
+                    $pdf_invoice->setWarnings(false);
+                    return $pdf_invoice->stream('Factura.pdf');
+                }
+                return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+            }
+            if($data['type'] === 'QUOTE'){
+                foreach($sales as $sale){
+                    $price_sale = 0;
+                    $iva = 0;
+                    $price_incident = 0;
+                    if($sale->type === 'PRODUCT'){
+                        $product = Product::find($sale->id_product_service);
+                        $name = $product->name;
+                        $description = $product->description;
+                        $quantity = $sale->quantity;
+                        $price = $product->price;
+                        $price_incident = $product->price * $sale->quantity;
+                        $iva = $price_incident * $sale->iva;
+                        $discount = $price_incident * $sale->discount;
+                        $price_sale = $price_incident - $discount + $iva;
+                        if($product->quantity > 0){
+                            if($product->quantity > $quantity){
+                                $sale_items [$i] = [
+                                    'name' => $name,
+                                    'description' => $description,
+                                    'quantity' => $quantity,
+                                    'price' => $price,
+                                    'iva' => $sale->iva * 100,
+                                    'discount' => $sale->discount * 100,
+                                    'price_incident' => $price_incident,
+                                    'price_sale' => $price_sale
+                                ];
+                            }
+                        }
+                    }
+                    if($sale->type === 'SERVICE'){
+                        $service = Service::find($sale->id_product_service);
+                        $name = $service->name;
+                        $description = $service->description;
+                        $quantity = $sale->quantity;
+                        $price = $service->price;
+                        $price_incident = $service->price * $sale->quantity;
+                        $iva = $price_incident * $sale->iva;
+                        $discount = $price_incident * $sale->discount;
+                        $price_sale = $price_incident - $discount + $iva;
+                        $sale_items [$i] = [
+                            'name' => $name,
+                            'description' => $description,
+                            'quantity' => $quantity,
+                            'price' => $price,
+                            'iva' => $sale->iva * 100,
+                            'discount' => $sale->discount * 100,
+                            'price_incident' => $price_incident,
+                            'price_sale' => $price_sale
+                        ];
+                    }
+                    $i++;
+                    $price_total = $price_total + $price_sale;
+                    $price_inc_total = $price_inc_total + $price_incident;
+                    $iva_total = $iva_total + $iva;
+                    $discount_total = $discount_total + $discount;
+                }
+                $pdf_quote = PDF::loadView('pt.pdf.quote', [
+                    'data' => $data,
+                    'sale_items' => $sale_items,
+                    'price_total' => $price_total,
+                    'price_incident_total' => $price_inc_total,
+                    'iva_total' => $iva_total,
+                    ]);
+                    $pdf_quote->setPaper('A4');
+                $pdf_quote->setWarnings(false);
+                return $pdf_quote->stream('Cotacao.pdf');
+            }
+            return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+        }
+        return redirect()->route('root');
+    }
+
+    //PDF Invoice for checking process
+    public function check_invoice(Array $data){
+        if(Auth::check()){
+            $user = Auth::user();
+            $moves = Move::where('id_invoice', $data['invoice_id'])->get();
+            $price_total = 0;
+            $iva_total = 0;
+            $price_inc_total = 0;
+            $discount_total = 0;
+            $sale_items = [];
+            $i = 0;
+            if($data['type'] === 'INVOICE'){
+                $invoice = Invoice::find($data['invoice_id']);
+                if($invoice !== null){
+                    foreach($moves as $move){
+                        $price_sale = 0;
+                        $iva = 0;
+                        $discount = 0;
+                        $price_incident = 0;
+                        if($move->sale_type === 'PRODUCT'){
+                                $name = $move->product_service;
+                                $description = $move->description;
+                                $quantity = $move->quantity;
+                                $price = $move->price;
+                                $price_incident = $move->price * $move->quantity;
+                                $iva = $move->iva;
+                                $discount = $move->discount;
+                                $price_sale = $price_incident - $discount + $iva;
+                                $sale_items [$i] = [
+                                'name' => $name,
+                                'description' => $description,
+                                'quantity' => $quantity,
+                                'price' => $price,
+                                'iva' => $move->iva *100 / $price_incident,
+                                'discount' => $move->discount * 100 / $price_incident,
+                                'price_incident' => $price_incident,
+                                'price_sale' => $price_sale
+                            ];
+                        }
+                        if($move->sale_type === 'SERVICE'){
+                            $name = $move->product_service;
+                            $description = $move->description;
+                            $quantity = $move->quantity;
+                            $price = $move->price;
+                            $price_incident = $move->price * $move->quantity;
+                            $iva = $move->iva;
+                            $discount = $move->discount;
+                            $price_sale = $price_incident - $discount + $iva;
+                            $sale_items [$i] = [
+                                'name' => $name,
+                                'description' => $description,
+                                'quantity' => $quantity,
+                                'price' => $price,
+                                'iva' => $move->iva,
+                                'iva' => $move->iva *100 / $price_incident,
+                                'discount' => $move->discount * 100 / $price_incident,
+                                'price_sale' => $price_sale,
+                                'price_incident' => $price_incident
+                            ];
+                        }
+                        $i++;
+                        $price_total = $price_total + $price_sale;
+                        $price_inc_total = $price_inc_total + $price_incident;
+                        $iva_total = $iva_total + $iva;
+                        $discount_total = $discount_total + $discount;
+                    }
+                    $invoice->price = $price_total;
+                    $invoice->save();
+                    $pdf_invoice = PDF::loadView('pt.pdf.quote', [
+                        'data' => $data,
+                        'sale_items' => $sale_items,
+                        'price_total' => $price_total,
+                        'price_incident_total' => $price_inc_total,
+                        'iva_total' => $iva_total,
+                        'invoice_id' => $invoice->id
+                        ]);
+                        $pdf_invoice->setPaper('A4');
+                    $pdf_invoice->setWarnings(false);
+                    return $pdf_invoice->stream('Factura.pdf');
+                }
+                return redirect()->route('view_debit')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+            }
+            return redirect()->route('view_debit')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+        }
+        return redirect()->route('root');
+    }
+}

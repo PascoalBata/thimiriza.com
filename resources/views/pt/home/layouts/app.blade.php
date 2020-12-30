@@ -143,6 +143,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{route('view_invoice_note')}}">
+                            {{ __('Notas') }} <i class="small material-icons">note</i>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{route('view_credit')}}">
                             {{ __('Pagas') }} <i class="small material-icons">credit_card</i>
                         </a>
