@@ -41,7 +41,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <button style="width: 100%;" type="submit"
-                                            class="waves-effect waves-light btn-small red darken-3">remover</button>
+                                            class="waves-effect waves-light btn-small red darken-3"
+                                            onclick="return confirm('Tem certeza que deseja remover este produto?')">remover</button>
                                     </form>
                                 </td>
                             </tr>

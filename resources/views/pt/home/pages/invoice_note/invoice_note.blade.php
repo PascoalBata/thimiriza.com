@@ -12,30 +12,24 @@
         </div>
         @include('pt.home.pages.invoice_note.create')
     </div>
-    <!-- Products Modals -->
+    <!-- Invoice Notes Modals -->
+    @include('pt.home.pages.invoice_note.index')
+    @includeWhen($is_edit, 'pt.home.pages.invoice_note.edit')
 @endsection
 
 <!-- Scripts -->
 @section('script')
     <script>
-        function displayProductsTable() {
-            if (document.getElementById('products_table').style.display === 'none') {
-                document.getElementById('products_table').style.display = 'block';
-            } else {
-                document.getElementById('products_table').style.display = 'none';
-            }
-        }
         $(document).ready(function() {
             $('.modal').modal();
             $('input#input_text, textarea#description').characterCounter();
         });
-
     </script>
     @if ($is_edit)
         <script>
             $(document).ready(function() {
-                $('#table_products_modal').modal('open');
-                $('#edit_product_modal').modal('open');
+                $('#table_notes_modal').modal('open');
+                $('#edit_note_modal').modal('open');
             });
         </script>
     @endif
@@ -43,8 +37,8 @@
     @if ($is_destroy)
         <script>
             $(document).ready(function() {
-                $('#table_products_modal').modal('open');
-                $('#destroy_product_modal').modal('open');
+                $('#table_notes_modal').modal('open');
+                $('#destroy_note_modal').modal('open');
             });
         </script>
     @endif

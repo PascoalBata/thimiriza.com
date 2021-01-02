@@ -84,8 +84,12 @@ Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
 Route::delete('/sales/clear', 'Sale\SaleController@clean_sale')->name('clean_sale');
 
 //invoice_note
-Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@create')->name('view_invoice_note');
+Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@index')->name('view_invoice_note');
 Route::post('/invoice_notes', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
+Route::get('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@edit')->name('edit_invoice_note');
+Route::put('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@update')->name('update_invoice_note');
+Route::delete('/invoice_notes/destroy/{id}', 'InvoiceNote\InvoiceNoteController@destroy')->name('destroy_invoice_note');
+
 
 //sevice
 Route::get('/services', 'Service\ServiceController@index')->name('view_service');

@@ -19,6 +19,10 @@ use stdClass;
 
 class SaleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -242,9 +246,9 @@ class SaleController extends Controller
             foreach($invoices_query as $invoice_query){
                 $invoice = new stdClass;
                 $invoice->id = $invoice_query->id;
+                $invoice->status = $invoice_query->status;
                 $invoice->created_at = $invoice_query->created_at;
                 $invoice->price = $invoice_query->price;
-                $invoice->code = substr($invoice_query->code, 10, 11);
                 if($invoice_query->client_type === 'SINGULAR'){
                     $client = DB::table('clients_singular')->find($invoice_query->id_client);
                     $invoice->client_name = $client->name . ' ' . $client->surname;

@@ -48,6 +48,7 @@
                                             @if ($user->privilege === 'ADMIN')
                                                 disabled
                                             @endif
+                                            onclick="return confirm('Tem certeza que deseja remover este utilizador?')"
                                             class="waves-effect waves-light btn-small red darken-3">remover</button>
                                     </form>
                                 </td>

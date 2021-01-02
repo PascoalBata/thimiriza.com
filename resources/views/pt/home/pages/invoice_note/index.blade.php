@@ -1,54 +1,64 @@
-<div class="row" id="service_table" style="display: block;">
-    <div class="col s12 m12 l12" style="overflow-x: auto;">
-        <table class="highlight" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>{{ __('Factura') }}</th>
-                    <th style="text-align: center;">{{ __('Cliente') }}</th>
-                    <th style="text-align: center;">{{ __('Tipo') }}</th>
-                    <th style="text-align: right;">{{ __('Preço') }}</th>
-                    <th style="width: 5%;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($notes_data as $note_data)
-                    <tr>
-                        <td>{{ $sale->name }}</td>
-                        <td style="text-align: center;">{{ $sale->description }}</td>
-                        <td style="text-align: center;">{{ $sale->quantity }}</td>
-                        <td style="text-align: right;">{{ number_format($sale->price_unit, 2, ',', '.') }}{{ __('MT') }}</td>
-                        <td style="text-align: center;">{{ number_format($sale->discount_price, 2, ',', '.') }}
-                            {{ __('MT') }}</td>
-                        @if ($company_type === 'NORMAL')
-                            <td style="text-align: center;">{{ number_format($sale->iva, 2, ',', '.') }}{{ __('MT') }}
-                            </td>
+<div id="notes_table_modal" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>{{ __('Produtos') }}</h4>
+        <div class="row" id="table_notes" style="display: block;">
+            <div class="col s12 m12 l12" style="overflow-x: auto;">
+                <table class="highlight" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Factura') }}</th>
+                            <th style="text-align: center;">{{ __('Cliente') }}</th>
+                            <th style="text-align: center;">{{ __('Tipo de Cliente') }}</th>
+                            <th style="text-align: center;">{{ __('Tipo de Nota') }}</th>
+                            <th style="text-align: right;">{{ __('Valor da Factura') }}</th>
+                            <th style="text-align: right;">{{ __('Valor da Nota') }}</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (count($notes_data) > 0)
+                            @foreach ($notes_data as $note_data)
+                                <tr>
+                                    <td>{{ $note_data->invoice_id }}</td>
+                                    <td style="text-align: center;">{{ $note_data->client_name }}
+                                    </td>
+                                    @if ($note_data->client_type === 'ENTERPRISE')
+                                        <td style="text-align: center;">{{ __('EMPRESARIAL') }}
+                                        </td>
+                                    @endif
+                                    @if ($note_data->client_type === 'SINGULAR')
+                                        <td style="text-align: center;">{{ __('SINGULAR') }}
+                                        </td>
+                                    @endif
+                                    @if ($note_data->type === 'CREDIT')
+                                        <td style="text-align: center;">{{ __('Débito') }}
+                                        </td>
+                                    @endif
+                                    @if ($note_data->type === 'DEBIT')
+                                        <td style="text-align: center;">{{ __('Crédito') }}
+                                        </td>
+                                    @endif
+                                    <td style="text-align: right;">{{ number_format($note_data->price, 2, ',', '.') }}{{ __('MT') }}</td>
+                                    <td style="text-align: right;">{{ number_format($note_data->value, 2, ',', '.') }}
+                                        {{ __('MT') }}</td>
+                                    <td style="text-align: right;">
+                                        <form method="POST" action="{{  route('destroy_invoice_note', $note_data->note_id)  }}">
+                                            @method('DELETE')
+                                            @csrf
+                                            <a style="width:100%;" class="waves-effect waves-light btn-small" href="{{  route('edit_invoice_note', $note_data->note_id)  }}">editar</a>
+                                            <button style="width:100%;" class="waves-effect waves-light btn-small red darken-3"
+                                                type="submit" onclick="return confirm('Tem certeza que deseja remover esta nota?')">remover</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @php
+                                @endphp
+                            @endforeach
                         @endif
-                        <td style="text-align: right;">{{ number_format($sale->price, 2, ',', '.') }}{{ __('MT') }}
-                        </td>
-                        <td style="text-align: right;">
-                            <a style="width:100%;" class="modal-trigger waves-effect waves-light btn-small" href="#edit_sale_item_modal"
-                                onclick="editSaleItem(this, {{ $sale->id }}, {{ $sale->quantity }}, {{ $sale->discount * 100 }})">editar</a>
-                            <a style="width:100%;" class="modal-trigger waves-effect waves-light btn-small red darken-3"
-                                href="#remove_sale_item_modal"
-                                onclick="removeSaleItem(this, {{ $sale->id }})">remover</a>
-                        </td>
-                    </tr>
-                    @php
-                    $total = $total + $sale->price;
-                    @endphp
-                @endforeach
-                <tr>
-                    <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
-                    <td></td>
-                    <td></td>
-                    @if ($company_type === 'NORMAL')
-                        <td></td>
-                    @endif
-                    <td></td>
-                    <td colspan="2" style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }}
-                        {{ __('MT') }}</td>
-                </tr>
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+                {!! $notes_data->links() !!}
+            </div>
+        </div>
     </div>
 </div>

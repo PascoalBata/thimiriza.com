@@ -37,7 +37,7 @@
                                 <form method="POST" action="{{ route('destroy_service', $service->id) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button style="width: 100%;" type="submit"
+                                    <button style="width: 100%;" type="submit" onclick="return confirm('Tem certeza que deseja remover este serviço?')"
                                         class="waves-effect waves-light btn-small red darken-3">remover</button>
                                 </form>
                             </td>

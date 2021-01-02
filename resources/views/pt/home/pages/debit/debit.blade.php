@@ -98,8 +98,7 @@
             <div class="row">
                 <div class="col s12 m12 l12">
                     @if (count($invoices) > 0)
-                        <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                            onclick="{{route('print_debit', strtotime($inicial_date) . strtotime($limit_date))}}">
+                        <a class="modal-trigger waves-effect waves-light btn-small" href="{{route('print_debit', strtotime($inicial_date) . strtotime($limit_date))}}">
                             {{ ('Imprimir') }}</a>
                     @endif
                 </div>

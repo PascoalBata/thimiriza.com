@@ -51,6 +51,7 @@
                     <tr>
                         <th>{{ __('Data') }}</th>
                         <th style="text-align: center;">{{ __('Factura') }}</th>
+                        <th style="text-align: center;">{{ __('Estado') }}</th>
                         <th style="text-align: center;">{{ __('Cliente') }}</th>
                         <th style="text-align: right;">{{ __('Valor') }}</th>
                         <th></th>
@@ -67,7 +68,13 @@
                     @foreach ($invoices as $invoice)
                         <tr>
                             <td>{{ $inicial_date = $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ $invoice->code }}</td>
+                            <td style="text-align: center;">{{ $invoice->id }}</td>
+                            @if ($invoice->status === 'PAID')
+                            <td style="text-align: center;">Pago</td>
+                            @endif
+                            @if ($invoice->status === 'NOT PAID')
+                            <td style="text-align: center;">Em dívida</td>
+                            @endif
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }} {{__('MT') }}</td>
                             <td style="text-align: right;">
@@ -85,7 +92,7 @@
                         <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
                         <td style="text-align: center; font-weight: bold;">{{ $facturas }}</td>
                         <td></td>
-                        <td style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }} {{__('MT') }}</td>
+                        <td colspan="2" style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }} {{__('MT') }}</td>
                     </tr>
                     @endif
                 </tbody>

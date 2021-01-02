@@ -1,6 +1,17 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
+    "\\app\\Http\\Controllers\\ClientEnterprise",
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\pt",
+    "\\resources\\views\\pt\\home",
+    "\\resources\\views\\pt\\home\\pages",
+    "\\resources\\views\\pt\\home\\pages\\invoice_note"
   ],
+  "SelectedNode": "\\app\\Http\\Controllers\\ClientEnterprise\\ClientEnterpriseController.php",
   "PreviewInSolutionExplorer": false
 }

@@ -136,7 +136,6 @@ class ServiceController extends Controller
             if($request['edit_service_iva'] === null){
             $service->iva = 'off';
             }
-            $service->created_by = $user->id;
             $service->id_company = $user->id_company;
             if($service->save()){
             return redirect()->route('view_service', $id)->with('operation_status', 'Serviço actualizado com sucesso.');

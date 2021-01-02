@@ -158,7 +158,7 @@ class ProductController extends Controller
         if(Auth::check()){
             $user = Auth::user();
             $product = Product::find($id);
-            if(Product::find($id)->delete()){
+            if($product->delete()){
                 $product->updated_by = $user->id;
                 $product->save();
                 return redirect()->route('view_product')->with('operation_status', 'Produto removido sucesso.');

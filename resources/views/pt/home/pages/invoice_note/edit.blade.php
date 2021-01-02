@@ -1,20 +1,46 @@
-<div id="edit_sale_item_modal" tabindex="-1" class="modal">
-    <form method="POST" id="editSaleItemForm" name="editSaleItemForm" action="{{ route('edit_sale_item') }}">
+<div id="edit_note_modal" tabindex="-1" class="modal">
+    <form method="POST" id="editNoteForm" name="editNoteForm" action="{{ route('update_invoice_note', $selected_note->id) }}">
         <div class="modal-content">
-            <h4>{{ __('Editar Item') }}</h4>
+            <h4>{{ __('Editar Nota') }}</h4>
             @method('PUT')
             @csrf
-            <input id="id" type="number" name="id" value="{{ old('id') }}" hidden>
             <div class="row">
-                <div class="input-field col s12 m4 l4">
-                    <label for="discount" class="black-text">{{ __('Quantidade') }}</label>
-                    <input required id="quantity" type="text" class="black-text" name="quantity"
-                        value="{{ old('quantity') }}" autofocus>
+                <div class="input-field col s12 m2 l2">
+                    <label for="edit_invoice_id" class="black-text">
+                        Actual:
+                        @if ($selected_note->type === 'CREDIT')
+                            Crédito
+                        @endif
+                        @if ($selected_note->type === 'DEDIT')
+                            Dédito
+                        @endif
+                    </label>
                 </div>
-                <div class="input-field col s12 m4 l4">
-                    <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
-                    <input required id="discount" type="text" class="black-text" name="discount"
-                        value="{{ old('discount') }}" autofocus>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <select id="edit_type" name="edit_type">
+                        <optgroup label="{{ __('Tipo de nota') }}">
+                            <option value="CREDIT">{{ __('Crédito') }}</option>
+                            <option value="DEBIT">{{ __('Dédito') }}</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <label for="edit_invoice_id" class="black-text">{{ __('ID da factura') }}</label>
+                    <input id="edit_invoice_id" type="number" autocomplete="off" class="black-text" name="edit_invoice_id"
+                    value="{{ $selected_note->id_invoice }}" required/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6 l6">
+                    <textarea id="edit_description" name="edit_description" class="materialize-textarea" data-length="200">{{ $selected_note->description }}</textarea>
+                    <label for="edit_description" class="black-text">Descrição</label>
+                </div>
+                <div class="input-field col s12 m6 l6">
+                    <label for="edit_value" class="black-text">{{ __('Valor') }}</label>
+                    <input id="edit_value" type="number" class="black-text" name="edit_value" value="{{ $selected_note->value }}"
+                        required>
                 </div>
             </div>
         </div>

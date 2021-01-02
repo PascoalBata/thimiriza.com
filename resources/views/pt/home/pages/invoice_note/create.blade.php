@@ -5,7 +5,7 @@
         <div class="row">
             <div class="input-field col s12 m6 l6">
                 <label for="invoice_id" class="black-text">{{ __('ID da factura') }}</label>
-                <input id="invoice_id" type="number" autocomplete="off" class="black-text" name="id_invoice"
+                <input id="invoice_id" type="number" autocomplete="off" class="black-text" name="invoice_id"
                 value="{{ old('price') }}" required/>
             </div>
             <div class="input-field col s12 m6 l6">
@@ -38,6 +38,8 @@
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
+                <a class="waves-effect waves-light btn-small modal-trigger"
+                    href="#notes_table_modal">{{ __('Notas') }}</a>
             </div>
         </div>
     </form>
