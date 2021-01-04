@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InvoiceNote;
 
+use App\Helpers\Collection\CollectionHelper;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Models\Client_Enterprise;
@@ -67,7 +68,7 @@ class InvoiceNoteController extends Controller
                 $notes_data[$i] = $data;
                 $i = $i + 1;
             }
-            $notes_data->forPage($_GET['page'], 30);
+            $paginator = CollectionHelper::paginate($notes_data, 1);
             return view ('pt.home.pages.invoice_note.invoice_note', $user,
             [
                 'company_type' => $company_validate['company_type'],
@@ -75,7 +76,8 @@ class InvoiceNoteController extends Controller
                 'deadline_payment' =>  $company_validate['expire_msg'],
                 'isAdmin' => $isAdmin,
                 'is_edit' => false,
-                'notes_data' => $notes_data,
+                'is_index' => true,
+                'notes_data' => $paginator,
                 'is_destroy' => false]);
         }
         return redirect()->route('root');
@@ -88,7 +90,25 @@ class InvoiceNoteController extends Controller
      */
     public function create()
     {
-        //
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $isAdmin = true;
+            if($user->privilege !== 'ADMIN'){
+                $isAdmin = false;
+            }
+            return view ('pt.home.pages.invoice_note.invoice_note', $user,
+            [
+                'company_type' => $company_validate['company_type'],
+                'logo' => $company_validate['company_logo'],
+                'deadline_payment' =>  $company_validate['expire_msg'],
+                'isAdmin' => $isAdmin,
+                'is_edit' => false,
+                'is_index' => false,
+                'is_destroy' => false]);
+        }
+        return redirect()->route('root');
     }
 
     /**
@@ -111,15 +131,15 @@ class InvoiceNoteController extends Controller
                 $invoice_note->created_by = $user->id;
                 if($invoice_note->save()){
                     if($request['type'] === 'DEBIT'){
-                        return redirect()->route('view_invoice_note')->with('operation_status', 'Nota de crédito criada com sucesso.');
+                        return redirect()->route('create_invoice_note')->with('operation_status', 'Nota de crédito criada com sucesso.');
                     }
                     if($request['type'] === 'CREDIT'){
-                        return redirect()->route('view_invoice_note')->with('operation_status', 'Nota de dédito criada com sucesso.');
+                        return redirect()->route('create_invoice_note')->with('operation_status', 'Nota de dédito criada com sucesso.');
                     }
                 }
-                return redirect()->route('view_invoice_note')->with('operation_status', 'Nao foi possivel criar a nota. Ocorreu um erro.');
+                return redirect()->route('create_invoice_note')->with('operation_status', 'Nao foi possivel criar a nota. Ocorreu um erro.');
             }
-            return redirect()->route('view_invoice_note')->with('operation_status', 'A factura inserida nao existe');
+            return redirect()->route('create_invoice_note')->with('operation_status', 'A factura inserida nao existe');
         }
         return redirect()->route('root');
     }
@@ -155,7 +175,7 @@ class InvoiceNoteController extends Controller
             if($user->privilege !== 'ADMIN'){
                 $isAdmin = false;
             }
-            $notes_data = [];
+            $notes_data = new Collection();
             $i = 0;
             $notes = DB::table('invoice_notes')->join('invoices', 'invoice_notes.id_invoice', '=', 'invoices.id')
             ->select('invoices.id as invoice_id', 'invoice_notes.id as note_id', 'invoices.price', 'invoices.client_type', 'invoices.id_client',
@@ -191,6 +211,7 @@ class InvoiceNoteController extends Controller
                 $notes_data[$i] = $data;
                 $i = $i + 1;
             }
+            $paginator = CollectionHelper::paginate($notes_data, 1);
             return view ('pt.home.pages.invoice_note.invoice_note', $user,
             [
                 'company_type' => $company_validate['company_type'],
@@ -199,7 +220,8 @@ class InvoiceNoteController extends Controller
                 'isAdmin' => $isAdmin,
                 'selected_note' => $selected_note,
                 'is_edit' => true,
-                'notes_data' => $notes_data,
+                'is_index' => true,
+                'notes_data' => $paginator,
                 'is_destroy' => false]);
         }
         return redirect()->route('root');

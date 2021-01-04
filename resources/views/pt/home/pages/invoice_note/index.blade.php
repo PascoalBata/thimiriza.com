@@ -1,6 +1,6 @@
 <div id="notes_table_modal" class="modal bottom-sheet">
     <div class="modal-content">
-        <h4>{{ __('Produtos') }}</h4>
+        <h4>{{ __('Notas') }}</h4>
         <div class="row" id="table_notes" style="display: block;">
             <div class="col s12 m12 l12" style="overflow-x: auto;">
                 <table class="highlight" style="width: 100%;">
@@ -57,7 +57,7 @@
                         @endif
                     </tbody>
                 </table>
-                {!! $notes_data->links() !!}
+                {{$notes_data->links()}}
             </div>
         </div>
     </div>

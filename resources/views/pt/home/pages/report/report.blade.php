@@ -106,6 +106,7 @@
                     @endif
                 </div>
             </div>
+            {{ $invoices->links() }}
         </div>
     </div>
 @endsection

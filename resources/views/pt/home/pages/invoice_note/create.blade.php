@@ -38,8 +38,8 @@
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
-                <a class="waves-effect waves-light btn-small modal-trigger"
-                    href="#notes_table_modal">{{ __('Notas') }}</a>
+                <a class="waves-effect waves-light btn-small"
+                    href="{{route('index_invoice_note')}}">{{ __('Notas') }}</a>
             </div>
         </div>
     </form>

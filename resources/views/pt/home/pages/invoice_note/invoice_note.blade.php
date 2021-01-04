@@ -13,7 +13,7 @@
         @include('pt.home.pages.invoice_note.create')
     </div>
     <!-- Invoice Notes Modals -->
-    @include('pt.home.pages.invoice_note.index')
+    @includeWhen($is_index, 'pt.home.pages.invoice_note.index')
     @includeWhen($is_edit, 'pt.home.pages.invoice_note.edit')
 @endsection
 
@@ -25,10 +25,18 @@
             $('input#input_text, textarea#description').characterCounter();
         });
     </script>
+    @if ($is_index)
+    <script>
+        $(document).ready(function() {
+            $('#notes_table_modal').modal('open');
+        });
+    </script>
+    @endif
+
     @if ($is_edit)
         <script>
             $(document).ready(function() {
-                $('#table_notes_modal').modal('open');
+                $('#notes_table_modal').modal('open');
                 $('#edit_note_modal').modal('open');
             });
         </script>

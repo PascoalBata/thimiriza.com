@@ -48,7 +48,7 @@
                 <thead>
                     <tr>
                         <th>{{ __('Data') }}</th>
-                        <th style="text-align: center;">{{ __('ID') }}</th>
+                        <th style="text-align: center;">{{ __('Factura') }}</th>
                         <th style="text-align: center;">{{ __('Cliente') }}</th>
                         <th style="text-align: right;">{{ __('Valor') }}</th>
                         <th style=""></th>
@@ -75,9 +75,6 @@
                                     <button type="submit" class="waves-effect waves-light btn-small">{{__('Pagar')}}</button>
                                     <a class="waves-effect waves-yellow btn-small"
                                     href="{{ route('debit_invoice', $invoice->id) }}">{{__('ver')}}</a>
-                                    <a class="waves-effect waves-red btn-small"
-                                    href="{{ route('debit_invoice', $invoice->id) }}">{{__('nota')}}</a>
-                                    <i class="material-icons right"></i>
                                 </form>
                             </td>
                         </tr>
@@ -98,11 +95,12 @@
             <div class="row">
                 <div class="col s12 m12 l12">
                     @if (count($invoices) > 0)
-                        <a class="modal-trigger waves-effect waves-light btn-small" href="{{route('print_debit', strtotime($inicial_date) . strtotime($limit_date))}}">
+                        <a class="waves-effect waves-light btn-small" href="{{route('print_debit', strtotime($inicial_date) . strtotime($limit_date))}}">
                             {{ ('Imprimir') }}</a>
                     @endif
                 </div>
             </div>
+            {{$invoices->links()}}
         </div>
     </div>
 @endsection

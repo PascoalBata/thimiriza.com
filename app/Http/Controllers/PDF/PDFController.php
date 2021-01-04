@@ -292,7 +292,7 @@ class PDFController extends Controller
     }
 
     //PDF Report
-    public function print_report($inicial_date, $limit_date, Object $company, $type){
+    public function print_debit($inicial_date, $limit_date, Object $company, $type){
             if(Auth::check()){
             $user = Auth::user();
             $items = new stdClass;
@@ -360,5 +360,144 @@ class PDFController extends Controller
             }
         }
         return redirect()->route('root');
+    }
+
+    public function print_credit($inicial_date, $limit_date, Object $company, $type){
+            if(Auth::check()){
+            $user = Auth::user();
+            $items = new stdClass;
+            $i=0;
+            if(date('Y-m-d', strtotime($inicial_date)) === date('Y-m-d', strtotime($limit_date))){
+                $invoices = Invoice::whereDate('created_at', date('Y-m-d', strtotime($inicial_date)))->where('status', 'PAID')
+                ->orderByDesc('created_at')->get();
+                if($invoices !== null){
+                    $items = $invoices;
+                    foreach($invoices as $invoice){
+                        if($invoice->client_type === 'SINGULAR'){
+                            $client = DB::table('clients_singular')->find($invoice->id_client);
+                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                        }
+                        if($invoice->client_type === 'ENTERPRISE'){
+                            $client = DB::table('clients_enterprise')->find($invoice->id_client);
+                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                        }
+                        $i=$i+1;
+                    }
+                    $pdf_invoice = PDF::loadView('pt.pdf.report',
+                    [
+                        'inicial_date' => $inicial_date,
+                        'limit_date' => $limit_date,
+                        'type' => $type,
+                        'company' => $company,
+                        'user' => $user,
+                        'items' => $items
+                        ]);
+                        $pdf_invoice->setPaper('A4');
+                    $pdf_invoice->setWarnings(false);
+                    return $pdf_invoice->stream('Relatório.pdf');
+                }
+                return redirect()->route('view_debit');
+            }else{
+                $invoices = Invoice::whereBetween('created_at', [$inicial_date, $limit_date])->where('status', 'PAID')
+                ->orderByDesc('invoices.created_at')->get();
+                if($invoices !== null){
+                    $items = $invoices;
+                    foreach($invoices as $invoice){
+                        if($invoice->client_type === 'SINGULAR'){
+                            $client = DB::table('clients_singular')->find($invoice->id_client);
+                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                        }
+                        if($invoice->client_type === 'ENTERPRISE'){
+                            $client = DB::table('clients_enterprise')->find($invoice->id_client);
+                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                        }
+                        $i=$i+1;
+                    }
+                    $pdf_invoice = PDF::loadView('pt.pdf.report',
+                    [
+                        'inicial_date' => $inicial_date,
+                        'limit_date' => $limit_date,
+                        'type' => $type,
+                        'company' => $company,
+                        'user' => $user,
+                        'items' => $items
+                        ]);
+                        $pdf_invoice->setPaper('A4');
+                    $pdf_invoice->setWarnings(false);
+                    return $pdf_invoice->stream('Relatório.pdf');
+                }
+                return redirect()->route('view_debit');
+            }
+        }
+        return redirect()->route('root');
+    }
+    public function print_report($inicial_date, $limit_date, Object $company, $type){
+        if(Auth::check()){
+        $user = Auth::user();
+        $items = new stdClass;
+        $i=0;
+        if(date('Y-m-d', strtotime($inicial_date)) === date('Y-m-d', strtotime($limit_date))){
+            $invoices = Invoice::whereDate('created_at', date('Y-m-d', strtotime($inicial_date)))
+            ->orderByDesc('created_at')->get();
+            if($invoices !== null){
+                $items = $invoices;
+                foreach($invoices as $invoice){
+                    if($invoice->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($invoice->id_client);
+                        $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                    }
+                    if($invoice->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($invoice->id_client);
+                        $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                    }
+                    $i=$i+1;
+                }
+                $pdf_invoice = PDF::loadView('pt.pdf.report',
+                [
+                    'inicial_date' => $inicial_date,
+                    'limit_date' => $limit_date,
+                    'type' => $type,
+                    'company' => $company,
+                    'user' => $user,
+                    'items' => $items
+                    ]);
+                    $pdf_invoice->setPaper('A4');
+                $pdf_invoice->setWarnings(false);
+                return $pdf_invoice->stream('Relatório.pdf');
+            }
+            return redirect()->route('view_debit');
+        }else{
+            $invoices = Invoice::whereBetween('created_at', [$inicial_date, $limit_date])
+            ->orderByDesc('invoices.created_at')->get();
+            if($invoices !== null){
+                $items = $invoices;
+                foreach($invoices as $invoice){
+                    if($invoice->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($invoice->id_client);
+                        $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                    }
+                    if($invoice->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($invoice->id_client);
+                        $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                    }
+                    $i=$i+1;
+                }
+                $pdf_invoice = PDF::loadView('pt.pdf.report',
+                [
+                    'inicial_date' => $inicial_date,
+                    'limit_date' => $limit_date,
+                    'type' => $type,
+                    'company' => $company,
+                    'user' => $user,
+                    'items' => $items
+                    ]);
+                    $pdf_invoice->setPaper('A4');
+                $pdf_invoice->setWarnings(false);
+                return $pdf_invoice->stream('Relatório.pdf');
+            }
+            return redirect()->route('view_debit');
+        }
+    }
+    return redirect()->route('root');
     }
 }

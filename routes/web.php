@@ -54,19 +54,19 @@ Route::put('/company/payment', 'Company\CompanyController@payment')->name('compa
 Route::get('/about', 'Company\CompanyController@show_about')->name('view_about');
 
 //report
-Route::get('/report', 'Sale\SaleController@index_report')->name('view_report');
+Route::get('/report', 'Report\ReportController@index_report')->name('view_report');
 Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
 Route::get('/report/print/{invoices}', 'Report\ReportController@print_report')->name('print_report');
-Route::post('/report', 'HomeController@view_report')->name('get_report');
+Route::post('/report', 'Report\ReportController@index_report')->name('get_report');
 
 //credit
-Route::get('/credit', 'Sale\SaleController@index_credit')->name('view_credit');
+Route::get('/credit', 'Report\ReportController@index_credit')->name('view_credit');
 Route::get('/credit/{id}', 'Invoice\InvoiceController@see_invoice')->name('credit_invoice');
 Route::get('/credit/print/{invoices}', 'Report\ReportController@print_credit')->name('print_credit');
 Route::post('/credit', 'HomeController@view_credit')->name('get_credit');
 
 //debit
-Route::get('/debit', 'Sale\SaleController@index_debit')->name('view_debit');
+Route::get('/debit', 'Report\ReportController@index_debit')->name('view_debit');
 Route::get('/debit/{id}', 'Invoice\InvoiceController@see_invoice')->name('debit_invoice');
 Route::get('/debit/print/{invoices}', 'Report\ReportController@print_debit')->name('print_debit');
 Route::post('/debit', 'HomeController@view_debit')->name('get_debit');
@@ -84,7 +84,8 @@ Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
 Route::delete('/sales/clear', 'Sale\SaleController@clean_sale')->name('clean_sale');
 
 //invoice_note
-Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@index')->name('view_invoice_note');
+Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@create')->name('view_invoice_note');
+Route::get('/invoice_notes/index', 'InvoiceNote\InvoiceNoteController@index')->name('index_invoice_note');
 Route::post('/invoice_notes', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
 Route::get('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@edit')->name('edit_invoice_note');
 Route::put('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@update')->name('update_invoice_note');
