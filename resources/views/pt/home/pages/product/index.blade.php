@@ -10,7 +10,9 @@
                             <th>{{ __('Nome') }}</th>
                             <th style="text-align: center;">{{ __('Descrição') }}</th>
                             <th style="text-align: center;">{{ __('Quantidade') }}</th>
+                            @if ($company_type === 'NORMAL')
                             <th style="text-align: center;">{{ __('IVA') }}</th>
+                            @endif
                             <th style="text-align: center;">{{ __('Preço') }}</th>
                             <th style="width: 5%;"></th>
                         </tr>
@@ -22,6 +24,7 @@
                                 <td>{{ $product->name }}</td>
                                 <td style="text-align: center;">{{ $product->description }}</td>
                                 <td style="text-align: center;">{{ $product->quantity }}</td>
+                                @if ($company_type === 'NORMAL')
                                 <td style="text-align: center;">
                                     <label class="black-text">
                                         <input disabled type="checkbox" class="filled-in"
@@ -32,6 +35,7 @@
                                         <span></span>
                                     </label>
                                 </td>
+                                @endif
                                 <td style="text-align: center;">{{ number_format($product->price, 2, ',', '.') }}
                                     {{ __('MT') }}</td>
                                 <td style="text-align: right;">

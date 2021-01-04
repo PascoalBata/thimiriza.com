@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cotação</title>
     <style>
+        @page {
+                margin: 100px 25px;
+            }
         #items_table{
             width: 100%;
             font-size: 14px;
@@ -26,22 +29,29 @@
                     border-bottom-width: medium;
                     font-size: 12px;
                 }
-        header {
+            header {
                 position: fixed;
-                top: -60px;
-                left: 5px;
+                top: -80px;
+                left: 0px;
                 right: 0px;
-                height: 50px;
+                height: 8.5cm;
 
                 /** Extra personal styles **/
                 background-color: #ffffff;
                 color: rgb(66, 66, 66);
-                line-height: 30px;
+                line-height: 20px;
             }
-
+            main{
+                top: 7.8cm;
+                position: relative;
+                page-break-after: auto;
+            }
+            main:last-child {
+                page-break-after: never;
+            }
             footer {
                 position: fixed;
-                bottom: 0px;
+                bottom: -40px;
                 left: 0px;
                 right: 0px;
                 height: 4cm;
@@ -51,7 +61,7 @@
                 color: rgb(0, 0, 0);
             }
 
-            #table_footer {
+            footer #table_footer {
                 width: 100%;
                 border-top: solid;
                 border-top-color: gray;
@@ -70,69 +80,67 @@
         @if ($type === 'REPORT')
             <h3>Relatório (Geral)</h3>
         @endif
+        <table style="width: 100%; font-size: 14px; border-top: solid; border-top-color: gray; border-top-width: medium;">
+            <tr>
+                <td>
+                    <table>
+                        <tr><td style="width: 100px;">Emitido a:</td><td> {{now()}}  </td></tr>
+                        <tr><td style="width: 100px;">Por:</td><td colspan="2" style="width: 230px;">
+                            @if ($user->privileges === 'ADMIN')
+                                {{$user->name}}
+                            @else
+                                {{$user->name . ' ' . $user->surname}}
+                            @endif
+                        </td></tr>
+                    </table>
+                </td>
+                <td>
+
+                </td>
+                <td rowspan="2">
+                    <table>
+                        <tr><td></td></tr>
+                        <tr><td><img src= "{{url('storage/' .$company->logo) }}"  height="130px" width="210px"/></td></tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 3cm;"></td><td></td><td></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: center; font-size: 16px;">
+                    @if (date('Y-m-d', strtotime($inicial_date)) === date('Y-m-d', strtotime($limit_date)))
+                    {{date('d-m-Y', strtotime($inicial_date))}}
+                    @else
+                    {{date('d-m-Y', strtotime($inicial_date))}} até {{date('d-m-Y', strtotime($limit_date))}}
+                    @endif
+                </td>
+            </tr>
+        </table>
     </header>
-
-    <table style="width: 100%; font-size: 14px; border-top: solid; border-top-color: gray; border-top-width: medium;">
-        <tr>
-            <td>
-                <table>
-                    <tr><td style="width: 100px;">Emitido a:</td><td> {{now()}}  </td></tr>
-                    <tr><td style="width: 100px;">Por:</td><td colspan="2" style="width: 230px;">
-                        @if ($user->privileges === 'ADMIN')
-                            {{$user->name}}
-                        @else
-                            {{$user->name . ' ' . $user->surname}}
-                        @endif
-                    </td></tr>
-                </table>
-            </td>
-            <td>
-
-            </td>
-            <td rowspan="2">
-                <table>
-                    <tr><td></td></tr>
-                    <tr><td><img src= "{{url('storage/' .$company->logo) }}"  height="130px" width="210px"/></td></tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td style="height: 3cm;"></td><td></td><td></td>
-        </tr>
-        <tr>
-            <td colspan="3" style="text-align: center; font-size: 16px;">
-                @if (date('Y-m-d', strtotime($inicial_date)) === date('Y-m-d', strtotime($limit_date)))
-                {{date('d-m-Y', strtotime($inicial_date))}}
-                @else
-                {{date('d-m-Y', strtotime($inicial_date))}} até {{date('d-m-Y', strtotime($limit_date))}}
+    <main>
+        <table id="items_table">
+            <tr><th style="text-align:left;">DATA</th>
+                <th style="text-align:center;">FACTURA</th>
+                @if ($type === 'REPORT')
+                <th style="text-align:center;">ESTADO</th>
                 @endif
-            </td>
-        </tr>
-    </table>
-
-    <br/>
-    <table id="items_table">
-        <tr><th style="text-align:left;">DATA</th>
-            <th style="text-align:center;">FACTURA</th>
-            @if ($type === 'REPORT')
-            <th style="text-align:center;">ESTADO</th>
-            @endif
-            <th style="text-align:center;">CLIENTE</th>
-            <th style="text-align:right;">VALOR</th>
-        </tr>
-        @foreach ($items as $item)
-        <tr>
-            <td>{{$item->created_at}}</td>
-            <td style="text-align: center;">{{$item->id}}</td>
-            @if ($type === 'REPORT')
-            <td style="text-align: center;">{{$item->status}}</td>
-            @endif
-            <td style="text-align: center;">{{$item->client_name}}</td>
-            <td style="text-align: right;">{{number_format($item->price, 2, ",", ".") . ' MT'}}</td>
-        </tr>
-        @endforeach
-    </table>
-
+                <th style="text-align:center;">CLIENTE</th>
+                <th style="text-align:right;">VALOR</th>
+            </tr>
+            @foreach ($items as $item)
+            <tr>
+                <td>{{$item->created_at}}</td>
+                <td style="text-align: center;">{{$item->id}}</td>
+                @if ($type === 'REPORT')
+                <td style="text-align: center;">{{$item->status}}</td>
+                @endif
+                <td style="text-align: center;">{{$item->client_name}}</td>
+                <td style="text-align: right;">{{number_format($item->price, 2, ",", ".") . ' MT'}}</td>
+            </tr>
+            @endforeach
+        </table>
+    </main>
     <footer>
         <table id="table_footer">
 

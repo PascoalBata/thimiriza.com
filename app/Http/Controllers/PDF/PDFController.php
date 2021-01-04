@@ -196,6 +196,7 @@ class PDFController extends Controller
                     'iva_total' => $iva_total,
                     ]);
                     $pdf_quote->setPaper('A4');
+
                 $pdf_quote->setWarnings(false);
                 return $pdf_quote->stream('Cotacao.pdf');
             }
