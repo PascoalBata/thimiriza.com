@@ -27,7 +27,6 @@ class ServiceController extends Controller
             'logo' => $company_validate['company_logo'],
             'company_type' => $company_validate['company_type'],
             'is_edit' => false,
-            'is_index' => true,
             'is_destroy' => false]);
         }
         return route('root');
@@ -40,18 +39,7 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        if(Auth::check()){
-            $user = Auth::user();
-            $company_controller = new CompanyController;
-            $company_validate = $company_controller->validate_company($user->id_company);
-            return view ('pt.home.pages.service.service', $user,
-            ['logo' => $company_validate['company_logo'],
-            'company_type' => $company_validate['company_type'],
-            'is_edit' => false,
-            'is_index' => false,
-            'is_destroy' => false]);
-        }
-        return route('root');
+        //
     }
 
     /**
@@ -116,7 +104,6 @@ class ServiceController extends Controller
                 'company_type' => $company_validate['company_type'],
                 'service' => $service,
                 'is_edit' => false,
-                'is_index' => true,
                 'is_destroy' => false]);
             }
             return view ('pt.home.pages.service.service', $user, ['services' => $services,
@@ -124,7 +111,6 @@ class ServiceController extends Controller
             'company_type' => $company_validate['company_type'],
             'selected_service' => $service,
             'is_edit' => true,
-            'is_index' => true,
             'is_destroy' => false]);
         }
         return route('root');

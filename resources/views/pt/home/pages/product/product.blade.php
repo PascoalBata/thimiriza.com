@@ -13,31 +13,35 @@
         @include('pt.home.pages.product.create')
     </div>
     <!-- Products Modals -->
-    @includeWhen($is_index,'pt.home.pages.product.index')
+    @include('pt.home.pages.product.index')
     @includeWhen($is_edit, 'pt.home.pages.product.edit')
 @endsection
 
 <!-- Scripts -->
 @section('script')
     <script>
+        function displayProductsTable() {
+            if (document.getElementById('products_table').style.display === 'none') {
+                document.getElementById('products_table').style.display = 'block';
+            } else {
+                document.getElementById('products_table').style.display = 'none';
+            }
+        }
+
         $(document).ready(function() {
             $('.modal').modal();
         });
+
     </script>
-    @if ($is_index)
-        <script>
-            $(document).ready(function() {
-                $('#products_table_modal').modal('open');
-            });
-        </script>
-    @endif
     @if ($is_edit)
         <script>
             $(document).ready(function() {
+                $('#table_products_modal').modal('open');
                 $('#edit_product_modal').modal('open');
             });
         </script>
     @endif
+
     @if ($is_destroy)
         <script>
             $(document).ready(function() {

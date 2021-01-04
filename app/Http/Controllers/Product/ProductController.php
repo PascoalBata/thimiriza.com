@@ -27,7 +27,6 @@ class ProductController extends Controller
             'logo' => $company_validate['company_logo'],
             'company_type' => $company_validate['company_type'],
             'is_edit' => false,
-            'is_index' => true,
             'is_destroy' => false]);
         }
         return route('root');
@@ -40,18 +39,7 @@ class ProductController extends Controller
      */
     public function create(Request $request)
     {
-        if(Auth::check()){
-            $user = Auth::user();
-            $company_controller = new CompanyController;
-            $company_validate = $company_controller->validate_company($user->id_company);
-            return view ('pt.home.pages.product.product', $user,
-            ['logo' => $company_validate['company_logo'],
-            'company_type' => $company_validate['company_type'],
-            'is_edit' => false,
-            'is_index' => false,
-            'is_destroy' => false]);
-        }
-        return route('root');
+
     }
 
     /**
@@ -117,7 +105,6 @@ class ProductController extends Controller
                 'company_type' => $company_validate['company_type'],
                 'product' => $product,
                 'is_edit' => false,
-                'is_index' => true,
                 'is_destroy' => false]);
             }
             return view ('pt.home.pages.product.product', $user, ['products' => $products,
@@ -125,7 +112,6 @@ class ProductController extends Controller
             'company_type' => $company_validate['company_type'],
             'selected_product' => $product,
             'is_edit' => true,
-            'is_index' => true,
             'is_destroy' => false]);
         }
         return route('root');
