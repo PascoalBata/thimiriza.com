@@ -93,14 +93,16 @@ Route::delete('/invoice_notes/destroy/{id}', 'InvoiceNote\InvoiceNoteController@
 
 
 //sevice
-Route::get('/services', 'Service\ServiceController@index')->name('view_service');
+Route::get('/services', 'Service\ServiceController@create')->name('view_service');
+Route::get('/services/index', 'Service\ServiceController@index')->name('index_service');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
 Route::get('/services/update/{id}', 'Service\ServiceController@edit')->name('edit_service');
 Route::put('/services/update/{id}', 'Service\ServiceController@update')->name('update_service');
 Route::delete('/services/destroy/{id}', 'Service\ServiceController@destroy')->name('destroy_service');
 
 //product
-Route::get('/products', 'Product\ProductController@index')->name('view_product');
+Route::get('/products', 'Product\ProductController@create')->name('view_product');
+Route::get('/products/index', 'Product\ProductController@index')->name('index_product');
 Route::post('/products', 'Product\ProductController@store')->name('store_product');
 Route::get('/products/update/{id}', 'Product\ProductController@edit')->name('edit_product');
 Route::put('/products/update/{id}', 'Product\ProductController@update')->name('update_product');

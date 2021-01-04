@@ -14,29 +14,26 @@
 </div>
 
 <!-- Users Modal -->
-@include('pt.home.pages.service.index')
+@includeWhen($is_index, 'pt.home.pages.service.index')
 @includeWhen($is_edit, 'pt.home.pages.service.edit')
 @endsection
 
 @section('script')
     <script>
-        function displayServiceTable() {
-            if (document.getElementById('services_table').style.display === 'none') {
-                document.getElementById('services_table').style.display = 'block';
-            } else {
-                document.getElementById('services_table').style.display = 'none';
-            }
-        }
-
         $(document).ready(function() {
             $('.modal').modal();
         });
-
     </script>
+    @if ($is_index)
+    <script>
+        $(document).ready(function() {
+            $('#services_table_modal').modal('open');
+        });
+    </script>
+@endif
     @if ($is_edit)
         <script>
             $(document).ready(function() {
-                $('#services_table_modal').modal('open');
                 $('#edit_service_modal').modal('open');
             });
         </script>
