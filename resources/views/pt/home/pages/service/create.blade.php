@@ -53,7 +53,7 @@
                         <i class="material-icons right"></i>
                     </button>
                     <a class="waves-effect waves-light btn-small modal-trigger"
-                        href="#services_table_modal">{{ __('Serviços') }}</a>
+                        href="{{route('index_service')}}">{{ __('Serviços') }}</a>
                 </div>
             </div>
     </form>

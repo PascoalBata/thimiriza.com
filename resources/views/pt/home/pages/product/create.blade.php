@@ -66,7 +66,7 @@
                     <i class="material-icons right"></i>
                 </button>
                 <a class="waves-effect waves-light btn-small modal-trigger"
-                    href="#products_table_modal">{{ __('Produtos') }}</a>
+                    href="{{route('index_product')}}">{{ __('Produtos') }}</a>
             </div>
         </div>
     </form>
