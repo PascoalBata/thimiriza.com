@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 */
+//to make storage link
+Route::get('/storage_link', function () {
+    Artisan::call('storage:link');
+});
 
 Route::get('/', function () {
     return view('auth.login');
@@ -36,7 +41,7 @@ Route::post('/loggout', 'User\UserController@end_session')->name('end_session');
 Auth::routes(['verify' => true]);
 
 //Aplicar Middware de Authentication
-Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_company')->middleware('auth');
+//Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_selected_company')->middleware('auth');
 Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
 Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
 Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
