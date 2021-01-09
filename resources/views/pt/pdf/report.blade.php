@@ -7,7 +7,8 @@
     <title>Cotação</title>
     <style>
         @page {
-                margin: 100px 25px;
+                size: 7in 9.25in;
+            margin: 27mm 16mm 27mm 16mm;
             }
         #items_table{
             width: 100%;
@@ -18,7 +19,7 @@
             border-spacing: 0px;
         }
         #items_table td{
-                    font-size: 14px;
+                    font-size: 12px;
                     border-top: solid;
                 border-top-color: transparent;
                 border-top-width: thick;
@@ -42,7 +43,7 @@
                 line-height: 20px;
             }
             main{
-                top: 7.8cm;
+                top: 4.5cm;
                 position: relative;
                 page-break-after: auto;
             }
@@ -105,7 +106,7 @@
                 </td>
             </tr>
             <tr>
-                <td style="height: 3cm;"></td><td></td><td></td>
+                <td style="height: 1.5cm;"></td><td></td><td></td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: center; font-size: 16px;">
@@ -142,9 +143,7 @@
         </table>
     </main>
     <footer>
-        <table id="table_footer">
 
-        </table>
     </footer>
 </body>
 </html>

@@ -131,15 +131,15 @@ class InvoiceNoteController extends Controller
                 $invoice_note->created_by = $user->id;
                 if($invoice_note->save()){
                     if($request['type'] === 'DEBIT'){
-                        return redirect()->route('create_invoice_note')->with('operation_status', 'Nota de crédito criada com sucesso.');
+                        return redirect()->route('view_invoice_note')->with('operation_status', 'Nota de crédito criada com sucesso.');
                     }
                     if($request['type'] === 'CREDIT'){
-                        return redirect()->route('create_invoice_note')->with('operation_status', 'Nota de dédito criada com sucesso.');
+                        return redirect()->route('view_invoice_note')->with('operation_status', 'Nota de dédito criada com sucesso.');
                     }
                 }
-                return redirect()->route('create_invoice_note')->with('operation_status', 'Nao foi possivel criar a nota. Ocorreu um erro.');
+                return redirect()->route('view_invoice_note')->with('operation_status', 'Nao foi possivel criar a nota. Ocorreu um erro.');
             }
-            return redirect()->route('create_invoice_note')->with('operation_status', 'A factura inserida nao existe');
+            return redirect()->route('view_invoice_note')->with('operation_status', 'A factura inserida nao existe');
         }
         return redirect()->route('root');
     }

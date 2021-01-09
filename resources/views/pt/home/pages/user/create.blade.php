@@ -1,102 +1,31 @@
 <div class="row" style="padding-bottom: 5%">
-    <form method="POST" action="{{ route('store_user') }}">
+    <form method="POST" name="saleForm" action="{{ route('store_invoice_note') }}">
+        @method('POST')
         @csrf
         <div class="row">
             <div class="input-field col s12 m6 l6">
-                <label for="name" class="black-text">{{ __('Nome') }}</label>
-                <input id="name" type="text" class="black-text" name="name" value="{{ old('name') }}" required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
+                <label for="invoice_id" class="black-text">{{ __('Nº. da factura') }}</label>
+                <input id="invoice_id" type="number" autocomplete="off" class="black-text" name="invoice_id"
+                value="{{ old('price') }}" required/>
             </div>
             <div class="input-field col s12 m6 l6">
-                <label for="surname" class="black-text">{{ __('Apelido') }}</label>
-                <input id="surname" type="text" class="black-text" name="surname" value="{{ old('surname') }}"
-                    required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <select id="gender" name="gender">
-                    <optgroup label="{{ __('Género') }}">
-                        <option value="HOMEM">Homem</option>
-                        <option value="MULHER">Mulher</option>
+                <select id="type" name="type">
+                    <optgroup label="{{ __('Tipo de nota') }}">
+                        <option value="CREDIT">{{ __('Crédito') }}</option>
+                        <option value="DEBIT">{{ __('Dédito') }}</option>
                     </optgroup>
                 </select>
             </div>
-            <div class="input-field col s12 m6 l6">
-                <label for="birthdate" class="black-text">{{ __('Data de nascimento') }}</label>
-                <input id="birthdate" placeholder="" type="date" class="black-text" name="birthdate" value="{{ old('birthdate') }}" required>
-            </div>
         </div>
         <div class="row">
             <div class="input-field col s12 m6 l6">
-                <label for="email" class="black-text">{{ __('Email') }}</label>
-                <input id="email" type="email" class="black-text" name="email" value="{{ old('email') }}" required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
+                <textarea id="description" name="description" class="materialize-textarea" data-length="200"></textarea>
+                <label for="description" class="black-text">Descrição</label>
             </div>
             <div class="input-field col s12 m6 l6">
-                <label for="phone" class="black-text">{{ __('Telefone') }}</label>
-                <input id="phone" type="tel" data-target="20" class="black-text" name="phone"
-                    value="{{ old('phone') }}" required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <select id="privilege" name="privilege">
-                    <optgroup label="{{ __('Previlégio') }}">
-                        <option value="HOMEM">Parcial</option>
-                        <option value="MULHER">Total</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div class="input-field col s12 m6 l6">
-                <label for="address" class="black-text">{{ __('Endereço/Morada') }}</label>
-                <input id="address" type="text" class="black-text" name="address" value="{{ old('address') }}"
+                <label for="value" class="black-text">{{ __('Valor') }}</label>
+                <input id="value" type="number" class="black-text" name="value" value="{{ old('price') }}"
                     required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12 m6 l6">
-                <label for="password" class="black-text">{{ __('Senha') }}</label>
-                <input id="password" type="password" class="black-text" name="password"
-                    value="{{ old('password') }}" required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-            <div class="input-field col s12 m6 l6">
-                <label for="confirm_password" class="black-text">{{ __('Confirme a senha') }}</label>
-                <input id="confirm_password" type="password" class="black-text" name="confirm_password"
-                    value="{{ old('confirm_password') }}" required>
-                @error('email')
-                <span class="red-text" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
             </div>
         </div>
         <div class="row">
@@ -109,7 +38,8 @@
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
-                <a class="waves-effect waves-light btn-small modal-trigger" href="#table_users_modal">{{__('Utilizadores')}}</a>
+                <a class="waves-effect waves-light btn-small"
+                    href="{{route('index_invoice_note')}}">{{ __('Notas') }}</a>
             </div>
         </div>
     </form>

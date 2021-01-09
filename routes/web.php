@@ -18,9 +18,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 */
+Route::get('/phpinfo', function() {
+    return phpinfo();
+});
 //to make storage link
 Route::get('/storage_link', function () {
-    Artisan::call('storage:link');
+    return Artisan::call('storage:link');
 });
 
 Route::get('/', function () {
@@ -42,16 +45,17 @@ Auth::routes(['verify' => true]);
 
 //Aplicar Middware de Authentication
 //Route::get('Admin/{id}/Update', 'Company\CompanyController@edit')->name('edit_selected_company')->middleware('auth');
-Route::get('Admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
-Route::get('Admin/{id}', 'Company\CompanyController@show')->name('get_company')->middleware('auth');
-Route::put('Admin/{id}', 'Company\CompanyController@update')->name('save_update_company')->middleware('auth');
-Route::delete('Admin/{id}', 'Company\CompanyController@destroy')->name('remove_company')->middleware('auth');
-
-
-Route::get('home', 'HomeController@index')->name('home');
+Route::get('/admin', function () {
+    return view('pt.Admin.pages.login');
+})->name('login_admin_view');
+Route::post('/admin', 'Admin\AdminController@login')->name('login_admin');
+Route::get('admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
+Route::get('admin/{id}', 'Company\CompanyController@show')->name('get_company');
+Route::put('admin/{id}', 'Company\CompanyController@update')->name('save_update_company');
+Route::delete('admin/{id}', 'Company\CompanyController@destroy')->name('remove_company');
 
 //company (authenticated)
-Route::get('/company', 'company\CompanyController@show_company')->name('view_company');
+Route::get('/company', 'Company\CompanyController@show_company')->name('view_company');
 Route::put('/company', 'Company\CompanyController@update_company')->name('edit_company');
 Route::put('/company/payment', 'Company\CompanyController@payment')->name('company_payment');
 

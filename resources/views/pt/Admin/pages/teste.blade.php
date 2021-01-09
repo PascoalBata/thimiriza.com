@@ -1,4 +1,4 @@
-@extends('pt.layouts.app')
+@extends('pt.Admin.layouts.app')
 @section ('title', 'Nova conta Thimiriza')
 @section('content')
 <div class="container grey lighten-5" style="opacity: 90%; transform: translateY(2%);">

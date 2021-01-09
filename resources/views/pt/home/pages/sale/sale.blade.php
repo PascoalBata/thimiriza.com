@@ -1,4 +1,4 @@
-@extends('pt.home.layouts.app')
+@extends('pt.home.layouts.app_2')
 
 @section('username', $name)
 @section('user_email', $email)

@@ -7,19 +7,20 @@
     <title>Cotação</title>
     <style>
         @page {
-                margin: 100px 25px;
+                size: 7in 9.25in;
+            margin: 27mm 16mm 27mm 16mm;
             }
         #items_table{
             width: 100%;
-            font-size: 14px;
+            font-size: 12px;
             border-top: solid;
             border-top-color: gray;
             border-top-width: medium;
             border-spacing: 0px;
         }
         #items_table td{
-                    font-size: 14px;
-                    border-top: solid;
+                font-size: 12px;
+                border-top: solid;
                 border-top-color: transparent;
                 border-top-width: thick;
                 }
@@ -27,7 +28,7 @@
                     border-bottom: solid;
                     border-bottom-color: gray;
                     border-bottom-width: medium;
-                    font-size: 12px;
+                    font-size: 11px;
                 }
         header {
                 position: fixed;
@@ -109,7 +110,7 @@
     </header>
     <main>
         <table id="items_table">
-            <tr><th style="text-align:left;">NOME</th><th style="text-align:center;">DESCRIÇÃO</th><th style="text-align:center;">QUANT.</th><th style="text-align:right;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESC.</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>
+            <tr><th style="text-align:left;">NOME</th><th style="text-align:center;">DESCRIÇÃO</th><th style="text-align:center;">QTD</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESC.</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>
             @foreach ($sale_items as $sale_item)
                 <tr>
                     <td>
@@ -143,10 +144,10 @@
 
     <footer>
         <table id="table_footer">
-            <tr><td colspan="2">Banco: {{ $data['company_bank_account_name'] }}</td><td></td><td></td><td><strong>Incidência:</strong></td><td colspan="2" style="text-align: right;"> {{number_format($price_incident_total, 2, ",", ".") . ' MT' }} </td></tr>
-            <tr><td colspan="2">Titular: {{ $data['company_bank_account_owner'] }}</td><td></td><td></td><td><strong>IVA:</strong></td><td colspan="2" style="text-align: right;"> {{number_format($iva_total, 2, ",", ".") . ' MT' }} </td></tr>
+            <tr><td colspan="2">Banco: {{ $data['company_bank_account_name'] }}</td><td></td><td><strong>Incidência:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($price_incident_total, 2, ",", ".") . ' MT' }} </td></tr>
+            <tr><td colspan="2">Titular: {{ $data['company_bank_account_owner'] }}</td><td></td><td><strong>IVA:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($iva_total, 2, ",", ".") . ' MT' }} </td></tr>
             <tr><td colspan="2">Nº. da conta: {{ $data['company_bank_account_number'] }}</td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td colspan="2">NIB: {{ $data['company_bank_account_nib'] }}</td><td></td><td></td><td style="font-size: 18px;"><strong>Total:</strong></td><td colspan="2"><strong style="text-align: right; font-size: 18px;"> {{number_format($price_total, 2, ",", ".") . ' MT' }} </strong></td></tr>
+            <tr><td colspan="2">Titular: {{ $data['company_bank_account_nib'] }}</td><td></td><td><strong>Total:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($price_total, 2, ",", ".") . ' MT' }} </td></tr>
             <tr><td><br/></td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr><td colspan="4">Documento processado por computador (Thimiriza)</td><td></td><td></td><td></td><td><strong></strong></td><td></td></tr>
             </table>

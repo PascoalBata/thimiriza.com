@@ -18,7 +18,10 @@
 
         body {
             height: 100%;
+            /*
             background-image: url("{{ asset('assets/images/main_bg.jpg') }}");
+            */
+            background-color: #fafafa;
             background-position: center center;
             background-size: cover;
             background-repeat: no-repeat;
@@ -278,11 +281,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.fixed-action-btn');
-            var instances = M.FloatingActionButton.init(elems, {
-                direction: 'top'
-            });
+            var instances = M.FloatingActionButton.init(elems, {direction: 'top'});
         });
-
     </script>
     @yield('script')
 </body>
