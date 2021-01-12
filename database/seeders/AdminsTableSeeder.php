@@ -1,9 +1,11 @@
 <?php
 
-use App\Models\Package;
+namespace Database\Seeders;
+
+use App\Models\Admin;
 use Illuminate\Database\Seeder;
 
-class PackagesTableSeeder extends Seeder
+class AdminsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,7 +14,6 @@ class PackagesTableSeeder extends Seeder
      */
     public function run()
     {
-        //
-        factory(Package::class, 1)->create();
+        Admin::factory()->times(1)->create();
     }
 }

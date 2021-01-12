@@ -168,20 +168,28 @@ class SaleController extends Controller
                 $iva = 0; //0%
             }
 
-            $client = DB::table('clients_enterprise')
-                ->select('*')
+            $client = Client_Enterprise::select('*')
                 ->where('email', 'like', $client_email)
                 ->where('name', 'like', $client_name)->get();
-            if(!$client->count() > 0){
-                $client = DB::table('clients_singular')
-                    ->select('*')
-                    ->where('email', 'like', $client_email);
-                if(!$client->exists()){
-                    return redirect()->route('view_sale')->with('sale_notification', 'Esse cliente nao existe.');
+            if($client->count() === 0){
+                $client = Client_Singular::select('*')
+                    ->where('email', 'like', $client_email)->get();
+                if($client->count() === 0){
+                    return redirect()->route('view_sale')->with('sale_notification', 'Esse cliente não existe.');
                 }
                 $type_client = 'SINGULAR';
             }
             $client = $client->first();
+            $last_sale = Sale::select('*')->where('created_by', $user->id)->first();
+            if($last_sale !== null){
+                if($last_sale->type_client !== $type_client){
+                    Sale::where('created_by', $user->id)->forceDelete();
+                }
+                if(intval($last_sale->id_client) !== intval($client->id)){
+                    Sale::where('created_by', $user->id)->forceDelete();
+                }
+            }
+
             if($sale_type === 'PRODUCT'){
                 $products = Product::where('id_company', 'like', $user->id_company)
                 ->where('products.name', 'like', $sale_name)
@@ -211,7 +219,7 @@ class SaleController extends Controller
                     }
                 }
                 //product does not exist
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse produto nao existe.');
+                return redirect()->route('view_sale')->with('sale_notification', 'Esse produto não existe.');
             }
             if($sale_type === 'SERVICE'){
                 $services = Service::where('id_company', 'like', $user->id_company)
@@ -228,11 +236,11 @@ class SaleController extends Controller
                             ['quantity' => $quantity, 'discount' => $discount]
                         )
                     ){
-                        return redirect()->route('view_sale')->with('sale_notification', 'Sucesso Service.');
+                        return redirect()->route('view_sale')->with('sale_notification', 'Serviço adicionado com sucesso.');
                     }
                 }
                 //service does no exist
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nao existe.');
+                return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nãoo existe.');
             }
             return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }

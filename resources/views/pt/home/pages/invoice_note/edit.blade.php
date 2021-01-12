@@ -27,9 +27,9 @@
                     </select>
                 </div>
                 <div class="input-field col s12 m6 l6">
-                    <label for="edit_invoice_id" class="black-text">{{ __('ID da factura') }}</label>
-                    <input id="edit_invoice_id" type="number" autocomplete="off" class="black-text" name="edit_invoice_id"
-                    value="{{ $selected_note->id_invoice }}" required/>
+                    <label for="edit_invoice_number" class="black-text">{{ __('Nº. da factura') }}</label>
+                    <input id="edit_invoice_number" type="text" autocomplete="off" class="black-text" name="edit_invoice_number"
+                    value="{{ $selected_note->invoice_number }}" required/>
                 </div>
             </div>
             <div class="row">

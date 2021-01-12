@@ -7,8 +7,8 @@
     <title>Cotação</title>
     <style>
         @page {
-                size: 7in 9.25in;
-            margin: 27mm 16mm 27mm 16mm;
+                size: 21cm 29.7cm;
+                margin: 27mm 16mm 27mm 16mm;
             }
         #items_table{
             width: 100%;
@@ -76,7 +76,7 @@
             <h3>Cotação</h3>
         @endif
         @if ($data['type'] === 'INVOICE')
-            <h3>Factura: {{date('Y') . '/' . $invoice_id}}</h3>
+            <h3>Factura: {{$serie . '/' . $invoice_number}}</h3>
         @endif
         <table id="table_info" style="width: 100%; font-size: 14px; border-top: solid; border-top-color: gray; border-top-width: medium;">
             <tr>
@@ -110,13 +110,13 @@
     </header>
     <main>
         <table id="items_table">
-            <tr><th style="text-align:left;">NOME</th><th style="text-align:center;">DESCRIÇÃO</th><th style="text-align:center;">QTD</th><th style="text-align:center;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESC.</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>
+            <tr><th style="text-align:left;">NOME</th><th style="text-align:center;">DESCRIÇÃO</th><th style="text-align:center;">QTD</th><th style="text-align:right;">PREÇO UNIT.</th><th style="text-align:center;">IVA</th><th style="text-align:center;">DESC.</th><th style="text-align:right;">PREÇO INC.</th><th style="text-align:right;">PREÇO TOTAL</th></tr>
             @foreach ($sale_items as $sale_item)
                 <tr>
                     <td>
                         {{ $sale_item['name'] }}
                     </td>
-                    <td>
+                    <td style="text-align:center;">
                         {{ $sale_item['description'] }}
                     </td>
                     <td style="text-align:center;">

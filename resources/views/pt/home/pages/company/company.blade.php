@@ -5,12 +5,12 @@
 @section('logo', $logo)
 @section('style')
     <style>
-        div .text-1 {
-            font-size: 20px;
+        .text-1 {
+            font-weight: bold;
         }
 
-        div .text-2 {
-            font-size: 18px;
+        .text-2 {
+
         }
 
     </style>

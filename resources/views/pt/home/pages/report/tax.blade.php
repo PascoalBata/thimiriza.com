@@ -11,6 +11,12 @@
         <div class="row center-align">
             <div class="col s12 m12 l12">
                 <h1 class="display-4 black-text"><strong>{{ __('Relatório') }}</strong></h1>
+                @if ($company_type === 'NORMAL')
+                    <h5 class="display-4 black-text"><strong>{{ __('Regime Normal') }}</strong></h5>
+                @endif
+                @if ($company_type === 'ISPC')
+                    <h5 class="display-4 black-text"><strong>{{ __('Regime ISPC') }}</strong></h5>
+                @endif
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
@@ -49,50 +55,56 @@
             <table class="highlight" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>{{ __('Data') }}</th>
-                        <th style="text-align: center;">{{ __('Factura') }}</th>
-                        <th style="text-align: center;">{{ __('Estado') }}</th>
-                        <th style="text-align: center;">{{ __('Cliente') }}</th>
-                        <th style="text-align: right;">{{ __('Valor') }}</th>
-                        <th></th>
+                        <th>{{ __('Factura') }}</th>
+                        <th style="text-align: right;">{{ __('Incidência') }}</th>
+                        @if ($company_type === 'NORMAL')
+                            <th style="text-align: right;">{{ __('Imposto (17%)') }}</th>
+                        @endif
+                        @if ($company_type === 'ISPC')
+                            <th style="text-align: right;">{{ __('Imposto (3%)') }}</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
                     @if (count($invoices) > 0)
                     @php
-                    $total = 0;
+                    $total_iva = 0;
+                    $total_incident = 0;
                     $facturas = 0;
                     $limit_date = $invoices[0]->created_at;
                     $inicial_date = $invoices[0]->created_at;
                     @endphp
                     @foreach ($invoices as $invoice)
                         <tr>
-                            <td>{{ $inicial_date = $invoice->created_at }}</td>
-                            <td style="text-align: center;">{{ date('Y', strtotime($invoice->created_at)) . '/' . $invoice->number }}</td>
-                            @if ($invoice->status === 'PAID')
-                            <td style="text-align: center;">Pago</td>
+                            <td>{{ date('Y', strtotime($invoice->created_at)) . '/' . $invoice->number }}</td>
+                            <td style="text-align: right;">{{ number_format($invoice->incident, 2, ',', '.') }} {{__('MT') }}</td>
+                            @if ($company_type === 'NORMAL')
+                                <td style="text-align: right;">{{ number_format($invoice->iva, 2, ',', '.') }} {{__('MT') }}</td>
                             @endif
-                            @if ($invoice->status === 'NOT PAID')
-                            <td style="text-align: center;">Em dívida</td>
+                            @if ($company_type === 'ISPC')
+                                <td style="text-align: right;">{{ number_format($invoice->incident * 0.03, 2, ',', '.') }} {{__('MT') }}</td>
                             @endif
-                            <td style="text-align: center;">{{ $invoice->client_name }}</td>
-                            <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }} {{__('MT') }}</td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                                    onclick="window.open('report/{{ $invoice->id }}');">
+                                <a class="modal-trigger waves-effect waves-light btn-small" href="{{route('report_invoice', $invoice->id)}}">
                                     {{ __('ver') }}</a>
                             </td>
                         </tr>
                         @php
                         $facturas = $facturas + 1;
-                        $total = $total + $invoice->price;
+                        $total_incident = $total_incident + $invoice->incident;
+                        if ($company_type === 'NORMAL') {
+                            $total_iva = $total_iva + $invoice->iva;
+                        }
+                        if ($company_type === 'ISPC') {
+                            $total_iva = $total_iva + $invoice->incident * 0.03;
+                        }
                         @endphp
                     @endforeach
                     <tr>
-                        <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
-                        <td style="text-align: center; font-weight: bold;">{{ $facturas }}</td>
+                        <td style="text-align: left; font-weight: bold;">{{ __('TOTAL (') . $facturas . ')'}}</td>
+                        <td style="text-align: right; font-weight: bold;">{{ number_format($total_incident, 2, ',', '.') }} {{__('MT') }}</td>
+                        <td style="text-align: right; font-weight: bold;">{{ number_format($total_iva, 2, ',', '.') }} {{__('MT') }}</td>
                         <td></td>
-                        <td colspan="2" style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }} {{__('MT') }}</td>
                     </tr>
                     @endif
                 </tbody>
@@ -101,7 +113,7 @@
                 <div class="col s12 m12 l12">
                     @if (count($invoices) > 0)
                         <a class="modal-trigger waves-effect waves-light btn-small"
-                        href="{{ route('print_report',strtotime($inicial_date)  . strtotime($limit_date)) }}">
+                        href="{{ route('print_tax',strtotime($inicial_date)  . strtotime($limit_date)) }}">
                             {{ ('Imprimir') }}</a>
                     @endif
                 </div>

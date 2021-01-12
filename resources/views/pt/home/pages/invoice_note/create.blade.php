@@ -4,9 +4,9 @@
         @csrf
         <div class="row">
             <div class="input-field col s12 m6 l6">
-                <label for="invoice_id" class="black-text">{{ __('ID da factura') }}</label>
-                <input id="invoice_id" type="number" autocomplete="off" class="black-text" name="invoice_id"
-                value="{{ old('price') }}" required/>
+                <label for="invoice_number" class="black-text">{{ __('Nº. da factura') }}</label>
+                <input id="invoice_number" type="text" autocomplete="off" class="black-text" name="invoice_number"
+                value="{{ old('invoice_number') }}" required autofocus placeholder="Ex.:2020/4"/>
             </div>
             <div class="input-field col s12 m6 l6">
                 <select id="type" name="type">
@@ -24,7 +24,7 @@
             </div>
             <div class="input-field col s12 m6 l6">
                 <label for="value" class="black-text">{{ __('Valor') }}</label>
-                <input id="value" type="number" class="black-text" name="value" value="{{ old('price') }}"
+                <input id="value" type="number" class="black-text" name="value" value="{{ old('value') }}"
                     required>
             </div>
         </div>

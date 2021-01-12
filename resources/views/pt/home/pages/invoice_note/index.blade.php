@@ -19,7 +19,7 @@
                         @if (count($notes_data) > 0)
                             @foreach ($notes_data as $note_data)
                                 <tr>
-                                    <td>{{ $note_data->invoice_id }}</td>
+                                    <td>{{ $note_data->invoice_number }}</td>
                                     <td style="text-align: center;">{{ $note_data->client_name }}
                                     </td>
                                     @if ($note_data->client_type === 'ENTERPRISE')
@@ -45,10 +45,21 @@
                                         <form method="POST" action="{{  route('destroy_invoice_note', $note_data->note_id)  }}">
                                             @method('DELETE')
                                             @csrf
-                                            <a style="width:100%;" class="waves-effect waves-light btn-small" href="{{  route('edit_invoice_note', $note_data->note_id)  }}">editar</a>
-                                            <button style="width:100%;" class="waves-effect waves-light btn-small red darken-3"
-                                                type="submit" onclick="return confirm('Tem certeza que deseja remover esta nota?')">remover</button>
-                                        </form>
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <a  class="waves-effect waves-light btn-small white black-text" href="{{  route('print_invoice_note', $note_data->note_id)  }}">imprimir</a>
+                                                    </td>
+                                                    <td>
+                                                        <a  class="waves-effect waves-light btn-small" href="{{  route('edit_invoice_note', $note_data->note_id)  }}">editar</a>
+                                                    </td>
+                                                    <td>
+                                                        <button  class="waves-effect waves-light btn-small red darken-3"
+                                                        type="submit" onclick="return confirm('Tem certeza que deseja remover esta nota?')">remover</button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            </form>
                                     </td>
                                 </tr>
                                 @php

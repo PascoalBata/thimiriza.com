@@ -48,8 +48,8 @@ Auth::routes(['verify' => true]);
 Route::get('/admin', function () {
     return view('pt.Admin.pages.login');
 })->name('login_admin_view');
-Route::post('/admin', 'Admin\AdminController@login')->name('login_admin');
-Route::get('admin/Companies', 'Company\CompanyController@index')->name('show_all_companies');
+Route::post('/admin', 'Admin\LoginController@login')->name('login_admin');
+Route::get('admin/companies', 'Company\CompanyController@index')->name('show_companies');
 Route::get('admin/{id}', 'Company\CompanyController@show')->name('get_company');
 Route::put('admin/{id}', 'Company\CompanyController@update')->name('save_update_company');
 Route::delete('admin/{id}', 'Company\CompanyController@destroy')->name('remove_company');
@@ -64,6 +64,8 @@ Route::get('/about', 'Company\CompanyController@show_about')->name('view_about')
 
 //report
 Route::get('/report', 'Report\ReportController@index_report')->name('view_report');
+Route::get('report/taxes', 'Report\ReportController@index_tax')->name('view_tax');
+Route::get('report/taxes/print/{invoices}', 'Report\ReportController@print_tax')->name('print_tax');
 Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
 Route::get('/report/print/{invoices}', 'Report\ReportController@print_report')->name('print_report');
 Route::post('/report', 'Report\ReportController@index_report')->name('get_report');
@@ -98,6 +100,7 @@ Route::get('/invoice_notes/index', 'InvoiceNote\InvoiceNoteController@index')->n
 Route::post('/invoice_notes', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
 Route::get('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@edit')->name('edit_invoice_note');
 Route::put('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@update')->name('update_invoice_note');
+Route::get('/invoice_notes/print/{id}', 'InvoiceNote\InvoiceNoteController@print')->name('print_invoice_note');
 Route::delete('/invoice_notes/destroy/{id}', 'InvoiceNote\InvoiceNoteController@destroy')->name('destroy_invoice_note');
 
 

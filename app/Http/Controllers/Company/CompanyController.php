@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Requests\StoreCompanyRequest;
@@ -11,34 +12,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of companies.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        /*$companies = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('invoices', 'companies.id', '=', 'invoices.id_company')
-        ->select(
-            DB::raw('count(users.id) as users, count(invoices.id) as invoices, companies.id, companies.name, companies.phone,
-            companies.email, companies.status, companies.created_at')
-        )->groupBy('companies.id')->paginate(30);
-        */
-        $companies = DB::table('companies')
-        ->join('users', 'companies.id', '=', 'users.id_company')
-        ->join('invoices', 'companies.id', '=', 'invoices.id_company')
-        ->selectRaw('count(users.id) as users, count(invoices.id) as invoices, companies.id, companies.name, companies.phone,
-            companies.email, companies.status, companies.created_at')
-            ->groupBy('companies.id')->paginate(30);
-        //dd($companies);
-        //$empresas = DB::table('empresas')->orderByRaw('updated_at - created_at DESC')->get('empresa_id');
-        return view('pt.Admin.pages.companies', ['companies' => $companies]);
+        if(session('logged')){
+            $companies = DB::table('companies')
+            ->join('users', 'companies.id', '=', 'users.id_company')
+            ->join('invoices', 'companies.id', '=', 'invoices.id_company')
+            ->selectRaw('count(users.id) as users, count(invoices.id) as invoices, companies.id, companies.name, companies.phone,
+                companies.email, companies.status, companies.created_at')
+                ->groupBy('companies.id')->paginate(30);
+            return view('pt.Admin.pages.companies', ['companies' => $companies])->with([
+                'user' => session('user'),
+            ]);
+        }else{
+            return redirect()->route('login_admin');
+        }
     }
 
     /**

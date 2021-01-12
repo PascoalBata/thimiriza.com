@@ -2,17 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\Package;
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 
-class PackageFactory extends Factory
+class AdminFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Package::class;
+    protected $model = Admin::class;
 
     /**
      * Define the model's default state.
@@ -22,11 +23,8 @@ class PackageFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'THIMIRIZA-OFF',
-            'months' => 1,
-            'users' => 0,
-            'price' => 0,
-            'created_at' => now()
+            'user' => 'admin',
+            'password' => Hash::make('12345')
         ];
     }
 }

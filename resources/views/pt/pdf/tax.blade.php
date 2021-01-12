@@ -52,7 +52,7 @@
             }
             footer {
                 position: fixed;
-                bottom: -40px;
+                bottom: -100px;
                 left: 0px;
                 right: 0px;
                 height: 4cm;
@@ -72,15 +72,8 @@
 </head>
 <body>
     <header>
-        @if ($type === 'DEBIT')
-            <h3>Relatório (Débito)</h3>
-        @endif
-        @if ($type === 'CREDIT')
-            <h3>Relatório (Crébito)</h3>
-        @endif
-        @if ($type === 'REPORT')
-            <h3>Relatório (Geral)</h3>
-        @endif
+        <h3>Relatório (Impostos)</h3>
+
         <table style="width: 100%; font-size: 14px; border-top: solid; border-top-color: gray; border-top-width: medium;">
             <tr>
                 <td>
@@ -121,34 +114,58 @@
     </header>
     <main>
         <table id="items_table">
-            <tr><th style="text-align:left;">DATA</th>
-                <th style="text-align:center;">FACTURA</th>
-                @if ($type === 'REPORT')
-                <th style="text-align:center;">ESTADO</th>
+            <thead>
+                <tr>
+                <th style="text-align:left;">FACTURA</th>
+                <th style="text-align:right;">INCIDÊNCIA</th>
+                @if ($company->type === 'NORMAL')
+                    <th style="text-align:right;">IMPOSTO (17%)</th>
                 @endif
-                <th style="text-align:center;">CLIENTE</th>
-                <th style="text-align:right;">VALOR</th>
-            </tr>
+                @if ($company->type === 'ISPC')
+                    <th style="text-align:right;">IMPOSTO (3%)</th>
+                @endif
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $total_invoices = 0;
+                    $total_incident = 0;
+                    $total_iva = 0;
+                @endphp
             @foreach ($items as $item)
-            <tr>
-                <td>{{$item->created_at}}</td>
-                <td style="text-align: center;">{{$item->number}}</td>
-                @if ($type === 'REPORT')
-                    @if ($item->status === 'PAID')
-                        <td style="text-align: center;">PAGO</td>
+                @php
+                    $incident = $item->price - $item->iva + $item->discount;
+                @endphp
+                <tr>
+                    <td>{{ date('Y', strtotime($item->created_at)) . '/' . $item->number }}</td>
+                    <td style="text-align: right;">{{ number_format($incident, 2, ',', '.') }} {{__('MT') }}</td>
+                    @if ($company->type === 'NORMAL')
+                        <td style="text-align: right;">{{ number_format($item->iva, 2, ',', '.') }} {{__('MT') }}</td>
                     @endif
-                    @if ($item->status === 'NOT PAID')
-                        <td style="text-align: center;">EM DÍVIDA</td>
+                    @if ($company->type === 'ISPC')
+                        <td style="text-align: right;">{{ number_format( $incident * 0.03, 2, ',', '.') }} {{__('MT') }}</td>
                     @endif
-                @endif
-                <td style="text-align: center;">{{$item->client_name}}</td>
-                <td style="text-align: right;">{{number_format($item->price, 2, ",", ".") . ' MT'}}</td>
-            </tr>
+                </tr>
+                @php
+                    $total_invoices = $total_invoices + 1;
+                    $total_incident = $total_incident + $incident;
+                    if($company->type === 'NORMAL'){
+                        $total_iva = $total_iva + $item->iva;
+                    }
+                    if($company->type === 'ISPC'){
+                        $total_iva = $total_iva + ($incident * 0.03);
+                    }
+                @endphp
             @endforeach
+            </tbody>
         </table>
     </main>
     <footer>
-
+        <table id="table_footer">
+            <tr><td><strong>TOTAL ({{ $total_invoices }})</strong></td><td style="text-align: right"><strong>{{ number_format( $total_incident, 2, ',', '.') }} {{__('MT') }}</strong></td><td style="text-align: right"><strong>{{ number_format( $total_iva, 2, ',', '.') }} {{__('MT') }}</strong></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td colspan="3">Documento processado por computador (Thimiriza)</td></tr>
+        </table>
     </footer>
 </body>
 </html>
