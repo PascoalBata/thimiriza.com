@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInvoiceNotesTable extends Migration
+class CreateTempNotesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,18 @@ class CreateInvoiceNotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('invoice_notes', function (Blueprint $table) {
+        Schema::create('temp_notes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_invoice');
+            $table->string('type_product_service');
+            $table->string('id_product_service');
             $table->text('description');
             $table->float('value');
             $table->string('type');
+            $table->BigInteger('id_invoice');
+            $table->unsignedBigInteger('id_company');
             $table->BigInteger('created_by'); //id_user
-            $table->BigInteger('updated_by')->nullable(); //id_user
-            $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('id_invoice')->references('id')->on('invoices');
+            $table->foreign('id_company')->references('id')->on('companies');
         });
     }
 
@@ -35,6 +35,6 @@ class CreateInvoiceNotesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invoice_notes');
+        Schema::dropIfExists('temp_notes');
     }
 }

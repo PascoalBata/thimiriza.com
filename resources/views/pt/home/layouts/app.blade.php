@@ -110,11 +110,6 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('view_invoice_note') }}">
-                                    {{ __('Notas') }} <i class="small material-icons">note</i>
-                                </a>
-                            </li>
-                            <li>
                                 <a href="{{ route('view_credit') }}">
                                     {{ __('Pagas') }} <i class="small material-icons">credit_card</i>
                                 </a>
@@ -122,6 +117,29 @@
                             <li>
                                 <a href="{{ route('view_debit') }}">
                                     {{ __('Não pagas') }} <i class="small material-icons">event_busy</i>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="nav-link black-text dropdown-trigger" href="#" data-target='dropdown2'>
+                            {{ __('Notas') }} <i class="small material-icons">note</i>
+                        </a>
+                        <ul id='dropdown2' class='dropdown-content'>
+                            <li>
+                                <a href="#">
+                                    {{ __('Notas') }} <i class="small material-icons">note</i>
+                                </a>
+                            </li>
+                            <li class="divider" tabindex="-1"></li>
+                            <li>
+                                <a href="{{ route('view_invoice_note') }}">
+                                    {{ __('Criar') }} <i class="small material-icons">create</i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('index_invoice_note') }}">
+                                    {{ __('Lista') }} <i class="small material-icons">list</i>
                                 </a>
                             </li>
                         </ul>
@@ -150,10 +168,10 @@
                         </ul>
                     </li>
                     <li>
-                        <a class="nav-link black-text dropdown-trigger" href="#" data-target='dropdown2'>
+                        <a class="nav-link black-text dropdown-trigger" href="#" data-target='dropdown4'>
                             {{ __('Clientes') }} <i class="small material-icons">supervisor_account</i>
                         </a>
-                        <ul id='dropdown2' class='dropdown-content'>
+                        <ul id='dropdown4' class='dropdown-content'>
                             <li>
                                 <a href="#">
                                     {{ __('Clientes') }} <i class="small material-icons">supervisor_account</i>
@@ -174,10 +192,10 @@
                         </ul>
                     </li>
                     <li>
-                        <a class="nav-link black-text sidenav-close dropdown-trigger" href="#" data-target='dropdown4'>
+                        <a class="nav-link black-text dropdown-trigger" href="#" data-target='dropdown5'>
                             {{ __('Relatórios') }} <i class="small material-icons">assignment</i>
                         </a>
-                        <ul id='dropdown4' class='dropdown-content'>
+                        <ul id='dropdown5' class='dropdown-content'>
                             <li>
                                 <a href="#">
                                     {{ __('Relatórios') }} <i class="small material-icons">assignment</i>

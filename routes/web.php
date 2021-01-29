@@ -84,7 +84,6 @@ Route::post('/debit', 'HomeController@view_debit')->name('get_debit');
 Route::put('/debit/payment/{id}', 'Invoice\InvoiceController@pay_invoice')->name('pay_invoice');
 
 //sale
-//Route::get('/sales', 'HomeController@view_sale')->name('view_sale');
 Route::get('/sales', 'Sale\SaleController@create')->name('view_sale');
 Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');
 Route::put('/sales', 'Sale\SaleController@store')->name('edit_sale');
@@ -92,19 +91,22 @@ Route::put('/sales/update', 'Sale\SaleController@edit_sale_item')->name('edit_sa
 Route::delete('/sales/remove', 'Sale\SaleController@remove_sale_item')->name('remove_sale_item');
 Route::post('/sales/sell', 'Sale\SaleController@sell')->name('sell');
 Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
-Route::delete('/sales/clear', 'Sale\SaleController@clean_sale')->name('clean_sale');
+Route::delete('/sales/clean', 'Sale\SaleController@clean_sale')->name('clean_sale');
 
 //invoice_note
 Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@create')->name('view_invoice_note');
+Route::get('/invoice_notes/invoice/{invoice}', 'InvoiceNote\InvoiceNoteController@select_invoice')->name('select_invoice');
 Route::get('/invoice_notes/index', 'InvoiceNote\InvoiceNoteController@index')->name('index_invoice_note');
-Route::post('/invoice_notes', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
+Route::get('/invoice_notes/store', 'InvoiceNote\InvoiceNoteController@store')->name('store_invoice_note');
+Route::post('/invoice_notes/invoice/add', 'InvoiceNote\InvoiceNoteController@addItem')->name('add_invoice_note_item');
 Route::get('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@edit')->name('edit_invoice_note');
 Route::put('/invoice_notes/update/{id}', 'InvoiceNote\InvoiceNoteController@update')->name('update_invoice_note');
 Route::get('/invoice_notes/print/{id}', 'InvoiceNote\InvoiceNoteController@print')->name('print_invoice_note');
+Route::get('/invoice_notes/clean', 'InvoiceNote\InvoiceNoteController@clean')->name('clean_temp_note');
+Route::delete('/invoice_notes/remove_item/{id}', 'InvoiceNote\InvoiceNoteController@remove_item')->name('remove_note_item');
 Route::delete('/invoice_notes/destroy/{id}', 'InvoiceNote\InvoiceNoteController@destroy')->name('destroy_invoice_note');
 
-
-//sevice
+//service
 Route::get('/services', 'Service\ServiceController@create')->name('view_service');
 Route::get('/services/index', 'Service\ServiceController@index')->name('index_service');
 Route::post('/services', 'Service\ServiceController@store')->name('store_service');
@@ -155,4 +157,3 @@ Route::put('/users/update_gender/{id}', 'User\UserController@update_gender')->na
 Route::put('/users/update_birthdate/{id}', 'User\UserController@update_birthdate')->name('update_user_birthdate');
 Route::put('/users/update_password/{id}', 'User\UserController@update_password')->name('update_user_password');
 Route::delete('/users/remove_user/{id}', 'User\UserController@destroy')->name('destroy_user');
-

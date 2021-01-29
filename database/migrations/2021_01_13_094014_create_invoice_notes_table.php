@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesTable extends Migration
+class CreateInvoiceNotesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,17 @@ class CreateSalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('invoice_notes', function (Blueprint $table) {
             $table->id();
+            $table->float('value');
             $table->string('type');
-            $table->string('id_product_service');
-            $table->string('type_client');
-            $table->string('id_client');
-            $table->double('quantity');
-            $table->double('discount');
-            $table->double('iva');
-            $table->unsignedBigInteger('id_company');
+            $table->unsignedBigInteger('id_invoice');
             $table->BigInteger('created_by'); //id_user
+            $table->BigInteger('updated_by')->nullable(); //id_user
+            $table->softDeletes();
             $table->timestamps();
-            $table->foreign('id_company')->references('id')->on('companies');
+
+            $table->foreign('id_invoice')->references('id')->on('invoices');
         });
     }
 
@@ -36,6 +34,6 @@ class CreateSalesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('invoice_notes');
     }
 }

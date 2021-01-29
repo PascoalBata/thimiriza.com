@@ -1,6 +1,14 @@
-<div id="notes_table_modal" class="modal bottom-sheet">
-    <div class="modal-content">
-        <h4>{{ __('Notas') }}</h4>
+@extends('pt.home.layouts.app')
+
+@section('username', $name)
+@section('user_email', $email)
+@section('logo', $logo)
+@section('content')
+        <div class="row center-align">
+            <div class="col s12 m12 l12">
+                <h1 class="display-4 black-text"><strong>{{ __('Notas') }}</strong></h1>
+            </div>
+        </div>
         <div class="row" id="table_notes" style="display: block;">
             <div class="col s12 m12 l12" style="overflow-x: auto;">
                 <table class="highlight" style="width: 100%;">
@@ -31,11 +39,11 @@
                                         </td>
                                     @endif
                                     @if ($note_data->type === 'CREDIT')
-                                        <td style="text-align: center;">{{ __('Débito') }}
+                                        <td style="text-align: center;">{{ __('Crédito') }}
                                         </td>
                                     @endif
                                     @if ($note_data->type === 'DEBIT')
-                                        <td style="text-align: center;">{{ __('Crédito') }}
+                                        <td style="text-align: center;">{{ __('débito') }}
                                         </td>
                                     @endif
                                     <td style="text-align: right;">{{ number_format($note_data->price, 2, ',', '.') }}{{ __('MT') }}</td>
@@ -71,5 +79,4 @@
                 {{$notes_data->links()}}
             </div>
         </div>
-    </div>
-</div>
+@endsection

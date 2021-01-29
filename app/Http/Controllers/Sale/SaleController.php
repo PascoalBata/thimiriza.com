@@ -124,6 +124,7 @@ class SaleController extends Controller
                 'company_type' => $company_validate['company_type'],
                 'logo' => $company_validate['company_logo'],
                 'deadline_payment' =>  $company_validate['expire_msg'],
+                'expire_days_left' => $company_validate['expire_days_left'],
                 'sales' => $sales,
                 'services' => $services,
                 'products' => $products,

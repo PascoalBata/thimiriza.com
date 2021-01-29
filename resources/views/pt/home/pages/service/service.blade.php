@@ -3,6 +3,13 @@
 @section('username', $name)
 @section('user_email', $email)
 @section('logo', $logo)
+@section('style')
+    <style>
+        #paginator{
+
+        }
+    </style>
+@endsection
 @section('content')
 <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
     <div class="row center-align">

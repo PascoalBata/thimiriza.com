@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Move extends Model
+class Note_Move extends Model
 {
-    //use HasFactory;
     use SoftDeletes;
-    protected $table = 'moves';
+    use HasFactory;
+    protected $table = 'note_moves';
 }

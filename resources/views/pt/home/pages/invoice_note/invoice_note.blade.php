@@ -12,6 +12,9 @@
         </div>
         @include('pt.home.pages.invoice_note.create')
     </div>
+    @if ($hasTemp_notes || ($actual_serie_number !== '' && $actual_serie_number !== null))
+        @include('pt.home.pages.invoice_note.items')
+    @endif
     <!-- Invoice Notes Modals -->
     @includeWhen($is_index, 'pt.home.pages.invoice_note.index')
     @includeWhen($is_edit, 'pt.home.pages.invoice_note.edit')
@@ -19,13 +22,7 @@
 
 <!-- Scripts -->
 @section('script')
-    <script>
-        $(document).ready(function() {
-            $('.modal').modal();
-            $('input#input_text, textarea#description').characterCounter();
-        });
-    </script>
-    @if ($is_index)
+@if ($is_index)
     <script>
         $(document).ready(function() {
             $('#notes_table_modal').modal('open');
@@ -50,6 +47,44 @@
             });
         </script>
     @endif
+    <script>
+        $(document).ready(function() {
+            $('.modal').modal();
+            $('input#input_text, textarea#description').characterCounter();
+        });
+
+        function onSelect() {
+            var input = document.getElementById("invoice_number");
+            var val = document.getElementById("invoice_number").value;
+            var opts = document.getElementById('invoices').childNodes;
+            input.addEventListener("keydown", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    for (var i = 0; i < opts.length; i++) {
+                        if (opts[i].value === val) {
+                            var id = encodeURIComponent(encodeURIComponent(opts[i].value));
+                            var url = "{{ route('select_invoice', '' ) }}" + "/" + id;
+                            location.href = url;
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
+        function selectType(click) {
+            if (click.value == 'SERVICE') {
+                document.getElementById('select_type_label').innerText = 'Serviço';
+                document.getElementById('product_service').setAttribute('list', 'list_services')
+                document.getElementById('product_service').value = null;
+            }
+            if (click.value == 'PRODUCT') {
+                document.getElementById('select_type_label').innerText = 'Produto';
+                document.getElementById('product_service').setAttribute('list', 'list_products')
+                document.getElementById('product_service').value = null;
+            }
+        }
+    </script>
 
     @if (session('operation_status'))
         <div class="alert alert-success">

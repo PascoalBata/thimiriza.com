@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Cotação</title>
+    <title>
+        @if ($note->type === 'CREDIT')
+            Nota de Crédito
+        @endif
+        @if ($note->type === 'DEBIT')
+            Nota de Drédito
+        @endif
+    </title>
     <style>
         @page {
                 size: 21cm 29.7cm;
@@ -124,18 +131,39 @@
     </header>
     <main>
         <table id="items_table">
-            <tr><th style="text-align:center;">DESCRIÇÃO</th></tr>
+            <tr>
+                <th>NOME</th>
+                <th style="text-align:center;">TIPO</th>
+                <th>DESCRIÇÃO</th>
+                <th style="text-align:right;">VALOR</th>
+            </tr>
+            @foreach ($items as $item)
             <tr>
                 <td>
-                    {{$note->description}}
+                    {{$item->prduct_service . ' ' . $item->product_service_description}}
+                </td>
+                <td style="text-align: center">
+                    @if ($item->type_product_service === 'PRODUCT')
+                        {{__('PRODUTO')}}
+                    @endif
+                    @if ($item->type_product_service === 'SERVICE')
+                        {{__('SERVIÇO')}}
+                    @endif
+                </td>
+                <td>
+                    {{$item->description}}
+                </td>
+                <td style="text-align: right">
+                    {{ number_format($item->value, 2, ',', '.') }}{{ __('MT') }}
                 </td>
             </tr>
+            @endforeach
         </table>
     </main>
 
     <footer>
         <table id="table_footer">
-            <tr><td colspan="2">Banco: {{ $company->bank_account_name }}</td><td></td><td><strong>Valor:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($note->value, 2, ",", ".") . ' MT' }} </td></tr>
+            <tr><td colspan="2">Banco: {{ $company->bank_account_name }}</td><td></td><td><strong>Total:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($note->value, 2, ",", ".") . ' MT' }} </td></tr>
             <tr><td colspan="2">Titular: {{ $company->bank_account_owner }}</td><td></td><td><strong></strong></td><td colspan="3" style="text-align: right;"></td></tr>
             <tr><td colspan="2">Nº. da conta: {{ $company->bank_account_number }}</td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr><td colspan="2">Titular: {{ $company->bank_account_nib }}</td><td></td><td><strong></strong></td><td colspan="3" style="text-align: right;"></td></tr>

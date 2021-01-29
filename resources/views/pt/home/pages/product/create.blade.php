@@ -57,15 +57,15 @@
         </div>
         <div class="row">
             <div class="col s12 m12 l12">
-                <button type="submit" class="waves-effect waves-light btn-small">
+                <button style="margin-top: 2px;" type="submit" class="waves-effect waves-light btn-small">
                     {{ __('Salvar') }}
                     <i class="material-icons right">archive</i>
                 </button>
-                <button type="reset" class="waves-effect waves-light btn-small">
+                <button style="margin-top: 2px;" type="reset" class="waves-effect waves-light btn-small">
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
-                <a class="waves-effect waves-light btn-small modal-trigger"
+                <a class="waves-effect waves-light btn-small modal-trigger" style="margin-top: 2px;"
                     href="{{route('index_product')}}">{{ __('Produtos') }}</a>
             </div>
         </div>

@@ -302,11 +302,12 @@ class PDFController extends Controller
     }
 
     //print invoice note
-    public function print_note($company, $user, $note, $client){
+    public function print_note($company, $user, $note, $client, $items){
         $pdf_invoice = PDF::loadView('pt.pdf.note', [
             'company' => $company,
             'user' => $user,
             'note' => $note,
+            'items' => $items,
             'client' => $client
             ]);
             $pdf_invoice->setPaper('A4');
@@ -547,7 +548,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -562,7 +563,7 @@ class PDFController extends Controller
                         ]);
                         $pdf_invoice->setPaper('A4');
                     $pdf_invoice->setWarnings(false);
-                    return $pdf_invoice->stream('Relatório.pdf');
+                    return $pdf_invoice->stream('Taxas.pdf');
                 }
                 return back();
             }else{

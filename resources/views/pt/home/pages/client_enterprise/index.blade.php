@@ -38,7 +38,7 @@
                         @endforeach
                     </tbody>
                 </table>
-                {!! $clients_enterprise->links() !!}
+                {!! $clients_enterprise->links('vendor.pagination.custom') !!}
             </div>
         </div>
     </div>

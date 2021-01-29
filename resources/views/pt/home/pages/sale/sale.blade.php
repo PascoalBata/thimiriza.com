@@ -7,7 +7,11 @@
     @php
     $sale_type = 'PRODUCT';
     @endphp
-    <label>{{$deadline_payment}}</label>
+    <label class="black-text">{{$deadline_payment}}
+        @if ($deadline_payment === 'Conta expirou!' && ($privilege === 'ADMIN' || $privilege === 'TOTAL'))
+        <a href="{{route('view_company')}}">Efectuar pagamento</a>
+        @endif
+    </label>
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
             <div class="col s12 m12 l12">
@@ -23,10 +27,10 @@
                         <label for="client" class="black-text">{{ __('Cliente') }}</label>
                         <input id="client" list="clients" type="text" autocomplete="off" class="black-text" name="client"
                             @if ($hasSales)
-                        value="{{ $actual_client }}"
-                    @else
-                        value="{{ old('client') }}"
-                        @endif
+                                value="{{ $actual_client }}"
+                            @else
+                                value="{{ old('client') }}"
+                                @endif
                         required>
                         <datalist id="clients">
                             @foreach ($clients_singular as $client_singular)
@@ -195,9 +199,11 @@
                 </button>
             </form>
         </div>
-        <div class="col s12 m12 l12">
-            <p class="black-text">{{__('NOTA: Utilizadores administrativos nao podem efectuar vendas')}}</p>
-        </div>
+        @if ($company_type === 'ADMIN')
+            <div class="col s12 m12 l12">
+                <p class="black-text">{{__('NOTA: Utilizadores administrativos nao podem efectuar vendas')}}</p>
+            </div>
+        @endif
     </div>
     <div id="edit_sale_item_modal" tabindex="-1" class="modal">
         <form method="POST" id="editSaleItemForm" name="editSaleItemForm" action="{{ route('edit_sale_item') }}">

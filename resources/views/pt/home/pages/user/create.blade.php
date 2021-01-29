@@ -101,15 +101,15 @@
         </div>
         <div class="row">
             <div class="col s12 m12 l12">
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-top: 1%;">
+                <button type="submit" class="waves-effect waves-light btn-small" style="margin-top: 2px;">
                     {{ __('Salvar') }}
                     <i class="material-icons right">archive</i>
                 </button>
-                <button type="reset" class="waves-effect waves-light btn-small" style="margin-top: 1%;">
+                <button type="reset" class="waves-effect waves-light btn-small" style="margin-top: 2px;">
                     {{ __('Limpar') }}
                     <i class="material-icons right"></i>
                 </button>
-                <a class="waves-effect waves-light btn-small modal-trigger" href="#table_users_modal" style="margin-top: 1%;">{{__('Utilizadores')}}</a>
+                <a class="waves-effect waves-light btn-small modal-trigger" href="#table_users_modal" style="margin-top: 2px;">{{__('Utilizadores')}}</a>
             </div>
         </div>
     </form>
