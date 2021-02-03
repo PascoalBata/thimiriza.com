@@ -72,10 +72,10 @@
                         </select>
                     </div>
                     <div class="input-field col s12 m6 l6">
-                        <label for="name" id="sale_type_label" name="sale_type_label"
+                        <label for="product_service" id="product_service_label" name="product_service_label"
                             class="black-text">{{ __('Produto') }}</label>
-                        <input id="name" list="list_products" type="text" autocomplete="off" class="black-text" name="name"
-                            value="{{ old('name') }}" required>
+                        <input id="product_service" list="list_products" type="text" autocomplete="off" class="black-text" name="product_service"
+                            value="{{ old('product_service') }}" required>
                         <datalist id="list_products">
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}">{{ $product->name }} {{ __('===') }} {{ $product->description }}</option>
@@ -94,8 +94,7 @@
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
-                        <input id="discount" placeholder="Ex.: 12.5" step="0.01" min="0" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
-                            required>
+                        <input id="discount" placeholder="Ex.: 12.5" step="0.01" min="0" type="number" class="black-text" name="discount" value="{{ old('discount') }}">
                     </div>
                 </div>
                 <div class="row">
@@ -104,7 +103,7 @@
                             {{ __('Adicionar') }}
                             <i class="material-icons right">archive</i>
                         </button>
-                        <button type="button" onclick="resetForm();" class="waves-effect waves-light btn-small">
+                        <button type="reset" class="waves-effect waves-light btn-small">
                             {{ __('Limpar') }}
                             <i class="material-icons right"></i>
                         </button>
@@ -292,14 +291,14 @@
 
         function saleType(click) {
             if (click.value == 'SERVICE') {
-                document.getElementById('sale_type_label').innerText = 'Serviço';
-                document.getElementById('name').setAttribute('list', 'list_services')
-                document.getElementById('name').value = null;
+                document.getElementById('product_service_label').innerText = 'Serviço';
+                document.getElementById('product_service').setAttribute('list', 'list_services')
+                document.getElementById('product_service').value = null;
             }
             if (click.value == 'PRODUCT') {
-                document.getElementById('sale_type_label').innerText = 'Produto';
-                document.getElementById('name').setAttribute('list', 'list_products')
-                document.getElementById('name').value = null;
+                document.getElementById('product_service_label').innerText = 'Produto';
+                document.getElementById('product_service').setAttribute('list', 'list_products')
+                document.getElementById('product_service').value = null;
             }
         }
 
@@ -319,13 +318,16 @@
             document.getElementById('client').value = id;
         }
 
-        function resetForm() {
-            //before form reset
-            var id = document.getElementById('client').value;
-            document.getElementById('saleForm').reset(); //Reset manually the form
-            //after form reset
-            document.getElementById('client').value = 3;
-        }
+        $('form').on('reset', function(e)
+        {
+            var id = $('input#client').val();
+            setTimeout(function() {
+                $('input#client').val(id);
+                $('input#client').focus();
+            }, 100);
+        });
+
+
 
         $(document).ready(function() {
             $('.modal').modal();

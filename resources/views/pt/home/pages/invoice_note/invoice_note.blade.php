@@ -78,6 +78,13 @@
                 document.getElementById('product_service').value = null;
             }
         }
+
+        $('form').on('reset', function(e)
+        {
+            setTimeout(function() {
+                $('input#invoice_number').focus();
+            }, 100);
+        });
     </script>
 
     @if (session('operation_status'))
