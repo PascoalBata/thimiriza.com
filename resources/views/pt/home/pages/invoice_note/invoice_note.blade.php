@@ -56,20 +56,14 @@
         function onSelect() {
             var input = document.getElementById("invoice_number");
             var val = document.getElementById("invoice_number").value;
-            var opts = document.getElementById('invoices').childNodes;
-            input.addEventListener("keydown", function(event) {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    for (var i = 0; i < opts.length; i++) {
-                        if (opts[i].value === val) {
-                            var id = encodeURIComponent(encodeURIComponent(opts[i].value));
-                            var url = "{{ route('select_invoice', '' ) }}" + "/" + id;
-                            location.href = url;
-                            break;
-                        }
-                    }
-                }
-            });
+            if(val.trim() === ''){
+                window.alert('Escolha a Factura');
+            }else{
+                var id = encodeURIComponent(encodeURIComponent(val));
+                var url = "{{ route('select_invoice', '' ) }}" + "/" + id;
+                location.href = url;
+            }
+
         }
 
         function selectType(click) {

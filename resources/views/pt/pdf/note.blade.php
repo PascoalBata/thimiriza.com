@@ -150,7 +150,7 @@
                         {{__('SERVIÇO')}}
                     @endif
                 </td>
-                <td>
+                <td style="text-align: center">
                     {{$item->description}}
                 </td>
                 <td style="text-align: right">

@@ -56,7 +56,7 @@ class SaleController extends Controller
             $sales = [];
             $i = 0;
             $hasSales = false;
-            $actual_client = '';
+            $actual_client = new stdClass;
             foreach ($sales_query as $sale_query){
                 $sale = new stdClass;
                 if($sale_query->type === 'PRODUCT'){
@@ -70,13 +70,19 @@ class SaleController extends Controller
                         $sale->client_type = 'ENTERPRISE';
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Enterprise::find($sale_query->id_client);
-                        $actual_client = $client->name . ' === ' . $client->email;
+                        $actual_client->id = $client->id;
+                        $actual_client->name = $client->name;
+                        $actual_client->email = $client->email;
+                        $actual_client->type = 'ENTERPRISE';
                     }
                     if($sale_query->type_client === 'SINGULAR'){
                         $sale->client_type = 'SINGULAR';
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Singular::find($sale_query->id_client);
-                        $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                        $actual_client->id = $client->id;
+                        $actual_client->name = $client->name . ' ' . $client->surname;
+                        $actual_client->email = $client->email;
+                        $actual_client->type = 'SINGULAR';
                     }
                     $sale->discount = $sale_query->discount;
                     $sale->quantity = $sale_query->quantity;
@@ -96,13 +102,19 @@ class SaleController extends Controller
                         $sale->client_type = 'ENTERPRISE';
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Enterprise::find($sale_query->id_client);
-                        $actual_client = $client->name . ' === ' . $client->email;
+                        $actual_client->id = $client->id;
+                        $actual_client->name = $client->name;
+                        $actual_client->email = $client->email;
+                        $actual_client->type = 'ENTERPRISE';
                     }
                     if($sale_query->type_client === 'SINGULAR'){
                         $sale->client_type = 'SINGULAR';
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Singular::find($sale_query->id_client);
-                        $actual_client = $client->name . ' ' . $client->surname . ' === ' . $client->email;
+                        $actual_client->id = $client->id;
+                        $actual_client->name = $client->name . ' ' . $client->surname;
+                        $actual_client->email = $client->email;
+                        $actual_client->type = 'SINGULAR';
                     }
                     $sale->discount = $sale_query->discount;
                     $sale->quantity = $sale_query->quantity;
@@ -450,7 +462,7 @@ class SaleController extends Controller
             if(DB::table('sales')->where('created_by', 'like', $user->id)->delete()){
                 return redirect()->route('view_sale');
             }
-            return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+            return back()->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
         }
         return route('root');
     }

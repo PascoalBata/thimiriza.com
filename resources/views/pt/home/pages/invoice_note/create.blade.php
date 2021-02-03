@@ -4,7 +4,7 @@
             <div class="input-field col s12 m6 l6">
                 <label for="invoice_number" class="black-text">{{ __('Nº. da factura') }}</label>
                 <input id="invoice_number" list="invoices" type="text" autocomplete="off" class="black-text"
-                    name="invoice_number" onclick="onSelect();" @if ($hasTemp_notes) value="{{ $actual_serie_number }}"
+                    name="invoice_number" @if ($hasTemp_notes) value="{{ $actual_serie_number }}"
                 disabled
         @else
                 value="{{ old('invoice_number') }}"
@@ -23,6 +23,11 @@
         </datalist>
             </div>
         </div>
+        <div class="row">
+            <div class="input-field col s12 m6 l6">
+                <button class="waves-effect wave light btn-small" type="button" onclick="onSelect()">Prosseguir</button>
+            </div>
+        </div>
     @endif
 
 @if ($hasTemp_notes || ($actual_serie_number !== '' && $actual_serie_number !== null))
@@ -36,6 +41,7 @@
                     value="{{ $actual_serie_number }}" required
                     @if ($actual_serie_number !== null)
                         readonly
+                        autofocus
                     @endif/>
             </div>
             <div class="input-field col s12 m6 l6">
@@ -76,14 +82,12 @@
                     name="product_service" value="{{ old('product_service') }}" required>
                 <datalist id="list_products">
                     @foreach ($products as $product)
-                        <option value='{{ $product->id_product_service }}'>{{ $product->product_service }}
-                            {{ __('===') }} {{ $product->description }}</option>
+                        <option value="{{ $product->id_product_service }}">{{ $product->product_service }} {{ __('===') }} {{ $product->description }}</option>
                     @endforeach
                 </datalist>
                 <datalist id="list_services">
                     @foreach ($services as $service)
-                        <option value='{{ $service->id_product_service }}'>{{ $service->product_service }}
-                            {{ __('===') }} {{ $service->description }}</option>
+                        <option value='{{ $service->id_product_service }}'>{{ $service->product_service }} {{ __('===') }} {{ $service->description }}</option>
                     @endforeach
                 </datalist>
             </div>

@@ -19,40 +19,58 @@
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
-            <form method="POST" name="saleForm" action="{{ route('store_sale') }}">
+            <form method="POST" name="saleForm" id="saleForm" action="{{ route('store_sale') }}">
                 @method('POST')
                 @csrf
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
-                        <label for="client" class="black-text">{{ __('Cliente') }}</label>
-                        <input id="client" list="clients" type="text" autocomplete="off" class="black-text" name="client"
+                        <select id="client_type" name="client_type" onchange="clientType(this)">
+                            <optgroup label="{{ __('Tipo de Cliente') }}">
+                                @if($hasSales)
+                                    @if($actual_client->type === 'SINGULAR')
+                                        <option value="SINGULAR" selected>{{ __('Singular') }}</option>
+                                    @endif
+                                    @if($actual_client->type === 'ENTERPRISE')
+                                        <option value="ENTERPRISE" selected>{{ __('Empresa') }}</option>
+                                    @endif
+                                @else
+                                    <option value="SINGULAR">{{ __('Singular') }}</option>
+                                    <option value="ENTERPRISE">{{ __('Empresa') }}</option>
+                                @endif
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="input-field col s12 m6 l6">
+                        <label for="client" id="client_label" class="black-text">{{ __('Cliente') }}</label>
+                        <input id="client" list="singular_list" type="text" autocomplete="off" class="black-text" name="client"
                             @if ($hasSales)
-                                value="{{ $actual_client }}"
+                                value="{{ $actual_client->id }}"
                             @else
                                 value="{{ old('client') }}"
                                 @endif
                         required>
-                        <datalist id="clients">
+                        <datalist id="singular_list">
                             @foreach ($clients_singular as $client_singular)
-                                <option
-                                    value='{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}'>
+                                <option value="{{ $client_singular->id }}">{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}</option>
                             @endforeach
+                        </datalist>
+                        <datalist id="enterprise_list">
                             @foreach ($clients_enterprise as $client_enterprise)
-                                <option
-                                    value='{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}'>
+                                <option value="{{ $client_enterprise->id }}">{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}</option>
                             @endforeach
                         </datalist>
                     </div>
+
+                </div>
+                <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <select id="sale_type" name="sale_type" onchange="saleType(this)">
-                            <optgroup label="{{ __('Tipo') }}">
+                            <optgroup label="{{ __('Item de Venda') }}">
                                 <option value="PRODUCT">{{ __('Produto') }}</option>
                                 <option value="SERVICE">{{ __('Serviço') }}</option>
                             </optgroup>
                         </select>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <label for="name" id="sale_type_label" name="sale_type_label"
                             class="black-text">{{ __('Produto') }}</label>
@@ -60,25 +78,23 @@
                             value="{{ old('name') }}" required>
                         <datalist id="list_products">
                             @foreach ($products as $product)
-                                <option value='{{ $product->name }} {{ __('===') }} {{ $product->description }}'>
+                                <option value="{{ $product->id }}">{{ $product->name }} {{ __('===') }} {{ $product->description }}</option>
                             @endforeach
                         </datalist>
                         <datalist id="list_services">
                             @foreach ($services as $service)
-                                <option value='{{ $service->name }} {{ __('===') }} {{ $service->description }}'>
+                                <option value="{{ $service->id }}">{{ $service->name }} {{ __('===') }} {{ $service->description }}</option>
                             @endforeach
                         </datalist>
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <label for="quantity" class="black-text">{{ __('Quantidade') }}</label>
-                        <input id="quantity" type="number" class="black-text" name="quantity" value="{{ old('quantity') }}"
+                        <input id="quantity" type="number" step="1" min="1" class="black-text" name="quantity" value="{{ old('quantity') }}"
                             required>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <label for="discount" class="black-text">{{ __('Desconto (%)') }}</label>
-                        <input id="discount" placeholder="Ex.: 12.5" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
+                        <input id="discount" placeholder="Ex.: 12.5" step="0.01" min="0" type="number" class="black-text" name="discount" value="{{ old('discount') }}"
                             required>
                     </div>
                 </div>
@@ -88,7 +104,7 @@
                             {{ __('Adicionar') }}
                             <i class="material-icons right">archive</i>
                         </button>
-                        <button type="reset" class="waves-effect waves-light btn-small">
+                        <button type="button" onclick="resetForm();" class="waves-effect waves-light btn-small">
                             {{ __('Limpar') }}
                             <i class="material-icons right"></i>
                         </button>
@@ -287,20 +303,38 @@
             }
         }
 
+        function clientType(click) {
+            if (click.value == 'SINGULAR') {
+                document.getElementById('client').setAttribute('list', 'singular_list')
+                document.getElementById('client').value = null;
+            }
+            if (click.value == 'ENTERPRISE') {
+                document.getElementById('client').setAttribute('list', 'enterprise_list')
+                document.getElementById('client').value = null;
+            }
+        }
+
+        function onReset(id){
+            window.alert(id);
+            document.getElementById('client').value = id;
+        }
+
+        function resetForm() {
+            //before form reset
+            var id = document.getElementById('client').value;
+            document.getElementById('saleForm').reset(); //Reset manually the form
+            //after form reset
+            document.getElementById('client').value = 3;
+        }
+
         $(document).ready(function() {
             $('.modal').modal();
         });
-
     </script>
     @if (session('sale_notification'))
         <div class="alert alert-success">
             <script>
-                M.toast({
-                    html: '{{ session('sale_notification') }}',
-                    classes: 'rounded',
-                    displayLength: 1000
-                });
-
+                M.toast({ html: '{{ session('sale_notification') }}', classes: 'rounded', displayLength: 2000 });
             </script>
         </div>
     @endif

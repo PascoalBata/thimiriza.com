@@ -52,7 +52,7 @@
             }
             footer {
                 position: fixed;
-                bottom: -40px;
+                bottom: -100px;
                 left: 0px;
                 right: 0px;
                 height: 4cm;
@@ -129,6 +129,10 @@
                 <th style="text-align:center;">CLIENTE</th>
                 <th style="text-align:right;">VALOR</th>
             </tr>
+            @php
+                $total_invoices = 0;
+                $total_price = 0;
+            @endphp
             @foreach ($items as $item)
             <tr>
                 <td>{{$item->created_at}}</td>
@@ -144,11 +148,19 @@
                 <td style="text-align: center;">{{$item->client_name}}</td>
                 <td style="text-align: right;">{{number_format($item->price, 2, ",", ".") . ' MT'}}</td>
             </tr>
+            @php
+                    $total_invoices = $total_invoices + 1;
+                    $total_price = $total_price + $item->price;
+            @endphp
             @endforeach
         </table>
     </main>
     <footer>
-
+        <table id="table_footer">
+            <tr><td><strong>TOTAL ({{ $total_invoices }})</strong></td><td></td><td style="text-align: right"><strong>{{ number_format( $total_price, 2, ',', '.') }} {{__('MT') }}</strong></td></tr>
+            <tr><td></td><td></td><td></td><td></td></tr>
+            <tr><td colspan="3">Documento processado por computador (Thimiriza)</td></tr>
+        </table>
     </footer>
 </body>
 </html>

@@ -315,7 +315,7 @@ class PDFController extends Controller
         if($note->type === 'CREDIT'){
             return $pdf_invoice->stream('Nota de crédito.pdf');
         }
-        if($note->type === 'DEDIT'){
+        if($note->type === 'DEBIT'){
             return $pdf_invoice->stream('Nota de dédito.pdf');
         }
         return back()->with('operation_status', 'Não foi possivel gerar o documento.pdf');
@@ -339,7 +339,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -369,7 +369,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -409,7 +409,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -478,7 +478,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -508,7 +508,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -578,7 +578,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }

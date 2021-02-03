@@ -39,11 +39,11 @@
                                         </td>
                                     @endif
                                     @if ($note_data->type === 'CREDIT')
-                                        <td style="text-align: center;">{{ __('Crédito') }}
+                                        <td style="text-align: center;">{{ __('CRÉDITO') }}
                                         </td>
                                     @endif
                                     @if ($note_data->type === 'DEBIT')
-                                        <td style="text-align: center;">{{ __('débito') }}
+                                        <td style="text-align: center;">{{ __('DÉBITO') }}
                                         </td>
                                     @endif
                                     <td style="text-align: right;">{{ number_format($note_data->price, 2, ',', '.') }}{{ __('MT') }}</td>
@@ -57,9 +57,6 @@
                                                 <tr>
                                                     <td>
                                                         <a  class="waves-effect waves-light btn-small white black-text" href="{{  route('print_invoice_note', $note_data->note_id)  }}">imprimir</a>
-                                                    </td>
-                                                    <td>
-                                                        <a  class="waves-effect waves-light btn-small" href="{{  route('edit_invoice_note', $note_data->note_id)  }}">editar</a>
                                                     </td>
                                                     <td>
                                                         <button  class="waves-effect waves-light btn-small red darken-3"

@@ -372,9 +372,11 @@ class InvoiceNoteController extends Controller
                             $client = new stdClass;
                             if($invoice->client_type === 'ENTERPRISE'){
                                 $client = Client_Enterprise::find($invoice->id_client);
+                                $client->type = 'ENTERPRISE';
                             }
                             if($invoice->client_type === 'SINGULAR'){
                                 $client = Client_Singular::find($invoice->id_client);
+                                $client->type = 'SINGULAR';
                             }
                             if($client === null){
                                 return back()->with('operation_status', 'Cliente não identificado.');
@@ -431,9 +433,11 @@ class InvoiceNoteController extends Controller
             $client = new stdClass;
             if($invoice->client_type === 'ENTERPRISE'){
                 $client = Client_Enterprise::find($invoice->id_client);
+                $client->type = 'ENTERPRISE';
             }
             if($invoice->client_type === 'SINGULAR'){
                 $client = Client_Singular::find($invoice->id_client);
+                $client->type = 'SINGULAR';
             }
             if($client === null){
                 return back()->with('operation_status', 'Cliente não identificado.');
@@ -566,7 +570,7 @@ class InvoiceNoteController extends Controller
             $user = Auth::user();
             $item_note = Temp_Note::find($id);
             if($item_note->delete()){
-                return redirect()->route('view_invoice_note', $id)->with('operation_status', 'Item removido com sucesso.');
+                return back()->with('operation_status', 'Item removido com sucesso.');
             }
             return back()->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
@@ -587,7 +591,7 @@ class InvoiceNoteController extends Controller
             if($invoice_note->delete()){
                 $invoice_note->updated_by = $user->id;
                 $invoice_note->save();
-                return redirect()->route('view_invoice_note', $id)->with('operation_status', 'Nota removida com sucesso.');
+                return back()->with('operation_status', 'Nota removida com sucesso.');
             }
             return back()->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
