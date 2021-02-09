@@ -51,6 +51,16 @@
         $(document).ready(function() {
             $('.modal').modal();
             $('input#input_text, textarea#description').characterCounter();
+            if($('select[name=product_service_type] option').filter(':selected').val() === 'PRODUCT'){
+                $('#select_type_label').text('Produto');
+                $('#product_service').attr('list', 'list_products');
+                $('#product_service').val();
+            }
+            if($('select[name=product_service_type] option').filter(':selected').val() === 'SERVICE'){
+                $('#select_type_label').text('Serviço');
+                $('#product_service').attr('list', 'list_services');
+                $('#product_service').val();
+            }
         });
 
         function onSelect() {

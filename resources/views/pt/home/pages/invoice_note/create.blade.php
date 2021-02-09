@@ -78,7 +78,7 @@
             <div class="input-field col s12 m6 l6">
                 <label for="product_service" id="select_type_label" name="select_type_label"
                     class="black-text">{{ __('Produto') }}</label>
-                <input id="product_service" list="list_products" type="text" autocomplete="off" class="black-text"
+                <input type="text" id="product_service" list="list_products" type="text" autocomplete="off" class="black-text"
                     name="product_service" value="{{ old('product_service') }}" required>
                 <datalist id="list_products">
                     @foreach ($products as $product)
@@ -99,7 +99,7 @@
             </div>
             <div class="input-field col s12 m6 l6">
                 <label for="value" class="black-text">{{ __('Valor') }}</label>
-                <input id="value" type="number" class="black-text" name="value" value="{{ old('value') }}" required>
+                <input id="value" type="number" class="black-text" step="0.01" name="value" value="{{ old('value') }}" required>
             </div>
         </div>
         <div class="row">

@@ -52,21 +52,30 @@ class ClientEnterpriseController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            if(!$this->client_exists($request['email'], $request['nuit'])){
-                $client_enterprise = new Client_Enterprise;
-                $client_enterprise->name = $request['name'];
-                $client_enterprise->email = $request['email'];
-                $client_enterprise->address = $request['address'];
-                $client_enterprise->nuit = $request['nuit'];
-                $client_enterprise->phone = $request['phone'];
-                $client_enterprise->id_company = $user->id_company;
-                $client_enterprise->created_by = $user->id;
-                if($client_enterprise->save()){
-                    return redirect()->route('view_client_enterprise')->with('operation_status', 'cliente registado com sucesso.');
-                }
-                return redirect()->route('view_client_enterprise')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
+            if(Client_Enterprise::where('email', $request['email'])->where('id_company', $user->id_company)->count() > 0){
+                return back()->with('operation_status', 'Falhou! O Email introduzido pertence a outro Cliente Empresarial.');
             }
-            return redirect()->route('view_client_enterprise')->with('operation_status', 'Falhou! Esse Cliente já existe.');
+            if(Client_Enterprise::where('nuit', $request['nuit'])->where('id_company', $user->id_company)->count() > 0){
+                return back()->with('operation_status', 'Falhou! O NUIT introduzido pertence a outro Cliente Empresarial.');
+            }
+            if(Client_Singular::where('email', $request['email'])->where('id_company', $user->id_company)->count() > 0){
+                return back()->with('operation_status', 'Falhou! O Email introduzido pertence a outro Cliente Singular.');
+            }
+            if(Client_Singular::where('nuit', $request['nuit'])->where('id_company', $user->id_company)->count() > 0){
+                return back()->with('operation_status', 'Falhou! O NUIT introduzido pertence a outro Cliente Singular.');
+            }
+            $client_enterprise = new Client_Enterprise;
+            $client_enterprise->name = $request['name'];
+            $client_enterprise->email = $request['email'];
+            $client_enterprise->address = $request['address'];
+            $client_enterprise->nuit = $request['nuit'];
+            $client_enterprise->phone = $request['phone'];
+            $client_enterprise->id_company = $user->id_company;
+            $client_enterprise->created_by = $user->id;
+            if($client_enterprise->save()){
+                return redirect()->route('view_client_enterprise')->with('operation_status', 'cliente registado com sucesso.');
+            }
+            return redirect()->route('view_client_enterprise')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
         }
         return route('root');
     }

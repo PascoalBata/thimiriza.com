@@ -132,11 +132,13 @@
                                 </a>
                             </li>
                             <li class="divider" tabindex="-1"></li>
+                            @if ($privilege !== 'ADMIN')
                             <li>
                                 <a href="{{ route('view_invoice_note') }}">
                                     {{ __('Criar') }} <i class="small material-icons">create</i>
                                 </a>
                             </li>
+                            @endif
                             <li>
                                 <a href="{{ route('index_invoice_note') }}">
                                     {{ __('Lista') }} <i class="small material-icons">list</i>

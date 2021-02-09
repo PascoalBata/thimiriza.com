@@ -113,13 +113,20 @@ class InvoiceNoteController extends Controller
         if(Auth::check()){
             $selected_invoice = urldecode( urldecode( $selected_invoice ));
             $split_invoice = explode('/', $selected_invoice);
+            //dd($split_invoice);
+            if(count($split_invoice) === 1){
+                return back()->with('operation_status', 'Factura Inválida.');
+            }
             $invoice_year = $split_invoice[0];
             $invoice_number = $split_invoice[1];
-            $invoice = Invoice::where('number', $invoice_number)->whereYear('created_at', $invoice_year)->first();
-            $invoice_id = $invoice->id;
-            if(strlen($invoice_year) < 4){
+            if(strlen($invoice_year) < 4 || trim($invoice_year) === ""){
                 return back()->with('operation_status', 'Factura inexistente.');
             }
+            if(strlen($invoice_number) === 0 || trim($invoice_number) === ""){
+                return back()->with('operation_status', 'Factura inexistente.');
+            }
+            $invoice = Invoice::where('number', $invoice_number)->whereYear('created_at', $invoice_year)->first();
+            $invoice_id = $invoice->id;
             $user = Auth::user();
             $company_controller = new CompanyController;
             $company_validate = $company_controller->validate_company($user->id_company);
@@ -261,6 +268,22 @@ class InvoiceNoteController extends Controller
             $invoice_id = $invoice->id;
             if(strlen($invoice_year) < 4){
                 return back()->with('operation_status', 'Factura inexistente.');
+            }
+            if($request['product_service_type'] === 'SERVICE'){
+                $services = Move::where('id_invoice', $invoice_id)
+                ->where('sale_type', 'like', 'SERVICE')
+                ->where('id_product_service', $request['product_service_type'])->get();
+                if($services->count() === 0){
+                    return back()->with('operation_status', 'Serviço inexistente.');
+                }
+            }
+            if($request['product_service_type'] === 'PRODUCT'){
+                $products = Move::where('id_invoice', $invoice_id)
+                ->where('sale_type', 'like', 'PRODUCT')
+                ->where('id_product_service', $request['product_service_type'])->get();
+                if($products->count() === 0){
+                    return back()->with('operation_status', 'Produto inexistente.');
+                }
             }
             $user = Auth::user();
             $temp_notes = Temp_Note::where('id_invoice', $invoice_id)

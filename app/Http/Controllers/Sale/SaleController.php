@@ -166,17 +166,17 @@ class SaleController extends Controller
             $client = null;
             if($request['client_type'] === 'ENTERPRISE'){
                 $client = Client_Enterprise::find($request['client']);
-                $client->type = 'ENTERPRISE';
                 if($client === null){
                     return back()->with('sale_notification', 'Esse Cliente Empresarial não existe');
                 }
+                $client->type = 'ENTERPRISE';
             }
             if($request['client_type'] === 'SINGULAR'){
                 $client = Client_Singular::find($request['client']);
-                $client->type = 'SINGULAR';
                 if($client === null){
                     return back()->with('sale_notification', 'Esse Cliente Singular não existe');
                 }
+                $client->type = 'SINGULAR';
             }
             if($client === null){
                 return back()->with('sale_notification', 'Esse Cliente não existe.');
@@ -225,12 +225,12 @@ class SaleController extends Controller
                             )
                         ){$update_status = true;}
                         if($update_status){
-                            return redirect()->route('view_sale')->with('sale_notification', 'Produto adicionado com sucesso.');
+                            return back()->with('sale_notification', 'Produto adicionado com sucesso.');
                         }
                     }
                 }
                 //product does not exist
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse Produto não existe.');
+                return back()->with('sale_notification', 'Esse Produto não existe.');
             }
             if($sale_type === 'SERVICE'){
                 $service = Service::find($request['product_service']);
@@ -243,13 +243,13 @@ class SaleController extends Controller
                             ['quantity' => $quantity, 'discount' => $discount]
                         )
                     ){
-                        return redirect()->route('view_sale')->with('sale_notification', 'Serviço adicionado com sucesso.');
+                        return back()->with('sale_notification', 'Serviço adicionado com sucesso.');
                     }
                 }
                 //service does no exist
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse Serviço não existe.');
+                return back()->with('sale_notification', 'Esse Serviço não existe.');
             }
-            return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
+            return back()->with('sale_notification', 'Ocorreu um erro durante o processo.');
         }
         return redirect()->route('root');
     }
@@ -377,9 +377,9 @@ class SaleController extends Controller
         if(Auth::check()){
             $id = $request['id'];
             if(DB::table('sales')->where('id', 'like', $id)->delete()){
-                return redirect()->route('view_sale')->with('sale_notification', 'Item removido sucesso.');
+                return back()->with('sale_notification', 'Item removido sucesso.');
             }
-            return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a remocao do item.');
+            return back()->with('sale_notification', 'Falhou! Ocorreu um erro durante a remocao do item.');
         }
         return redirect()->route('root');
     }

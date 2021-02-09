@@ -76,7 +76,7 @@
             <h3>Relatório (Débito)</h3>
         @endif
         @if ($type === 'CREDIT')
-            <h3>Relatório (Crébito)</h3>
+            <h3>Relatório (Crédito)</h3>
         @endif
         @if ($type === 'REPORT')
             <h3>Relatório (Geral)</h3>

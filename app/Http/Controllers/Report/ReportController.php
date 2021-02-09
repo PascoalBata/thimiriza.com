@@ -47,7 +47,7 @@ class ReportController extends Controller
             $user = Auth::user();
             $company = Company::find($user->id_company);
             $pdf_controller = new PDFController;
-            return $pdf_controller->print_credit($inicial_date, $limit_date, $company ,"CREBIT");
+            return $pdf_controller->print_credit($inicial_date, $limit_date, $company ,"CREDIT");
         }
         return route('root');
     }

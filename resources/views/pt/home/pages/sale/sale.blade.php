@@ -60,7 +60,6 @@
                             @endforeach
                         </datalist>
                     </div>
-
                 </div>
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
@@ -214,7 +213,7 @@
                 </button>
             </form>
         </div>
-        @if ($company_type === 'ADMIN')
+        @if ($privilege === 'ADMIN')
             <div class="col s12 m12 l12">
                 <p class="black-text">{{__('NOTA: Utilizadores administrativos nao podem efectuar vendas')}}</p>
             </div>

@@ -69,6 +69,8 @@ class PDFController extends Controller
                                     $move->iva = $iva;
                                     $move->id_invoice = $invoice->id;
                                     $move->save();
+                                    $product->quantity = $product->quantity - $quantity;
+                                    $product->save();
                                     $sale_items [$i] = [
                                         'name' => $name,
                                         'description' => $description,
@@ -80,6 +82,12 @@ class PDFController extends Controller
                                         'price_sale' => $price_sale
                                     ];
                                 }
+                            }else{
+                                $name = $product->name;
+                                $description = $product->description;
+                                Move::where('id_invoice', $invoice->id)->forceDelete();
+                                Invoice::find($invoice->id)->forceDelete();
+                                return back()->with('', 'O produto: ' . $name . ' ' . $description . ' esgotou no stock.');
                             }
                         }
                         if($sale->type === 'SERVICE'){
@@ -439,7 +447,7 @@ class PDFController extends Controller
                         }
                         if($invoice->client_type === 'ENTERPRISE'){
                             $client = DB::table('clients_enterprise')->find($invoice->id_client);
-                            $items[$i]->client_name =$client->name . ' ' . $client->surname;
+                            $items[$i]->client_name =$client->name;
                         }
                         $i=$i+1;
                     }
@@ -604,7 +612,7 @@ class PDFController extends Controller
     private function invoice_number_generator($company_id){
         $number = 1;
         $serie = date("Y");
-        $last_invoice = Invoice::select('number', 'created_at')
+        $last_invoice = Invoice::select('id', 'number', 'created_at')
         ->where('id_company', $company_id)
         ->latest()
         ->first();
