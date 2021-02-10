@@ -70,7 +70,7 @@
                     @php
                     $total_iva = 0;
                     $total_incident = 0;
-                    $facturas = 0;
+                    $total_invoices = 0;
                     $limit_date = $invoices[0]->created_at;
                     $inicial_date = $invoices[0]->created_at;
                     @endphp
@@ -90,7 +90,7 @@
                             </td>
                         </tr>
                         @php
-                        $facturas = $facturas + 1;
+                        $total_invoices = $total_invoices + 1;
                         $total_incident = $total_incident + $invoice->incident;
                         if ($company_type === 'NORMAL') {
                             $total_iva = $total_iva + $invoice->iva;
@@ -100,8 +100,13 @@
                         }
                         @endphp
                     @endforeach
+                    @php
+                    if($total_invoices > 0){
+                        $inicial_date = $invoices[$total_invoices-1]->created_at;
+                    }
+                    @endphp
                     <tr>
-                        <td style="text-align: left; font-weight: bold;">{{ __('TOTAL (') . $facturas . ')'}}</td>
+                        <td style="text-align: left; font-weight: bold;">{{ __('TOTAL (') . $total_invoices . ')'}}</td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format($total_incident, 2, ',', '.') }} {{__('MT') }}</td>
                         <td style="text-align: right; font-weight: bold;">{{ number_format($total_iva, 2, ',', '.') }} {{__('MT') }}</td>
                         <td></td>

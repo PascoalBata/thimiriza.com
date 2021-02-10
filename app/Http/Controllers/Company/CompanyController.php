@@ -312,6 +312,9 @@ class CompanyController extends Controller
     }
 
     public function validate_company($id){
+        if($id === null){
+            return redirect()->route('root')->with('status', 'Autentique-se');
+        }
         $enable_sales = true;
         $company = Company::where('id', 'like', $id)->first();
         $company_logo = url('storage/' . $company->logo);
