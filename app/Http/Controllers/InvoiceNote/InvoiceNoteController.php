@@ -471,7 +471,7 @@ class InvoiceNoteController extends Controller
             $pdf_controller = new PDFController;
             return $pdf_controller->print_note($company, $user, $note, $client, $items);
         }
-
+        return redirect()->route('root');
     }
 
     /**
@@ -578,7 +578,7 @@ class InvoiceNoteController extends Controller
             }
             return redirect()->route('edit_invoice_note', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo da nota.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -597,7 +597,7 @@ class InvoiceNoteController extends Controller
             }
             return back()->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
-    return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -618,6 +618,6 @@ class InvoiceNoteController extends Controller
             }
             return back()->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
-    return route('root');
+        return redirect()->route('root');
     }
 }

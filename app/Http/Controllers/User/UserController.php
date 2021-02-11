@@ -34,7 +34,7 @@ class UserController extends Controller
             }
             return redirect()->route('view_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function root(Request $request)
@@ -48,7 +48,7 @@ class UserController extends Controller
     {
         //
         $request->session()->flush();
-        return redirect('/');
+        return redirect()->route('root');
     }
 
     /**
@@ -93,7 +93,7 @@ class UserController extends Controller
             }
             return redirect()->route('view_user')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -136,7 +136,7 @@ class UserController extends Controller
             }
             return redirect()->route('index_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -162,7 +162,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o nome do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_password(Request $request, $id)
@@ -186,7 +186,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar a senha.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_gender(Request $request, $id)
@@ -204,7 +204,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o género do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_birthdate(Request $request, $id)
@@ -228,7 +228,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar a data de nascimento do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_privilege(Request $request, $id)
@@ -253,7 +253,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar os previlégios do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_address(Request $request, $id)
@@ -271,7 +271,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o endereço do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_phone(Request $request, $id)
@@ -289,7 +289,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o telefone do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_email(Request $request, $id)
@@ -311,7 +311,7 @@ class UserController extends Controller
             }
             return redirect()->route('edit_user', $id )->with('operation_status', 'Falhou! Não foi possível actualizar o Email do utilizador.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -336,7 +336,6 @@ class UserController extends Controller
                 return redirect()->route('view_user')->with('operation_status', 'Sem sucesso! Este utilizador não existe.');
             }
         }
-        return route('root');
+        return redirect()->route('root');
     }
-
 }

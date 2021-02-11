@@ -114,17 +114,21 @@ class CompanyController extends Controller
      */
     public function show_company()
     {
-        $user = Auth::user();
-        $company_validate = $this->validate_company($user->id_company);
-        $company = Company::where('id', 'like', $user->id_company)->first();
-            return view ('pt.home.pages.company.company', $user,
-            [
-                'company' => $company,
-                'privileges' => $user['privilege'],
-                'logo' => $company_validate['company_logo']
-            ]);
-        //return $this->view_sale();
-        //return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_validate = $this->validate_company($user->id_company);
+            $company = Company::where('id', 'like', $user->id_company)->first();
+                return view ('pt.home.pages.company.company', $user,
+                [
+                    'company' => $company,
+                    'privileges' => $user['privilege'],
+                    'logo' => $company_validate['company_logo']
+                ]);
+            //return $this->view_sale();
+            //return redirect()->route('view_sale')->with('sale_notification', 'A sua conta nao possui permissao para realizar esta accao');
+        }
+        return redirect()->route('root');
+
     }
 
     /**
@@ -134,9 +138,12 @@ class CompanyController extends Controller
      */
     public function show_about()
     {
-        $user = Auth::user();
-        $company_validate = $this->validate_company($user->id_company);
-        return view ('pt.home.pages.about.about', $user, ['logo' => $company_validate['company_logo']]);
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_validate = $this->validate_company($user->id_company);
+            return view ('pt.home.pages.about.about', $user, ['logo' => $company_validate['company_logo']]);
+        }
+        return redirect()->route('root');
     }
 
     /**
@@ -190,6 +197,7 @@ class CompanyController extends Controller
                 return redirect()->route('view_company')->with('company_notification', 'Nao possui privilegios para efectuar esta operacao.');
             }
         }
+        return redirect()->route('root');
     }
 
     /**
@@ -297,7 +305,7 @@ class CompanyController extends Controller
             }
             return redirect()->route('view_company')->with('company_notification', 'A sua conta nao possui previlegios para realizar esta accao.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**

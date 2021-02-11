@@ -77,7 +77,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('view_client_enterprise')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -117,7 +117,7 @@ class ClientEnterpriseController extends Controller
                 'is_edit' => true,
                 'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -145,7 +145,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('edit_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_email(Request $request, $id)
@@ -166,7 +166,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('edit_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_phone(Request $request, $id)
@@ -182,7 +182,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('edit_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_nuit(Request $request, $id)
@@ -208,7 +208,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('edit_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function update_address(Request $request, $id)
@@ -224,7 +224,7 @@ class ClientEnterpriseController extends Controller
             }
             return redirect()->route('edit_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -236,12 +236,12 @@ class ClientEnterpriseController extends Controller
     public function destroy(Request $request, $id)
     {
         if(Auth::check()){
-                if(Client_Enterprise::find($id)->delete()){
-                    return redirect()->route('view_client_enterprise', $id)->with('operation_status', 'Cliente Empresarial removido com sucesso.');
-                }
-                return redirect()->route('view_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
+            if(Client_Enterprise::find($id)->delete()){
+                return redirect()->route('view_client_enterprise', $id)->with('operation_status', 'Cliente Empresarial removido com sucesso.');
+            }
+             return redirect()->route('view_client_enterprise', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante o processo da remoção.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function client_exists($nuit, $email){

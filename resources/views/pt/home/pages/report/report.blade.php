@@ -61,7 +61,7 @@
                     @if (count($invoices) > 0)
                     @php
                     $total = 0;
-                    $facturas = 0;
+                    $total_invoices = 0;
                     $limit_date = $invoices[0]->created_at;
                     $inicial_date = $invoices[0]->created_at;
                     @endphp
@@ -84,13 +84,18 @@
                             </td>
                         </tr>
                         @php
-                        $facturas = $facturas + 1;
+                        $total_invoices = $total_invoices + 1;
                         $total = $total + $invoice->price;
                         @endphp
                     @endforeach
+                    @php
+                    if($total_invoices > 0){
+                        $inicial_date = $invoices[$total_invoices-1]->created_at;
+                    }
+                    @endphp
                     <tr>
                         <td style="text-align: left; font-weight: bold;">{{ __('TOTAL') }}</td>
-                        <td style="text-align: center; font-weight: bold;">{{ $facturas }}</td>
+                        <td style="text-align: center; font-weight: bold;">{{ $total_invoices }}</td>
                         <td></td>
                         <td colspan="2" style="text-align: right; font-weight: bold;">{{ number_format($total, 2, ',', '.') }} {{__('MT') }}</td>
                     </tr>

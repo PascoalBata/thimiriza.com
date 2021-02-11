@@ -27,7 +27,7 @@ class InvoiceController extends Controller
             }
             return redirect()->route('view_debit')->with('debit_notification', 'Nao foi possivel efectuar o pagamento. Essa factura nao existe!');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     public function see_invoice($id){

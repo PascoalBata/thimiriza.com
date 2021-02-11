@@ -475,8 +475,10 @@ class PDFController extends Controller
             $items = new stdClass;
             $i=0;
             if(date('Y-m-d', strtotime($inicial_date)) === date('Y-m-d', strtotime($limit_date))){
-                $invoices = Invoice::whereDate('created_at', date('Y-m-d', strtotime($inicial_date)))
-                ->orderByDesc('created_at')->get();
+                $invoices = Invoice::where('id_company', $user->id_company)
+                ->whereDate('created_at', date('Y-m-d', strtotime($inicial_date)))
+                ->orderByDesc('created_at')
+                ->get();
                 if($invoices !== null){
                     $items = $invoices;
                     foreach($invoices as $invoice){
@@ -505,8 +507,10 @@ class PDFController extends Controller
                 }
                 return back();
             }else{
-                $invoices = Invoice::whereBetween('created_at', [$inicial_date, $limit_date])
-                ->orderByDesc('invoices.created_at')->get();
+                $invoices = Invoice::where('id_company', $user->id_company)
+                ->whereBetween('created_at', [$inicial_date, $limit_date])
+                ->orderByDesc('invoices.created_at')
+                ->get();
                 if($invoices !== null){
                     $items = $invoices;
                     foreach($invoices as $invoice){

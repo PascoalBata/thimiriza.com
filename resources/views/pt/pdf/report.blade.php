@@ -136,7 +136,7 @@
             @foreach ($items as $item)
             <tr>
                 <td>{{$item->created_at}}</td>
-                <td style="text-align: center;">{{$item->number}}</td>
+                <td style="text-align: center;">{{date('Y', strtotime($item->created_at)) . '/' . $item->number}}</td>
                 @if ($type === 'REPORT')
                     @if ($item->status === 'PAID')
                         <td style="text-align: center;">PAGO</td>

@@ -51,7 +51,7 @@ class ServiceController extends Controller
             'is_index' => false,
             'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -82,7 +82,7 @@ class ServiceController extends Controller
             }
             return redirect()->route('view_service')->with('operation_status', 'Falhou! Esse serviço já existe.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -127,7 +127,7 @@ class ServiceController extends Controller
             'is_index' => true,
             'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -156,7 +156,7 @@ class ServiceController extends Controller
             }
             return redirect()->route('view_service', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do serviço.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
 
@@ -178,7 +178,7 @@ class ServiceController extends Controller
             }
             return redirect()->route('view_service')->with('operation_status', 'Sem sucesso! Esse serviço não existe.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     private function service_exists($name, $description){

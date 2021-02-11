@@ -30,7 +30,7 @@ class ProductController extends Controller
             'is_index' => true,
             'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -51,7 +51,7 @@ class ProductController extends Controller
             'is_index' => false,
             'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -83,7 +83,7 @@ class ProductController extends Controller
             }
             return redirect()->route('view_product')->with('operation_status', 'Falhou! Esse produto já existe.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -128,7 +128,7 @@ class ProductController extends Controller
             'is_index' => true,
             'is_destroy' => false]);
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     /**
@@ -159,7 +159,7 @@ class ProductController extends Controller
             }
             return redirect()->route('edit_product', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizaçåo do produto.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
     /**
      * Remove the specified resource from storage.
@@ -179,7 +179,7 @@ class ProductController extends Controller
             }
             return redirect()->route('view_product')->with('operation_status', 'Sem sucesso! Esse produto não existe.');
         }
-        return route('root');
+        return redirect()->route('root');
     }
 
     private function product_exists($name, $description){
