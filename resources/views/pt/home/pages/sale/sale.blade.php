@@ -1,5 +1,20 @@
 @extends('pt.home.layouts.app')
+@section('style')
+    <link type="text/css" rel="stylesheet" href="{{ asset('assets/css/jquery-editable-select/jquery-editable-select.min.css') }}"
+        media="screen,projection">
+    <style>
+        #client-info svg {
+            display: none;
+        }
+        #client-info input.select-dropdown {
 
+        }
+        #client-info input.es-input{
+            padding: 0% !important;
+            background: url() !important;
+        }
+    </style>
+@endsection
 @section('username', $name)
 @section('user_email', $email)
 @section('logo', $logo)
@@ -40,27 +55,29 @@
                             </optgroup>
                         </select>
                     </div>
-                    <div class="input-field col s12 m6 l6">
-                        <label for="client" id="client_label" class="black-text">{{ __('Cliente') }}</label>
-                        <input id="client" list="singular_list" type="text" autocomplete="off" class="black-text" name="client"
-                            @if ($hasSales)
-                                value="{{ $actual_client->id }}"
-                            @else
-                                value="{{ old('client') }}"
+                    <div id="client-info" class="input-field col s12 m6 l6">
+                        <select id="client" name="client">
+                            <optgroup label="{{ __('Tipo de Cliente') }}">
+                                @if ($hasSales)
+                                    @if($actual_client->type === 'SINGULAR')
+                                        <option selected value="{{ $actual_client->id }}">{{ $actual_client->name }} {{ $actual_client->surname }} {{ __('===') }} {{ $actual_client->email }}</option>
+                                    @endif
+                                    @if($actual_client->type === 'ENTERPRISE')
+                                        <option selected value="{{ $actual_client->id }}">{{ $actual_client->name }} {{ $actual_client }} {{ __('===') }} {{ $actual_client->email }}</option>
+                                    @endif
+                                @else
+                                    @foreach ($clients_singular as $client_singular)
+                                        <option value="{{ $client_singular->id }}">{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}</option>
+                                    @endforeach
+                                    @foreach ($clients_enterprise as $client_enterprise)
+                                        <option value="{{ $client_enterprise->id }}">{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}</option>
+                                    @endforeach
                                 @endif
-                        required>
-                        <datalist id="singular_list">
-                            @foreach ($clients_singular as $client_singular)
-                                <option value="{{ $client_singular->id }}">{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}</option>
-                            @endforeach
-                        </datalist>
-                        <datalist id="enterprise_list">
-                            @foreach ($clients_enterprise as $client_enterprise)
-                                <option value="{{ $client_enterprise->id }}">{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}</option>
-                            @endforeach
-                        </datalist>
+                            </optgroup>
+                        </select>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <select id="sale_type" name="sale_type" onchange="saleType(this)">
@@ -274,6 +291,7 @@
     </div>
 @endsection
 @section('script')
+    <script type="text/javascript" src="{{ asset('assets/js/jquery-editable-select/jquery-editable-select.min.js') }}"></script>
     <script>
         function editSaleItem(button, id, quantity, discount) {
             var tr = button.parentElement.parentElement;
@@ -291,30 +309,25 @@
         function saleType(click) {
             if (click.value == 'SERVICE') {
                 document.getElementById('product_service_label').innerText = 'Serviço';
-                document.getElementById('product_service').setAttribute('list', 'list_services')
+                document.getElementById('product_service').setAttribute('list', 'list_services');
                 document.getElementById('product_service').value = null;
             }
             if (click.value == 'PRODUCT') {
                 document.getElementById('product_service_label').innerText = 'Produto';
-                document.getElementById('product_service').setAttribute('list', 'list_products')
+                document.getElementById('product_service').setAttribute('list', 'list_products');
                 document.getElementById('product_service').value = null;
             }
         }
 
         function clientType(click) {
             if (click.value == 'SINGULAR') {
-                document.getElementById('client').setAttribute('list', 'singular_list')
+                document.getElementById('client').setAttribute('list', 'singular_list');
                 document.getElementById('client').value = null;
             }
             if (click.value == 'ENTERPRISE') {
-                document.getElementById('client').setAttribute('list', 'enterprise_list')
+                document.getElementById('client').setAttribute('list', 'enterprise_list');
                 document.getElementById('client').value = null;
             }
-        }
-
-        function onReset(id){
-            window.alert(id);
-            document.getElementById('client').value = id;
         }
 
         $('form').on('reset', function(e)
@@ -326,17 +339,15 @@
             }, 100);
         });
 
-
-
         $(document).ready(function() {
-            $('.modal').modal();
+            $('select').formSelect();
+            $('#client').editableSelect({
+                effects: 'slide',
+                duration: 200,
+                filter: true
+            });
         });
     </script>
-    @if (session('sale_notification'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({ html: '{{ session('sale_notification') }}', classes: 'rounded', displayLength: 2000 });
-            </script>
-        </div>
-    @endif
 @endsection
+
+

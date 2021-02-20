@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -8,7 +8,7 @@
     <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link type="text/css" rel="stylesheet" href="{{ asset('assets/css/materialize-css/materialize.min.css') }}"
         media="screen,projection">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Thimiriza') }}</title>
@@ -34,18 +34,13 @@
         main {
             position: relative;
         }
-
-
-
         body {
             display: flex;
             flex-direction: column;
         }
-
         main {
             flex: 1 0 auto;
         }
-
         @media (min-width: 993px) {
             #float-btn {
                 display: none;
@@ -61,19 +56,13 @@
         .nav-link:hover{
             background-color:whitesmoke !important;
         }
-
-
-
     </style>
     @yield('style')
 </head>
 
 <body>
     <main style="margin-bottom: 2%;">
-
-
         <div class="row">
-
             <div class="col s12 m4 l2">
                 <!-- Note that "m4 l3" was added -->
                 <!-- Grey navigation panel
@@ -272,7 +261,7 @@
 
     </main>
     <footer class="page-footer grey lighten-2"
-    style="padding-top: 0%;">
+        style="padding-top: 0%;">
         @include('pt.Footer.footer')
     </footer>
 
@@ -298,7 +287,6 @@
                 direction: 'top'
             });
         });
-
     </script>
     @yield('script')
 </body>

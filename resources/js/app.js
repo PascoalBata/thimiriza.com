@@ -21,12 +21,12 @@ window.Vue = require('vue');
 
 Vue.component(
     'example-component',
-    require('./components/ExampleComponent.vue').default
+    //require('./components/ExampleComponent.vue').default
     );
 
 Vue.component(
     'product_edit-component',
-    require('./components/product/Product_edit.vue')
+    //require('./components/product/Product_edit.vue')
 );
 
 /**

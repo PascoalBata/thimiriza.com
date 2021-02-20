@@ -1,4 +1,15 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css"
+    "/assets/js/materialize-css/materialize.min.js": "/assets/js/materialize-css/materialize.min.js",
+    "/assets/js/materialize-css/materialize.js": "/assets/js/materialize-css/materialize.js",
+    "/assets/js/jquery-editable-select/jquery-editable-select.min.js": "/assets/js/jquery-editable-select/jquery-editable-select.min.js",
+    "/assets/js/jquery-editable-select/jquery-editable-select.js": "/assets/js/jquery-editable-select/jquery-editable-select.js",
+    "/css/app.css": "/css/app.css",
+    "/assets/css/jquery-editable-select/jquery-editable-select.min.css": "/assets/css/jquery-editable-select/jquery-editable-select.min.css",
+    "/assets/css/materialize-css/materialize.css": "/assets/css/materialize-css/materialize.css",
+    "/assets/js/jquery/AUTHORS.txt": "/assets/js/jquery/AUTHORS.txt",
+    "/assets/js/jquery/bower.json": "/assets/js/jquery/bower.json",
+    "/assets/js/jquery/LICENSE.txt": "/assets/js/jquery/LICENSE.txt",
+    "/assets/js/jquery/package.json": "/assets/js/jquery/package.json",
+    "/assets/js/jquery/README.md": "/assets/js/jquery/README.md"
 }

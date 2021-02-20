@@ -160,6 +160,7 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         //
+        dd($request->all());
         if(Auth::check()){
             $user = Auth::user();
             $company = Company::find($user->id_company);
