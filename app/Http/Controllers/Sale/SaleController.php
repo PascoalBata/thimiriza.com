@@ -80,7 +80,8 @@ class SaleController extends Controller
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Singular::find($sale_query->id_client);
                         $actual_client->id = $client->id;
-                        $actual_client->name = $client->name . ' ' . $client->surname;
+                        $actual_client->name = $client->name;
+                        $actual_client->surname = $client->surname;
                         $actual_client->email = $client->email;
                         $actual_client->type = 'SINGULAR';
                     }
@@ -112,7 +113,8 @@ class SaleController extends Controller
                         $sale->id_client = $sale_query->id_client;
                         $client = Client_Singular::find($sale_query->id_client);
                         $actual_client->id = $client->id;
-                        $actual_client->name = $client->name . ' ' . $client->surname;
+                        $actual_client->name = $client->name;
+                        $actual_client->surname = $client->surname;
                         $actual_client->email = $client->email;
                         $actual_client->type = 'SINGULAR';
                     }
@@ -160,20 +162,20 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         //
-        dd($request->all());
+        //dd($request->all());
         if(Auth::check()){
             $user = Auth::user();
             $company = Company::find($user->id_company);
             $client = null;
             if($request['client_type'] === 'ENTERPRISE'){
-                $client = Client_Enterprise::find($request['client']);
+                $client = Client_Enterprise::find($request['selected_client']);
                 if($client === null){
                     return back()->with('sale_notification', 'Esse Cliente Empresarial não existe');
                 }
                 $client->type = 'ENTERPRISE';
             }
             if($request['client_type'] === 'SINGULAR'){
-                $client = Client_Singular::find($request['client']);
+                $client = Client_Singular::find($request['selected_client']);
                 if($client === null){
                     return back()->with('sale_notification', 'Esse Cliente Singular não existe');
                 }
@@ -206,7 +208,7 @@ class SaleController extends Controller
             }
 
             if($sale_type === 'PRODUCT'){
-                $product = Product::find($request['product_service']);
+                $product = Product::find($request['selected_item']);
                 if($product !== null){
                     //product exists
                     if($product->quantity < $quantity){
@@ -234,7 +236,7 @@ class SaleController extends Controller
                 return back()->with('sale_notification', 'Esse Produto não existe.');
             }
             if($sale_type === 'SERVICE'){
-                $service = Service::find($request['product_service']);
+                $service = Service::find($request['selected_item']);
                 if($service !== null){
                     if(
                         DB::table('sales')

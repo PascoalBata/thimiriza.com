@@ -61,6 +61,25 @@
                 $('#product_service').attr('list', 'list_services');
                 $('#product_service').val();
             }
+            $('#product_service').change(function(){
+                var item_value = $('#product_service').val();
+                if($('#product_service_type').val() === 'PRODUCT'){
+                    var item_id = $('#list_products option').filter(function() {
+                        return this.value == item_value;
+                    }).data('item');
+                    //var msg = item_id ? item_id : 'Esse produto não existe';
+                    //alert(msg);
+                    $('#selected_item').val(item_id);
+                }
+                if($('#product_service_type').val() === 'SERVICE'){
+                    var item_id = $('#list_services option').filter(function() {
+                        return this.value == item_value;
+                    }).data('item');
+                    //var msg = item_id ? item_id : 'Esse servico não existe';
+                    //alert(msg);
+                    $('#selected_item').val(item_id);
+                }
+            });
         });
 
         function onSelect() {

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Models\Company;
 use App\User;

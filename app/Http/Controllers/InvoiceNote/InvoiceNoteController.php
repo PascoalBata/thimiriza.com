@@ -259,6 +259,7 @@ class InvoiceNoteController extends Controller
 
     public function addItem(Request $request)
     {
+        //dd($request->all());
         if(Auth::check()){
             $selected_invoice = urldecode( urldecode( $request['invoice_number'] ));
             $split_invoice = explode('/', $selected_invoice);
@@ -272,7 +273,7 @@ class InvoiceNoteController extends Controller
             if($request['product_service_type'] === 'SERVICE'){
                 $services = Move::where('id_invoice', $invoice_id)
                 ->where('sale_type', 'like', 'SERVICE')
-                ->where('id_product_service', $request['product_service_type'])->get();
+                ->where('id_product_service', $request['selected_item'])->get();
                 if($services->count() === 0){
                     return back()->with('operation_status', 'Serviço inexistente.');
                 }
@@ -280,14 +281,14 @@ class InvoiceNoteController extends Controller
             if($request['product_service_type'] === 'PRODUCT'){
                 $products = Move::where('id_invoice', $invoice_id)
                 ->where('sale_type', 'like', 'PRODUCT')
-                ->where('id_product_service', $request['product_service_type'])->get();
+                ->where('id_product_service', $request['selected_item'])->get();
                 if($products->count() === 0){
                     return back()->with('operation_status', 'Produto inexistente.');
                 }
             }
             $user = Auth::user();
             $temp_notes = Temp_Note::where('id_invoice', $invoice_id)
-            ->where('id_product_service', intval($request['product_service']))
+            ->where('id_product_service', intval($request['selected_item']))
             ->where('type_product_service', 'like', $request['product_service_type'])
             ->where('created_by', $user->id)
             ->get();
@@ -295,7 +296,7 @@ class InvoiceNoteController extends Controller
                 //update if exists
                 $temp_notes = Temp_Note::find($temp_notes[0]->id);
                 $temp_notes->type_product_service = $request['product_service_type'];
-                $temp_notes->id_product_service = $request['product_service'];
+                $temp_notes->id_product_service = $request['selected_item'];
                 $temp_notes->description = $request['description'];
                 $temp_notes->value = $request['value'];
                 $temp_notes->type = $request['type'];
@@ -311,7 +312,7 @@ class InvoiceNoteController extends Controller
                 //create new
                 $temp_notes = new Temp_Note();
                 $temp_notes->type_product_service = $request['product_service_type'];
-                $temp_notes->id_product_service = $request['product_service'];
+                $temp_notes->id_product_service = $request['selected_item'];
                 $temp_notes->description = $request['description'];
                 $temp_notes->value = $request['value'];
                 $temp_notes->type = $request['type'];
@@ -373,7 +374,9 @@ class InvoiceNoteController extends Controller
                     if($invoice_note->save()){
                         foreach($temp_notes as $temp_note){
                             $move = Move::where('id_invoice', $invoice->id)
-                            ->where('id_product_service', $temp_note->id_product_service)->first();
+                            ->where('id_product_service', $temp_note->id_product_service)
+                            ->where('sale_type', 'like', $temp_note->type_product_service)
+                            ->first();
                             $note_move = new Note_Move();
                             $note_move->id_invoice_note = $invoice_note->id;
                             $note_move->description = $temp_note->description;
@@ -404,6 +407,7 @@ class InvoiceNoteController extends Controller
                             if($client === null){
                                 return back()->with('operation_status', 'Cliente não identificado.');
                             }
+                            $invoice_note->invoice_number = date('Y', strtotime($date_time)) . '/' . $invoice->number;
                             $items = Note_Move::where('id_invoice_note', $invoice_note->id)->get();
                             return $pdf_controller->print_note($company, $user, $invoice_note, $client, $items);
                         }else{
@@ -416,7 +420,6 @@ class InvoiceNoteController extends Controller
 
                 }
             }
-
             return back()->with([
                 'operation_status' => 'operation_status', 'A factura inserida nao existe',
             ]);

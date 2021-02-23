@@ -82,14 +82,15 @@
                     name="product_service" value="{{ old('product_service') }}" required>
                 <datalist id="list_products">
                     @foreach ($products as $product)
-                        <option value="{{ $product->id_product_service }}">{{ $product->product_service }} {{ __('===') }} {{ $product->description }}</option>
+                        <option data-item="{{ $product->id_product_service }}">{{ $product->product_service }} {{ __('===') }} {{ $product->description }}</option>
                     @endforeach
                 </datalist>
                 <datalist id="list_services">
                     @foreach ($services as $service)
-                        <option value='{{ $service->id_product_service }}'>{{ $service->product_service }} {{ __('===') }} {{ $service->description }}</option>
+                        <option data-item='{{ $service->id_product_service }}'>{{ $service->product_service }} {{ __('===') }} {{ $service->description }}</option>
                     @endforeach
                 </datalist>
+                <input hidden type="text" id="selected_item" name="selected_item">
             </div>
         </div>
         <div class="row">

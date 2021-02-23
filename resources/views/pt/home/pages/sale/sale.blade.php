@@ -7,7 +7,7 @@
             display: none;
         }
         #client-info input.select-dropdown {
-
+            display: none;
         }
         #client-info input.es-input{
             padding: 0% !important;
@@ -56,25 +56,30 @@
                         </select>
                     </div>
                     <div id="client-info" class="input-field col s12 m6 l6">
-                        <select id="client" name="client">
-                            <optgroup label="{{ __('Tipo de Cliente') }}">
-                                @if ($hasSales)
-                                    @if($actual_client->type === 'SINGULAR')
-                                        <option selected value="{{ $actual_client->id }}">{{ $actual_client->name }} {{ $actual_client->surname }} {{ __('===') }} {{ $actual_client->email }}</option>
-                                    @endif
-                                    @if($actual_client->type === 'ENTERPRISE')
-                                        <option selected value="{{ $actual_client->id }}">{{ $actual_client->name }} {{ $actual_client }} {{ __('===') }} {{ $actual_client->email }}</option>
-                                    @endif
-                                @else
-                                    @foreach ($clients_singular as $client_singular)
-                                        <option value="{{ $client_singular->id }}">{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}</option>
-                                    @endforeach
-                                    @foreach ($clients_enterprise as $client_enterprise)
-                                        <option value="{{ $client_enterprise->id }}">{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}</option>
-                                    @endforeach
+                        <label for="client" id="client_label" class="black-text">{{ __('Cliente') }}</label>
+                        <input id="client" list="singular_list" type="text" autocomplete="off" class="black-text" name="client"
+                            @if ($hasSales)
+                                @if ($actual_client->type === 'SINGULAR')
+                                    value="{{ $actual_client->name . ' === ' . $actual_client->surname }}"
                                 @endif
-                            </optgroup>
-                        </select>
+                                @if ($actual_client->type === 'ENTERPRISE')
+                                    value="{{ $actual_client->name }}"
+                                @endif
+                            @else
+                                value="{{ old('client') }}"
+                                @endif
+                        required>
+                        <datalist id="singular_list">
+                            @foreach ($clients_singular as $client_singular)
+                                <option data-client="{{ $client_singular->id }}">{{ $client_singular->name }} {{ $client_singular->surname }} {{ __('===') }} {{ $client_singular->email }}</option>
+                            @endforeach
+                        </datalist>
+                        <datalist id="enterprise_list">
+                            @foreach ($clients_enterprise as $client_enterprise)
+                                <option data-client="{{ $client_enterprise->id }}">{{ $client_enterprise->name }} {{ __('===') }} {{ $client_enterprise->email }}</option>
+                            @endforeach
+                        </datalist>
+                        <input hidden type="text" id="selected_client" name="selected_client">
                     </div>
                 </div>
 
@@ -94,14 +99,15 @@
                             value="{{ old('product_service') }}" required>
                         <datalist id="list_products">
                             @foreach ($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }} {{ __('===') }} {{ $product->description }}</option>
+                                <option data-item="{{ $product->id }}">{{ $product->name }} {{ __('===') }} {{ $product->description }}</option>
                             @endforeach
                         </datalist>
                         <datalist id="list_services">
                             @foreach ($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->name }} {{ __('===') }} {{ $service->description }}</option>
+                                <option data-item="{{ $service->id }}">{{ $service->name }} {{ __('===') }} {{ $service->description }}</option>
                             @endforeach
                         </datalist>
+                        <input hidden type="text" id="selected_item" name="selected_item">
                     </div>
                     <div class="input-field col s12 m6 l6">
                         <label for="quantity" class="black-text">{{ __('Quantidade') }}</label>
@@ -292,6 +298,15 @@
 @endsection
 @section('script')
     <script type="text/javascript" src="{{ asset('assets/js/jquery-editable-select/jquery-editable-select.min.js') }}"></script>
+    @if ($hasSales)
+        <script>
+            $(document).ready(function() {
+                $('#selected_client').val(
+                    "{{ $actual_client->id }}"
+                );
+            });
+        </script>
+    @endif
     <script>
         function editSaleItem(button, id, quantity, discount) {
             var tr = button.parentElement.parentElement;
@@ -323,10 +338,12 @@
             if (click.value == 'SINGULAR') {
                 document.getElementById('client').setAttribute('list', 'singular_list');
                 document.getElementById('client').value = null;
+                document.getElementById('selected_client').value = null;
             }
             if (click.value == 'ENTERPRISE') {
                 document.getElementById('client').setAttribute('list', 'enterprise_list');
                 document.getElementById('client').value = null;
+                document.getElementById('selected_client').value = null;
             }
         }
 
@@ -345,6 +362,44 @@
                 effects: 'slide',
                 duration: 200,
                 filter: true
+            });
+            $('#client').change(function(){
+                var client_value = $('#client').val();
+                if($('#client_type').val() === 'SINGULAR'){
+                    var client_id = $('#singular_list option').filter(function() {
+                        return this.value == client_value;
+                    }).data('client');
+                    //var msg = client_id ? client_id : 'Esse cliente não existe';
+                    //alert(msg);
+                    $('#selected_client').val(client_id);
+                }
+                if($('#client_type').val() === 'ENTERPRISE'){
+                    var client_id = $('#enterprise_list option').filter(function() {
+                        return this.value == client_value;
+                    }).data('client');
+                    //var msg = client_id ? client_id : 'Esse cliente não existe';
+                    //alert(msg);
+                    $('#selected_client').val(client_id);
+                }
+            });
+            $('#product_service').change(function(){
+                var item_value = $('#product_service').val();
+                if($('#sale_type').val() === 'PRODUCT'){
+                    var item_id = $('#list_products option').filter(function() {
+                        return this.value == item_value;
+                    }).data('item');
+                    //var msg = item_id ? item_id : 'Esse produto não existe';
+                    //alert(item_id);
+                    $('#selected_item').val(item_id);
+                }
+                if($('#sale_type').val() === 'SERVICE'){
+                    var item_id = $('#list_services option').filter(function() {
+                        return this.value == item_value;
+                    }).data('item');
+                    //var msg = item_id ? item_id : 'Esse servico não existe';
+                    //alert(msg);
+                    $('#selected_item').val(item_id);
+                }
             });
         });
     </script>
