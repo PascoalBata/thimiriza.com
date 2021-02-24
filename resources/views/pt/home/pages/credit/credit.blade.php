@@ -113,22 +113,5 @@
             removeSaleItemForm.id.value = id;
             removeSaleItemForm.product.value = tr.cells[0].innerHTML + " <<->> " + tr.cells[1].innerHTML;
         }
-
-        $(document).ready(function() {
-            $('.modal').modal();
-        });
-
     </script>
-    @if (session('credit_notification'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({
-                    html: '{{ session('credit_notification') }}',
-                    classes: 'rounded',
-                    displayLength: 1000
-                });
-
-            </script>
-        </div>
-    @endif
 @endsection

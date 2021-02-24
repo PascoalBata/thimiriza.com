@@ -49,7 +49,6 @@
     @endif
     <script>
         $(document).ready(function() {
-            $('.modal').modal();
             $('input#input_text, textarea#description').characterCounter();
             if($('select[name=product_service_type] option').filter(':selected').val() === 'PRODUCT'){
                 $('#select_type_label').text('Produto');
@@ -115,12 +114,4 @@
             }, 100);
         });
     </script>
-
-    @if (session('operation_status'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({html: '{{ session('operation_status') }}', classes: 'rounded', displayLength: 2000});
-            </script>
-        </div>
-    @endif
 @endsection

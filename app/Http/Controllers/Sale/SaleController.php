@@ -170,19 +170,19 @@ class SaleController extends Controller
             if($request['client_type'] === 'ENTERPRISE'){
                 $client = Client_Enterprise::find($request['selected_client']);
                 if($client === null){
-                    return back()->with('sale_notification', 'Esse Cliente Empresarial não existe');
+                    return back()->with('operation_status', 'Esse Cliente Empresarial não existe');
                 }
                 $client->type = 'ENTERPRISE';
             }
             if($request['client_type'] === 'SINGULAR'){
                 $client = Client_Singular::find($request['selected_client']);
                 if($client === null){
-                    return back()->with('sale_notification', 'Esse Cliente Singular não existe');
+                    return back()->with('operation_status', 'Esse Cliente Singular não existe');
                 }
                 $client->type = 'SINGULAR';
             }
             if($client === null){
-                return back()->with('sale_notification', 'Esse Cliente não existe.');
+                return back()->with('operation_status', 'Esse Cliente não existe.');
             }
             $sale_type = $request['sale_type'];
             $quantity = $request['quantity'];
@@ -212,7 +212,7 @@ class SaleController extends Controller
                 if($product !== null){
                     //product exists
                     if($product->quantity < $quantity){
-                        return back()->with('sale_notification',
+                        return back()->with('operation_status',
                         'A quantidade requisitada excede o stock. O stock actual é ' . $product->quantity);
                     }else{
                         $update_status = false;
@@ -228,12 +228,12 @@ class SaleController extends Controller
                             )
                         ){$update_status = true;}
                         if($update_status){
-                            return back()->with('sale_notification', 'Produto adicionado com sucesso.');
+                            return back()->with('operation_status', 'Produto adicionado com sucesso.');
                         }
                     }
                 }
                 //product does not exist
-                return back()->with('sale_notification', 'Esse Produto não existe.');
+                return back()->with('operation_status', 'Esse Produto não existe.');
             }
             if($sale_type === 'SERVICE'){
                 $service = Service::find($request['selected_item']);
@@ -246,13 +246,13 @@ class SaleController extends Controller
                             ['quantity' => $quantity, 'discount' => $discount]
                         )
                     ){
-                        return back()->with('sale_notification', 'Serviço adicionado com sucesso.');
+                        return back()->with('operation_status', 'Serviço adicionado com sucesso.');
                     }
                 }
                 //service does no exist
-                return back()->with('sale_notification', 'Esse Serviço não existe.');
+                return back()->with('operation_status', 'Esse Serviço não existe.');
             }
-            return back()->with('sale_notification', 'Ocorreu um erro durante o processo.');
+            return back()->with('operation_status', 'Ocorreu um erro durante o processo.');
         }
         return redirect()->route('root');
     }
@@ -280,7 +280,7 @@ class SaleController extends Controller
                 if($client->exists()){
                     //client_singular exists
                 }else{
-                    return back()->with('sale_notification', 'Esse cliente nao existe.');
+                    return back()->with('operation_status', 'Esse cliente nao existe.');
                 }
             }
 
@@ -290,9 +290,9 @@ class SaleController extends Controller
                 ->where('description', 'like', $sale_description)->get();
                 if($products->count() > 0){
                     //product exists
-                    return redirect()->route('view_sale')->with('sale_notification', 'Prosseguir venda do produto.');
+                    return redirect()->route('view_sale')->with('operation_status', 'Prosseguir venda do produto.');
                 }
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse produto nao existe.');
+                return redirect()->route('view_sale')->with('operation_status', 'Esse produto nao existe.');
             }
             if($sale_type === 'SERVICE'){
                 $services = Service::where('id_company', 'like', $user->id_company)
@@ -300,11 +300,11 @@ class SaleController extends Controller
                 ->where('description', 'like', $sale_description);
                 if($services->count() > 0){
                     //service exists
-                    return redirect()->route('view_sale')->with('sale_notification', 'Prosseguir venda do servico.');
+                    return redirect()->route('view_sale')->with('operation_status', 'Prosseguir venda do servico.');
                 }
-                return redirect()->route('view_sale')->with('sale_notification', 'Esse servico nao existe.');
+                return redirect()->route('view_sale')->with('operation_status', 'Esse servico nao existe.');
             }
-            return redirect()->route('view_sale')->with('sale_notification', 'Ocorreu um erro durante o processo.');
+            return redirect()->route('view_sale')->with('operation_status', 'Ocorreu um erro durante o processo.');
         }
         return redirect()->route('root');
     }
@@ -368,9 +368,9 @@ class SaleController extends Controller
                     'discount' => $discount
                 ))
             ){
-                return redirect()->route('view_sale')->with('sale_notification', 'Item actualizado com sucesso.');
+                return redirect()->route('view_sale')->with('operation_status', 'Item actualizado com sucesso.');
             }
-            return redirect()->route('view_sale')->with('sale_notification', 'Falhou! Ocorreu um erro durante a actualizacao do item.');
+            return redirect()->route('view_sale')->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizacao do item.');
         }
         return redirect()->route('root');
     }
@@ -380,9 +380,9 @@ class SaleController extends Controller
         if(Auth::check()){
             $id = $request['id'];
             if(DB::table('sales')->where('id', 'like', $id)->delete()){
-                return back()->with('sale_notification', 'Item removido sucesso.');
+                return back()->with('operation_status', 'Item removido sucesso.');
             }
-            return back()->with('sale_notification', 'Falhou! Ocorreu um erro durante a remocao do item.');
+            return back()->with('operation_status', 'Falhou! Ocorreu um erro durante a remocao do item.');
         }
         return redirect()->route('root');
     }
@@ -459,7 +459,7 @@ class SaleController extends Controller
             if(DB::table('sales')->where('created_by', 'like', $user->id)->delete()){
                 return redirect()->route('view_sale');
             }
-            return back()->with('sale_notification', 'Falhou! Ocorreu um erro durante a operacao.');
+            return back()->with('operation_status', 'Falhou! Ocorreu um erro durante a operacao.');
         }
         return redirect()->route('root');
     }

@@ -26,10 +26,6 @@
             }
         }
 
-        $(document).ready(function() {
-            $('.modal').modal();
-        });
-
     </script>
     @if ($is_edit)
         <script>
@@ -47,12 +43,5 @@
                 $('#destroy_user_modal').modal('open');
             });
         </script>
-    @endif
-    @if (session('operation_status'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({html: '{{ session('operation_status') }}', classes: 'rounded', displayLength: 2000});
-            </script>
-        </div>
     @endif
 @endsection

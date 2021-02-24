@@ -265,15 +265,6 @@
 @endsection
 @section('script')
     <script>
-        $(document).ready(function() {
-            $('.modal').modal();
-        });
+
     </script>
-    @if (session('company_notification'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({html: '{{ session('company_notification') }}', classes: 'rounded', displayLength: 1000});
-            </script>
-        </div>
-    @endif
 @endsection

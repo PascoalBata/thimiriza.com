@@ -89,7 +89,7 @@ class CompanyController extends Controller
                 return redirect()->route('root')->with('status', 'Registo efectuado com sucesso.');
             }
             Company::destroy($company->id);
-            return redirect()->route('root')->with('status', 'O registo falhou porque esse utilizador ja existe.');
+            return back()->with('status', 'O registo falhou porque esse utilizador ja existe.');
         }
     }
 
@@ -164,7 +164,7 @@ class CompanyController extends Controller
                 $company_id = $user->id_company;
                 $company = Company::find($company_id);
                 if($company === null){
-                    return redirect()->route('view_company')->with('company_notification', 'Falhou. Essa empresa nao existe!');
+                    return back()->with('operation_status', 'Falhou. Essa empresa nao existe!');
                 }
                 $company_data = $company->name . ' - ' . $company->nuit;
                 $channel = "Thimiriza";
@@ -186,13 +186,13 @@ class CompanyController extends Controller
                     $company->id_package = $package_id;
                     $company->updated_by = $user->id;
                     if($company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso. ');
+                        return back()->with('operation_status', 'Pagamento efectuado com sucesso. ');
                     }
-                    return redirect()->route('view_company')->with('company_notification', 'Pagamento efectuado com sucesso, porem, ocorreu um falha no sistema. Por favor, reporte-nos contactando a linha do apoio ao cliente. ');
+                    return back()->with('operation_status', 'Pagamento efectuado com sucesso, porem, ocorreu um falha no sistema. Por favor, reporte-nos contactando a linha do apoio ao cliente. ');
                 }else{
-                    return redirect()->route('view_company')->with('company_notification', 'Pagamento sem sucesso.');
+                    return back()->with('operation_status', 'Pagamento sem sucesso.');
                 }
-                return redirect()->route('view_company')->with('company_notification', 'Nao possui privilegios para efectuar esta operacao.');
+                return back()->with('operation_status', 'Nao possui privilegios para efectuar esta operacao.');
             }
         }
         return redirect()->route('root');
@@ -229,10 +229,10 @@ class CompanyController extends Controller
                 $company = Company::find($id);
                 if($company !== null){
                     if(Company::where('nuit', 'like', $nuit)->where('id', 'not like', $id)->count() !== 0){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Este NUIT ja encontra-se associado a uma outra entidade.');
+                        return back()->with('operation_status', 'Falhou! Este NUIT ja encontra-se associado a uma outra entidade.');
                     }
                     if(Company::where('email', 'like', $email)->where('id', 'not like', $id)->count() !== 0){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Este Email ja encontra-se associado a uma outra entidade.');
+                        return back()->with('operation_status', 'Falhou! Este Email ja encontra-se associado a uma outra entidade.');
                     }
 
                     if($request->hasFile('logo')){
@@ -243,65 +243,65 @@ class CompanyController extends Controller
                         );
                         $company->logo = $logo;
                         if(!$company->save()){
-                            return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o logo.');
+                            return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o logo.');
                         }
                     }
                 }
                 if($request->filled('name')){
                     $company->name = $name;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o nome.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o nome.');
                     }
                 }
                 if($request->filled('email')){
                     $company->email = $email;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o email.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o email.');
                     }
                 }
                 if($request->filled('phone')){
                     $company->phone = $phone;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o telefone.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o telefone.');
                     }
                 }
                 if($request->filled('address')){
                     $company->address = $address;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o endereco.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o endereco.');
                     }
                 }
                 if($request->filled('bank_account_owner')){
                     $company->bank_account_owner = $bank_account_owner;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o titular da conta.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o titular da conta.');
                     }
                 }
                 if($request->filled('bank_account_number')){
                     $company->bank_account_number = $bank_account_number;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o numero da conta.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o numero da conta.');
                     }
                 }
                 if($request->filled('bank_account_name')){
                     $company->bank_account_name = $bank_account_name;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o nome do banco.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o nome do banco.');
                     }
                 }
                 if($request->filled('bank_account_nib')){
                     $company->bank_account_nib = $bank_account_nib;
                     if(!$company->save()){
-                        return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o nib da conta.');
+                        return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o nib da conta.');
                     }
                 }
                 $company->type = $type;
                 if(!$company->save()){
-                    return redirect()->route('view_company')->with('company_notification', 'Falhou! Nao foi possivel actualizar o logo.');
+                    return back()->with('operation_status', 'Falhou! Nao foi possivel actualizar o logo.');
                 }
-                return redirect()->route('view_company')->with('company_notification', 'Actualizacao bem sucedida.');
+                return back()->with('operation_status', 'Actualizacao bem sucedida.');
             }
-            return redirect()->route('view_company')->with('company_notification', 'A sua conta nao possui previlegios para realizar esta accao.');
+            return back()->with('operation_status', 'A sua conta nao possui previlegios para realizar esta accao.');
         }
         return redirect()->route('root');
     }

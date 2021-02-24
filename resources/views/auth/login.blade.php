@@ -33,14 +33,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col s12 m12 l12">
-                        <label class="black-text" for="remember">
-                            <input input type="checkbox" class="filled-in" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                <span>{{ __('Remember me') }}</span>
-                        </label>
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="col s12 m12 l12">
                         <button type="submit" class="btn btn-primary">

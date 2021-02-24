@@ -21,11 +21,11 @@ class InvoiceController extends Controller
                 $invoice->status = 'PAID';
                 $invoice->updated_by = $user->id;
                 if($invoice->save()){
-                    return redirect()->route('view_debit')->with('debit_notification', 'Pagamento da factura efectuado com sucesso.');
+                    return redirect()->route('view_debit')->with('operation_status', 'Pagamento da factura efectuado com sucesso.');
                 }
-                return redirect()->route('view_debit')->with('debit_notification', 'Falhou! Ocorreu um erro durante o pagamento da facuta.');
+                return redirect()->route('view_debit')->with('operation_status', 'Falhou! Ocorreu um erro durante o pagamento da facuta.');
             }
-            return redirect()->route('view_debit')->with('debit_notification', 'Nao foi possivel efectuar o pagamento. Essa factura nao existe!');
+            return redirect()->route('view_debit')->with('operation_status', 'Nao foi possivel efectuar o pagamento. Essa factura nao existe!');
         }
         return redirect()->route('root');
     }

@@ -1,6 +1,6 @@
 <div id="edit_client_singular_modal" tabindex="-1" class="modal modal-fixed-footer">
     <div class="modal-content">
-        <h4>{{ __('Actualizar Cliente Empresarial')}}</h4>
+        <h4>{{ __('Actualizar Cliente Singular')}}</h4>
         <p></p>
         <form method="POST" id="editClientSingularNameForm" name="editClientSingularNameForm" action="{{ route('edit_client_singular_name', $selected_client_singular->id) }}">
             @method('PUT')

@@ -270,6 +270,7 @@
     <script type="text/javascript" src="{{ asset('assets/js/materialize-css/materialize.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/home.js') }}"></script>
     <script>
+
         $(document).ready(function() {
             $('select').formSelect();
             $('.dropdown-trigger').dropdown();
@@ -288,6 +289,13 @@
             });
         });
     </script>
+    @if (session('operation_status'))
+        <div class="alert alert-success">
+            <script>
+                M.toast({html: '{{ session('operation_status') }}', classes: 'rounded', displayLength: 2000});
+            </script>
+        </div>
+    @endif
     @yield('script')
 </body>
 </html>

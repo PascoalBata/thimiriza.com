@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Cotação</title>
+    @if ($data['type'] === 'QUOTE')
+        <title>Cotação</title>
+    @endif
+    @if ($data['type'] === 'INVOICE')
+        <title>Factura</title>
+    @endif
     <style>
         @page {
                 size: 21cm 29.7cm;

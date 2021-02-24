@@ -19,11 +19,6 @@
 
 <!-- Scripts -->
 @section('script')
-    <script>
-        $(document).ready(function() {
-            $('.modal').modal();
-        });
-    </script>
     @if ($is_index)
         <script>
             $(document).ready(function() {
@@ -45,13 +40,5 @@
                 $('#destroy_product_modal').modal('open');
             });
         </script>
-    @endif
-
-    @if (session('operation_status'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({html: '{{ session('operation_status') }}', classes: 'rounded', displayLength: 2000});
-            </script>
-        </div>
     @endif
 @endsection

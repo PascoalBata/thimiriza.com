@@ -57,7 +57,7 @@
                     </div>
                     <div id="client-info" class="input-field col s12 m6 l6">
                         <label for="client" id="client_label" class="black-text">{{ __('Cliente') }}</label>
-                        <input id="client" list="singular_list" type="text" autocomplete="off" class="black-text" name="client"
+                        <input id="client" list="singular_list" type="text" autocomplete="off" class="black-text" name="client" autofocus
                             @if ($hasSales)
                                 @if ($actual_client->type === 'SINGULAR')
                                     value="{{ $actual_client->name . ' === ' . $actual_client->surname }}"
@@ -357,7 +357,6 @@
         });
 
         $(document).ready(function() {
-            $('select').formSelect();
             $('#client').editableSelect({
                 effects: 'slide',
                 duration: 200,

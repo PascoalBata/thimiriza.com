@@ -23,16 +23,16 @@ class UserController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $company_controller = new CompanyController;
-            $company_validate = $company_controller->validate_company($user->id_company);
             if($user['privilege'] === "TOTAL" || $user['privilege'] == "ADMIN"){
+                $company_controller = new CompanyController;
+                $company_validate = $company_controller->validate_company($user->id_company);
                 $users = User::where('id_company', 'like', $user->id_company)->paginate(30);
                 return view ('pt.home.pages.user.user', $user, ['users' => $users,
                 'logo' => $company_validate['company_logo'],
                 'is_edit' => false,
                 'is_destroy' => false]);
             }
-            return redirect()->route('view_sale')->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
+            return back()->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
         return redirect()->route('root');
     }
@@ -48,6 +48,7 @@ class UserController extends Controller
     {
         //
         $request->session()->flush();
+        Auth::logout();
         return redirect()->route('root');
     }
 
@@ -71,27 +72,30 @@ class UserController extends Controller
     {
         if(Auth::check()){
             $user = Auth::user();
-            $id_company = $user->id_company;
-            if(User::where('email', $request['email'])->count() > 0){
-                return redirect()->route('view_user')->with('operation_status', 'O Email inserido actualmente pertence a um outro utilizador.');
+            if($user['privilege'] === "TOTAL" || $user['privilege'] == "ADMIN"){
+                $id_company = $user->id_company;
+                if(User::where('email', $request['email'])->count() > 0){
+                    return redirect()->route('view_user')->with('operation_status', 'O Email inserido actualmente pertence a um outro utilizador.');
+                }
+                if(User::create([
+                    'name' => $request['name'],
+                    'surname' => $request['surname'],
+                    'gender' => $request['gender'],
+                    'birthdate' => $request['birthdate'],
+                    'privilege' => $request['privilege'],
+                    'email' => $request['email'],
+                    'phone' => $request['phone'],
+                    'nuit' => $request['nuit'],
+                    'address' => $request['address'],
+                    'id_company' => $id_company,
+                    'created_by' => $user->id,
+                    'password' => Hash::make($request['password'])
+                ])){
+                    return redirect()->route('view_user')->with('operation_status', 'Utilizador registado com sucesso.');
+                }
+                return redirect()->route('view_user')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
             }
-             if(User::create([
-                'name' => $request['name'],
-                'surname' => $request['surname'],
-                'gender' => $request['gender'],
-                'birthdate' => $request['birthdate'],
-                'privilege' => $request['privilege'],
-                'email' => $request['email'],
-                'phone' => $request['phone'],
-                'nuit' => $request['nuit'],
-                'address' => $request['address'],
-                'id_company' => $id_company,
-                'created_by' => $user->id,
-                'password' => Hash::make($request['password'])
-            ])){
-                return redirect()->route('view_user')->with('operation_status', 'Utilizador registado com sucesso.');
-            }
-            return redirect()->route('view_user')->with('operation_status', 'Falhou! Ocorreu um erro durante o registo.');
+            return back()->with('operation_status', 'A sua conta não possui permissão para realizar esta acção');
         }
         return redirect()->route('root');
     }

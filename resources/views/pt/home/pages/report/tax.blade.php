@@ -129,22 +129,6 @@
 @endsection
 @section('script')
     <script>
-        $(document).ready(function() {
-            $('.modal').modal();
-        });
 
     </script>
-    @if (session('credit_notification'))
-        <div class="alert alert-success">
-            <script>
-                M.toast({
-                    html: '{{ session('
-                    credit_notification ') }}',
-                    classes: 'rounded',
-                    displayLength: 1000
-                });
-
-            </script>
-        </div>
-    @endif
 @endsection

@@ -143,7 +143,7 @@ class ClientSingularController extends Controller
             $client_singular->created_by = $user->id;
             $client_singular->created_at = now();
             if($client_singular->save()){
-                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Empresarial (Nome) actualizado com sucesso.');
+                return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Cliente Singular (Nome) actualizado com sucesso.');
             }
             return redirect()->route('edit_client_singular', $id)->with('operation_status', 'Falhou! Ocorreu um erro durante a actualização.');
         }
