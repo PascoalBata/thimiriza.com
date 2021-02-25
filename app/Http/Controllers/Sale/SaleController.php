@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Sale;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PDF\PDFController;
-use App\Http\Controllers\SystemMail\SystemMailController;
+//use App\Http\Controllers\SystemMail\SystemMailController;
 use App\Models\Client_Enterprise;
 use App\Models\Client_Singular;
 use App\Models\Company;
@@ -258,7 +258,7 @@ class SaleController extends Controller
     }
 
     public function check(Request $request)
-    {
+    { //I think is uselee method - I'll check later
         //
         if(Auth::check()){
             $user = Auth::user();
@@ -445,7 +445,7 @@ class SaleController extends Controller
                 'type' => 'QUOTE'
             ];
 
-            return $pdf_controller->invoice_generator($data,);
+            return $pdf_controller->quote_generator($data,);
         }
         return redirect()->route('view_sale');
     }

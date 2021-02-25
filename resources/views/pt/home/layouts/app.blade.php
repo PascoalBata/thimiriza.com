@@ -184,7 +184,7 @@
                     </li>
                     <li>
                         <a class="nav-link black-text dropdown-trigger" href="#" data-target='dropdown5'>
-                            {{ __('Relatórios') }} <i class="small material-icons">assignment</i>
+                            {{ __('Relatório') }} <i class="small material-icons">assignment</i>
                         </a>
                         <ul id='dropdown5' class='dropdown-content'>
                             <li>
@@ -195,14 +195,20 @@
                             <li class="divider" tabindex="-1"></li>
                             <li>
                                 <a class="nav-link black-text sidenav-close"
-                                href="{{route('view_report')}}">
-                                    {{ __('Geral') }} <i class="small material-icons">assessment</i>
+                                href="{{route('view_invoices_report')}}">
+                                    {{ __('Facturas') }} <i class="small material-icons">arrow_forward</i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link black-text sidenav-close"
+                                href="{{route('view_cash_sales_report')}}">
+                                    {{ __('Vendas à Dinheiro') }} <i class="small material-icons">arrow_forward</i>
                                 </a>
                             </li>
                             <li>
                                 <a class="nav-link black-text sidenav-close"
                                 href="{{route('view_tax')}}">
-                                    {{ __('Impostos') }} <i class="small material-icons">content_paste</i>
+                                    {{ __('Impostos') }} <i class="small material-icons">arrow_forward</i>
                                 </a>
                             </li>
                         </ul>

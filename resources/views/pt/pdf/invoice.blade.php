@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Cotação</title>
+    <title>Factura</title>
     <style>
         @page {
                 size: 21cm 29.7cm;
@@ -72,7 +72,7 @@
 </head>
 <body>
     <header>
-        <h3>Cotação</h3>
+        <h3>Factura: {{$serie . '/' . $invoice_number}}</h3>
         <table id="table_info" style="width: 100%; font-size: 14px; border-top: solid; border-top-color: gray; border-top-width: medium;">
             <tr>
                 <td>

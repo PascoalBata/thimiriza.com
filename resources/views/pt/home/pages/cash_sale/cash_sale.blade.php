@@ -218,7 +218,7 @@
                     <i class="material-icons right"></i>
                 </button>
             </form>
-            <form method="POST" action="{{ route('sell_invoice') }}">
+            <form method="POST" action="{{ route('sell') }}">
                 @method('POST')
                 @csrf
                 <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
@@ -231,24 +231,7 @@
                         disabled
                     @endif
                     >
-                    {{ __('Factura') }}
-                    <i class="material-icons right"></i>
-                </button>
-            </form>
-            <form method="POST" action="{{ route('sell_cash_sale') }}">
-                @method('POST')
-                @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
-                    disabled
-                    @endif
-                    @if (!$enable_sales)
-                        disabled
-                    @endif
-                    @if ($isAdmin)
-                        disabled
-                    @endif
-                    >
-                    {{ __('Venda à Dinheiro (VD)') }}
+                    {{ __('VENDER') }}
                     <i class="material-icons right"></i>
                 </button>
             </form>

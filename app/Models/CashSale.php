@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Invoice extends Model
+class CashSale extends Model
 {
     use SoftDeletes;
-    protected $table = 'invoices';
+    use HasFactory;
+    protected $table = 'cash_sales';
 }

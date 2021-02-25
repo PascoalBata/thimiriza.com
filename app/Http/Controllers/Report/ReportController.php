@@ -28,14 +28,26 @@ class ReportController extends Controller
         return route('root');
     }
 
-    public function print_report($invoices){
+    public function print_invoices_report($invoices){
         if(Auth::check()){
             $inicial_date = date("Y-m-d H:i:s", substr($invoices, 0, strlen($invoices)/2));
             $limit_date = date("Y-m-d H:i:s", substr($invoices, strlen($invoices)/2, strlen($invoices)/2));
             $user = Auth::user();
             $company = DB::table('companies')->find($user->id_company);
             $pdf_controller = new PDFController;
-            return $pdf_controller->print_report($inicial_date, $limit_date, $company ,"REPORT");
+            return $pdf_controller->print_invoices_report($inicial_date, $limit_date, $company ,"INVOICES_REPORT");
+        }
+        return route('root');
+    }
+
+    public function print_cash_sales_report($cash_sales){
+        if(Auth::check()){
+            $inicial_date = date("Y-m-d H:i:s", substr($cash_sales, 0, strlen($cash_sales)/2));
+            $limit_date = date("Y-m-d H:i:s", substr($cash_sales, strlen($cash_sales)/2, strlen($cash_sales)/2));
+            $user = Auth::user();
+            $company = DB::table('companies')->find($user->id_company);
+            $pdf_controller = new PDFController;
+            return $pdf_controller->print_cash_sales_report($inicial_date, $limit_date, $company ,"CASH_SALES_REPORT");
         }
         return route('root');
     }
@@ -190,101 +202,201 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index_report(Request $request)
+    public function index_invoices_report(Request $request)
     {
-        $user = Auth::user();
-        $company_controller = new CompanyController;
-        $company_validate = $company_controller->validate_company($user->id_company);
-        $invoices = new Collection();
-        if(!$request->filled('inicial_date') && !$request->filled('final_date')){
-            $invoices_query = DB::table('companies')
-            ->join('invoices', 'companies.id', '=', 'invoices.id_company')
-            ->select('invoices.*')
-            ->where('companies.id', 'like', $user->id_company)
-            ->orderByDesc('invoices.created_at')->get();
-            $i=0;
-            foreach($invoices_query as $invoice_query){
-                $invoice = new stdClass;
-                $invoice->id = $invoice_query->id;
-                $invoice->number = $invoice_query->number;
-                $invoice->status = $invoice_query->status;
-                $invoice->created_at = $invoice_query->created_at;
-                $invoice->price = $invoice_query->price;
-                if($invoice_query->client_type === 'SINGULAR'){
-                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name . ' ' . $client->surname;
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $invoices = new Collection();
+            if(!$request->filled('inicial_date') && !$request->filled('final_date')){
+                $invoices_query = DB::table('companies')
+                ->join('invoices', 'companies.id', '=', 'invoices.id_company')
+                ->select('invoices.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->orderByDesc('invoices.created_at')->get();
+                $i=0;
+                foreach($invoices_query as $invoice_query){
+                    $invoice = new stdClass;
+                    $invoice->id = $invoice_query->id;
+                    $invoice->number = $invoice_query->number;
+                    $invoice->status = $invoice_query->status;
+                    $invoice->created_at = $invoice_query->created_at;
+                    $invoice->price = $invoice_query->price;
+                    if($invoice_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($invoice_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name;
+                    }
+                    $invoices[$i] = $invoice;
+                    $i++;
                 }
-                if($invoice_query->client_type === 'ENTERPRISE'){
-                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name;
-                }
-                $invoices[$i] = $invoice;
-                $i++;
+                $paginator = CollectionHelper::paginate($invoices, 30);
+                return view ('pt.home.pages.report.invoice_report', $user, ['invoices' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
             }
-            $paginator = CollectionHelper::paginate($invoices, 30);
-            return view ('pt.home.pages.report.report', $user, ['invoices' => $paginator,
-                'logo' => $company_validate['company_logo']]);
-        }
-        if($request->filled('inicial_date')){
-            $invoices_query = DB::table('companies')
-            ->join('invoices', 'companies.id', '=', 'invoices.id_company')
-            ->select('invoices.*')
-            ->where('companies.id', 'like', $user->id_company)
-            ->whereBetween('invoices.created_at', [$request['inicial_date'], now()])
-            ->orderByDesc('invoices.created_at')->get();
-            $i=0;
-            foreach($invoices_query as $invoice_query){
-                $invoice = new stdClass;
-                $invoice->id = $invoice_query->id;
-                $invoice->number = $invoice_query->number;
-                $invoice->status = $invoice_query->status;
-                $invoice->created_at = $invoice_query->created_at;
-                $invoice->price = $invoice_query->price;
-                if($invoice_query->client_type === 'SINGULAR'){
-                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name . ' ' . $client->surname;
+            if($request->filled('inicial_date')){
+                $invoices_query = DB::table('companies')
+                ->join('invoices', 'companies.id', '=', 'invoices.id_company')
+                ->select('invoices.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->whereBetween('invoices.created_at', [$request['inicial_date'], now()])
+                ->orderByDesc('invoices.created_at')->get();
+                $i=0;
+                foreach($invoices_query as $invoice_query){
+                    $invoice = new stdClass;
+                    $invoice->id = $invoice_query->id;
+                    $invoice->number = $invoice_query->number;
+                    $invoice->status = $invoice_query->status;
+                    $invoice->created_at = $invoice_query->created_at;
+                    $invoice->price = $invoice_query->price;
+                    if($invoice_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($invoice_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name;
+                    }
+                    $invoices[$i] = $invoice;
+                    $i++;
                 }
-                if($invoice_query->client_type === 'ENTERPRISE'){
-                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name;
-                }
-                $invoices[$i] = $invoice;
-                $i++;
+                $paginator = CollectionHelper::paginate($invoices, 30);
+                return view ('pt.home.pages.report.invoice_report', $user, ['invoices' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
             }
-            $paginator = CollectionHelper::paginate($invoices, 30);
-            return view ('pt.home.pages.report.report', $user, ['invoices' => $paginator,
-                'logo' => $company_validate['company_logo']]);
-        }
-        if($request->filled('final_date')){
-            $invoices_query = DB::table('companies')
-            ->join('invoices', 'companies.id', '=', 'invoices.id_company')
-            ->select('invoices.*')
-            ->where('companies.id', 'like', $user->id_company)
-            ->where('invoices.created_at', '<=', $request['final_date'])
-            ->orderByDesc('invoices.created_at')->get();
-            $i=0;
-            foreach($invoices_query as $invoice_query){
-                $invoice = new stdClass;
-                $invoice->id = $invoice_query->id;
-                $invoice->number = $invoice_query->number;
-                $invoice->status = $invoice_query->status;
-                $invoice->created_at = $invoice_query->created_at;
-                $invoice->price = $invoice_query->price;
-                if($invoice_query->client_type === 'SINGULAR'){
-                    $client = DB::table('clients_singular')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name . ' ' . $client->surname;
+            if($request->filled('final_date')){
+                $invoices_query = DB::table('companies')
+                ->join('invoices', 'companies.id', '=', 'invoices.id_company')
+                ->select('invoices.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->where('invoices.created_at', '<=', $request['final_date'])
+                ->orderByDesc('invoices.created_at')->get();
+                $i=0;
+                foreach($invoices_query as $invoice_query){
+                    $invoice = new stdClass;
+                    $invoice->id = $invoice_query->id;
+                    $invoice->number = $invoice_query->number;
+                    $invoice->status = $invoice_query->status;
+                    $invoice->created_at = $invoice_query->created_at;
+                    $invoice->price = $invoice_query->price;
+                    if($invoice_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($invoice_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
+                        $invoice->client_name = $client->name;
+                    }
+                    $invoices[$i] = $invoice;
+                    $i++;
                 }
-                if($invoice_query->client_type === 'ENTERPRISE'){
-                    $client = DB::table('clients_enterprise')->find($invoice_query->id_client);
-                    $invoice->client_name = $client->name;
-                }
-                $invoices[$i] = $invoice;
-                $i++;
+                $paginator = CollectionHelper::paginate($invoices, 30);
+                return view ('pt.home.pages.report.invoice_report', $user, ['invoices' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
             }
-            $paginator = CollectionHelper::paginate($invoices, 30);
-            return view ('pt.home.pages.report.report', $user, ['invoices' => $paginator,
-                'logo' => $company_validate['company_logo']]);
         }
+        return redirect()->route('root');
+    }
+
+    public function index_cash_sales_report(Request $request)
+    {
+        if(Auth::check()){
+            $user = Auth::user();
+            $company_controller = new CompanyController;
+            $company_validate = $company_controller->validate_company($user->id_company);
+            $cash_sales = new Collection();
+            if(!$request->filled('inicial_date') && !$request->filled('final_date')){
+                $cash_sales_query = DB::table('companies')
+                ->join('cash_sales', 'companies.id', '=', 'cash_sales.id_company')
+                ->select('cash_sales.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->orderByDesc('cash_sales.created_at')->get();
+                $i=0;
+                foreach($cash_sales_query as $cash_sale_query){
+                    $cash_sale = new stdClass;
+                    $cash_sale->id = $cash_sale_query->id;
+                    $cash_sale->number = $cash_sale_query->number;
+                    $cash_sale->created_at = $cash_sale_query->created_at;
+                    $cash_sale->price = $cash_sale_query->price;
+                    if($cash_sale_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($cash_sale_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name;
+                    }
+                    $cash_sales[$i] = $cash_sale;
+                    $i++;
+                }
+                $paginator = CollectionHelper::paginate($cash_sales, 30);
+                return view ('pt.home.pages.report.cash_sale_report', $user, ['cash_sales' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
+            }
+            if($request->filled('inicial_date')){
+                $cash_sales_query = DB::table('companies')
+                ->join('cash_sales', 'companies.id', '=', 'cash_sales.id_company')
+                ->select('cash_sales.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->whereBetween('cash_sales.created_at', [$request['inicial_date'], now()])
+                ->orderByDesc('cash_sales.created_at')->get();
+                $i=0;
+                foreach($cash_sales_query as $cash_sale_query){
+                    $cash_sale = new stdClass;
+                    $cash_sale->id = $cash_sale_query->id;
+                    $cash_sale->number = $cash_sale_query->number;
+                    $cash_sale->created_at = $cash_sale_query->created_at;
+                    $cash_sale->price = $cash_sale_query->price;
+                    if($cash_sale_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($cash_sale_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name;
+                    }
+                    $cash_sales[$i] = $cash_sale;
+                    $i++;
+                }
+                $paginator = CollectionHelper::paginate($cash_sales, 30);
+                return view ('pt.home.pages.report.cash_sale_report', $user, ['cash_sales' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
+            }
+            if($request->filled('final_date')){
+                $cash_sales_query = DB::table('companies')
+                ->join('cash_sales', 'companies.id', '=', 'cash_sales.id_company')
+                ->select('cash_sales.*')
+                ->where('companies.id', 'like', $user->id_company)
+                ->where('cash_sales.created_at', '<=', $request['final_date'])
+                ->orderByDesc('cash_sales.created_at')->get();
+                $i=0;
+                foreach($cash_sales_query as $cash_sale_query){
+                    $cash_sale = new stdClass;
+                    $cash_sale->id = $cash_sale_query->id;
+                    $cash_sale->number = $cash_sale_query->number;
+                    $cash_sale->created_at = $cash_sale_query->created_at;
+                    $cash_sale->price = $cash_sale_query->price;
+                    if($cash_sale_query->client_type === 'SINGULAR'){
+                        $client = DB::table('clients_singular')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name . ' ' . $client->surname;
+                    }
+                    if($cash_sale_query->client_type === 'ENTERPRISE'){
+                        $client = DB::table('clients_enterprise')->find($cash_sale_query->id_client);
+                        $cash_sale->client_name = $client->name;
+                    }
+                    $cash_sales[$i] = $cash_sale;
+                    $i++;
+                }
+                $paginator = CollectionHelper::paginate($cash_sales, 30);
+                return view ('pt.home.pages.report.cash_sale_report', $user, ['cash_sales' => $paginator,
+                    'logo' => $company_validate['company_logo']]);
+            }
+        }
+        return redirect()->route('root');
     }
 
     /**

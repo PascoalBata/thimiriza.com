@@ -11,10 +11,11 @@
         <div class="row center-align">
             <div class="col s12 m12 l12">
                 <h1 class="display-4 black-text"><strong>{{ __('Relatório') }}</strong></h1>
+                <h5 class="display-5 black-text"><strong>{{ __('Facturas') }}</strong></h5>
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
-            <form method="POST" name="saleForm" action="{{ route('get_report') }}">
+            <form method="POST" name="saleForm" action="{{ route('get_invoices_report') }}">
                 @method('POST')
                 @csrf
                 <div class="row">
@@ -78,8 +79,8 @@
                             <td style="text-align: center;">{{ $invoice->client_name }}</td>
                             <td style="text-align: right;">{{ number_format($invoice->price, 2, ',', '.') }} {{__('MT') }}</td>
                             <td style="text-align: right;">
-                                <a class="modal-trigger waves-effect waves-light btn-small" href=""
-                                    onclick="window.open('report/{{ $invoice->id }}');">
+                                <a class="modal-trigger waves-effect waves-light btn-small"
+                                href="{{ route('report_invoice', $invoice->id)}}">
                                     {{ __('ver') }}</a>
                             </td>
                         </tr>
@@ -106,7 +107,7 @@
                 <div class="col s12 m12 l12">
                     @if (count($invoices) > 0)
                         <a class="modal-trigger waves-effect waves-light btn-small"
-                        href="{{ route('print_report',strtotime($inicial_date)  . strtotime($limit_date)) }}">
+                        href="{{ route('print_invoices_report',strtotime($inicial_date)  . strtotime($limit_date)) }}">
                             {{ ('Imprimir') }}</a>
                     @endif
                 </div>

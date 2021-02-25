@@ -62,13 +62,21 @@ Route::put('/company/payment', 'Company\CompanyController@payment')->name('compa
 //about
 Route::get('/about', 'Company\CompanyController@show_about')->name('view_about');
 
-//report
-Route::get('/report', 'Report\ReportController@index_report')->name('view_report');
+//report invoice
+Route::get('/report/invoices', 'Report\ReportController@index_invoices_report')->name('view_invoices_report');
+Route::get('/report/invoice/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
+Route::get('/report/invoices/print/{invoices}', 'Report\ReportController@print_invoices_report')->name('print_invoices_report');
+Route::post('/report/invoices', 'Report\ReportController@index_invoices_report')->name('get_invoices_report');
+
+//taxes report
 Route::get('report/taxes', 'Report\ReportController@index_tax')->name('view_tax');
 Route::get('report/taxes/print/{invoices}', 'Report\ReportController@print_tax')->name('print_tax');
-Route::get('/report/{id}', 'Invoice\InvoiceController@see_invoice')->name('report_invoice');
-Route::get('/report/print/{invoices}', 'Report\ReportController@print_report')->name('print_report');
-Route::post('/report', 'Report\ReportController@index_report')->name('get_report');
+
+//report cash_sales
+Route::get('/report/cash_sales', 'Report\ReportController@index_cash_sales_report')->name('view_cash_sales_report');
+Route::get('/report/cash_sale/{id}', 'CashSale\CashSaleController@see_cash_sale')->name('report_cash_sale');
+Route::get('/report/print/cash_sales/{cash_sales}', 'Report\ReportController@print_cash_sales_report')->name('print_cash_sales_report');
+Route::post('/report/cash_sales', 'Report\ReportController@index_cash_sales_report')->name('get_cash_sales_report');
 
 //credit
 Route::get('/credit', 'Report\ReportController@index_credit')->name('view_credit');
@@ -89,9 +97,11 @@ Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');
 Route::put('/sales', 'Sale\SaleController@store')->name('edit_sale');
 Route::put('/sales/update', 'Sale\SaleController@edit_sale_item')->name('edit_sale_item');
 Route::delete('/sales/remove', 'Sale\SaleController@remove_sale_item')->name('remove_sale_item');
-Route::post('/sales/sell', 'Sale\SaleController@sell')->name('sell');
+Route::post('/sales/sell_invoice', 'Sale\SaleController@sell')->name('sell_invoice');
+Route::post('/sales/sell_vd', 'CashSale\CashSaleController@sell')->name('sell_cash_sale');
 Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
 Route::delete('/sales/clean', 'Sale\SaleController@clean_sale')->name('clean_sale');
+
 
 //invoice_note
 Route::get('/invoice_notes', 'InvoiceNote\InvoiceNoteController@create')->name('view_invoice_note');
