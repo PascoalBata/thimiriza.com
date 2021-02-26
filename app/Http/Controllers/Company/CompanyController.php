@@ -323,7 +323,8 @@ class CompanyController extends Controller
         }
         $enable_sales = true;
         $company = Company::where('id', 'like', $id)->first();
-        $company_logo = url('storage/' . $company->logo);
+        $company_logo = Storage::url($company->logo);
+        //dd($company_logo);
         //$this->company_logo = '..' . Storage::url($this->company->logo);
         //dd($this->company_logo);
         //$expire = date('Y/m/d', strtotime('+30 days', strtotime($company->created_at))) . PHP_EOL . '23:59:59';
@@ -341,7 +342,7 @@ class CompanyController extends Controller
             $enable_sales = false;
         }
         if($company->logo === null || trim($company->logo) === ''){
-            $company_logo = url('storage/companies/default/logo/default.png');
+            $company_logo = Storage::url('companies/default/logo/default.png');
             $enable_sales = false;
         }
         if($expire_days_left <= 0){

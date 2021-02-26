@@ -453,7 +453,6 @@ class PDFController extends Controller
     //PDF Invoice for checking process
     public function check_cash_sale(Array $data){
         if(Auth::check()){
-            $user = Auth::user();
             $moves = CashSale_Move::where('id_cash_sale', $data['cash_sale_id'])->get();
             $price_total = 0;
             $iva_total = 0;

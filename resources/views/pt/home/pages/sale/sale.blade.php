@@ -21,10 +21,21 @@
 @section('content')
     @php
     $sale_type = 'PRODUCT';
+    $default_logo = 'http://localhost/storage/companies/default/logo/default.png';
     @endphp
     <label class="black-text">{{$deadline_payment}}
         @if ($deadline_payment === 'Conta expirou!' && ($privilege === 'ADMIN' || $privilege === 'TOTAL'))
         <a href="{{route('view_company')}}">Efectuar pagamento</a>
+        @endif
+        @if (!$enable_sales)
+        <p>
+            <a href="{{ route('view_company') }}">
+                {{__('Insira os dados relativos a conta da empresa')}}
+                @if (trim($logo) === '' || trim($logo) === trim($default_logo))
+                {{__('(inserir logotipo)')}}
+                @endif
+            </a>
+        </p>
         @endif
     </label>
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
@@ -121,11 +132,11 @@
                 </div>
                 <div class="row">
                     <div class="col s12 m12 l12">
-                        <button type="submit" class="waves-effect waves-light btn-small">
+                        <button type="submit" class="waves-effect waves-light btn-small" style="margin-top: 1%">
                             {{ __('Adicionar') }}
                             <i class="material-icons right">archive</i>
                         </button>
-                        <button type="reset" class="waves-effect waves-light btn-small">
+                        <button type="reset" class="waves-effect waves-light btn-small" style="margin-top: 1%">
                             {{ __('Limpar') }}
                             <i class="material-icons right"></i>
                         </button>
@@ -197,65 +208,56 @@
         </div>
     </div>
     <div class="row">
-        <div class="col s12 m12 l12" style="display: flex;">
-            <form method="POST" action="{{ route('clean_sale') }}">
-                @method('DELETE')
-                @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;">
+        <div class="col s12 m12 l12">
+                <a href="{{ route('clean_sale') }}" class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;">
                     {{ __('LIMPAR') }}
                     <i class="material-icons right"></i>
-                </button>
-            </form>
-            <form method="POST" action="{{ route('quote') }}">
-                @method('POST')
-                @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;"
+                </a>
+
+                <a href="{{ route('quote') }}" class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;"
+                @if (trim($logo) === '' || trim($logo) === trim($default_logo))
+                    disabled
+                @endif
                 @if (!$enable_sales)
-                        disabled
-                    @endif
+                    disabled
+                @endif
                 >
                     {{ __('COTAÇÃO') }}
                     <i class="material-icons right"></i>
-                </button>
-            </form>
-            <form method="POST" action="{{ route('sell_invoice') }}">
-                @method('POST')
-                @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
+                </a>
+                <a href="{{ route('sell_invoice') }}" class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;"
+                @if (trim($logo) === '' || trim($logo) === trim($default_logo))
                     disabled
-                    @endif
-                    @if (!$enable_sales)
-                        disabled
-                    @endif
-                    @if ($isAdmin)
-                        disabled
-                    @endif
-                    >
-                    {{ __('Factura') }}
-                    <i class="material-icons right"></i>
-                </button>
-            </form>
-            <form method="POST" action="{{ route('sell_cash_sale') }}">
-                @method('POST')
-                @csrf
-                <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 2%;" @if ($logo === '')
+                @endif
+                @if (!$enable_sales)
                     disabled
-                    @endif
-                    @if (!$enable_sales)
-                        disabled
-                    @endif
-                    @if ($isAdmin)
-                        disabled
-                    @endif
-                    >
-                    {{ __('Venda à Dinheiro (VD)') }}
-                    <i class="material-icons right"></i>
-                </button>
-            </form>
+                @endif
+                @if ($isAdmin)
+                    disabled
+                @endif
+                >
+                {{ __('Factura') }}
+                <i class="material-icons right"></i>
+            </a>
+            <a href="{{ route('sell_cash_sale') }}"
+                class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;"
+                @if (trim($logo) === '' || trim($logo) === trim($default_logo))
+                    disabled
+                @endif
+                @if (!$enable_sales)
+                    disabled
+                @endif
+                @if ($isAdmin)
+                    disabled
+                @endif
+                >
+                {{ __('VD') }}
+                <i class="material-icons right"></i>
+            </a>
         </div>
         @if ($privilege === 'ADMIN')
             <div class="col s12 m12 l12">
-                <p class="black-text">{{__('NOTA: Utilizadores administrativos nao podem efectuar vendas')}}</p>
+                <p class="black-text">{{__('NOTA: Utilizadores administrativos não podem efectuar vendas')}}</p>
             </div>
         @endif
     </div>

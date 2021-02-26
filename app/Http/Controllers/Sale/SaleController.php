@@ -159,7 +159,7 @@ class SaleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function add_item(Request $request)
     {
         //
         //dd($request->all());
@@ -368,9 +368,9 @@ class SaleController extends Controller
                     'discount' => $discount
                 ))
             ){
-                return redirect()->route('view_sale')->with('operation_status', 'Item actualizado com sucesso.');
+                return back()->with('operation_status', 'Item actualizado com sucesso.');
             }
-            return redirect()->route('view_sale')->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizacao do item.');
+            return back()->with('operation_status', 'Falhou! Ocorreu um erro durante a actualizacao do item.');
         }
         return redirect()->route('root');
     }
@@ -387,7 +387,7 @@ class SaleController extends Controller
         return redirect()->route('root');
     }
 
-    public function quote(Request $request){
+    public function quote(){
         $pdf_controller = new PDFController;
         $user = Auth::user();
         $sale = Sale::where('created_by', 'like', $user->id)->get();
@@ -450,85 +450,16 @@ class SaleController extends Controller
         return redirect()->route('view_sale');
     }
 
-    public function clean_sale(Request $request){
+    public function clean_sale(){
         if(Auth::check()){
             $user = Auth::user();
             if(DB::table('sales')->select('*')->where('created_by', $user->id)->count() === 0){
-                return redirect()->route('view_sale');
+                return back();
             }
             if(DB::table('sales')->where('created_by', 'like', $user->id)->delete()){
-                return redirect()->route('view_sale');
+                return back();
             }
             return back()->with('operation_status', 'Falhou! Ocorreu um erro durante a operacao.');
-        }
-        return redirect()->route('root');
-    }
-
-    public function sell(Request $request){
-        if(Auth::check()){
-            $pdf_controller = new PDFController;
-            $user = Auth::user();
-            $sale = Sale::where('created_by', 'like', $user->id)->get();
-            $company = Company::find($user->id_company);
-            $requisites = true;
-            if($sale->count() > 0){
-                $sale = $sale->first();
-                $client_id = $sale->id_client;
-                $client_name = '';
-                $client_email = '';
-                $client_type = $sale->type_client;
-                $client_address = '';
-                $client_nuit ='';
-                $status = 'NOT PAID';
-                $user_name = '';
-                if($user->email !== $company->email){
-                    $user_name = $user->name . ' ' . $user->surname;
-                }else{
-                    $user_name = 'Admin';
-                }
-
-                if($sale->type_client === 'SINGULAR'){
-                    $client = Client_Singular::find($client_id);
-                    $client_name = $client->name . ' ' . $client->surname;
-                    $client_nuit = $client->nuit;
-                    $client_address = $client->address;
-                    $client_email = $client->email;
-                }else{
-                    if($sale->type_client === 'ENTERPRISE'){
-                        $client = Client_Enterprise::find($client_id);
-                        $client_name = $client->name;
-                        $client_nuit = $client->nuit;
-                        $client_address = $client->address;
-                        $client_email = $client->email;
-                    }else{
-                        $requisites = false;
-                    }
-                }
-                if($requisites){
-                    return $pdf_controller->invoice_generator([
-                        'client_type' => $client_type,
-                        'client_id' => $client_id,
-                        'client_name' => $client_name,
-                        'client_email' => $client_email,
-                        'client_address' => $client_address,
-                        'client_nuit' => $client_nuit,
-                        'company_name' => $company->name,
-                        'company_email' => $company->email,
-                        'company_address' => $company->address,
-                        'company_nuit' => $company->nuit,
-                        'company_type' => $company->type,
-                        'company_bank_account_owner' => $company->bank_account_owner,
-                        'company_bank_account_name' => $company->bank_account_name,
-                        'company_bank_account_nib' => $company->bank_account_nib,
-                        'company_bank_account_number' => $company->bank_account_number,
-                        'company_logo' => url('storage/' .$company->logo),
-                        'user_name' => $user_name,
-                        'status' => $status,
-                        'type' => 'INVOICE'
-                        ]);
-                }
-            }
-            return redirect()->route('view_sale');
         }
         return redirect()->route('root');
     }

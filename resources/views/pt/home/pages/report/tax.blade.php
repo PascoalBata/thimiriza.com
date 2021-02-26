@@ -10,7 +10,7 @@
     <div class="container grey lighten-5" style="opacity: 80%; position: relative; transform: translateY(0%);">
         <div class="row center-align">
             <div class="col s12 m12 l12">
-                <h1 class="display-4 black-text"><strong>{{ __('Relatório de Impostos') }}</strong></h1>
+                <h2 class="display-4 black-text"><strong>{{ __('Relatório de Impostos') }}</strong></h2>
                 @if ($company_type === 'NORMAL')
                     <h5 class="display-4 black-text"><strong>{{ __('Regime Normal') }}</strong></h5>
                 @endif
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="row" style="padding-bottom: 5%">
-            <form method="POST" name="saleForm" action="{{ route('get_report') }}">
+            <form method="POST" name="saleForm" action="{{ route('get_invoices_report') }}">
                 @method('POST')
                 @csrf
                 <div class="row">

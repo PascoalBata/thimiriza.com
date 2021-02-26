@@ -51,7 +51,7 @@
                 <thead>
                     <tr>
                         <th>{{ __('Data') }}</th>
-                        <th style="text-align: center;">{{ __('Factura') }}</th>
+                        <th style="text-align: center;">{{ __('VD') }}</th>
                         <th style="text-align: center;">{{ __('Cliente') }}</th>
                         <th style="text-align: right;">{{ __('Valor') }}</th>
                         <th></th>

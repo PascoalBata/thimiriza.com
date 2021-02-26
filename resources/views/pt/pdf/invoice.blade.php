@@ -145,7 +145,10 @@
             <tr><td colspan="2">Titular: {{ $data['company_bank_account_nib'] }}</td><td></td><td><strong>Total:</strong></td><td colspan="3" style="text-align: right;"> {{number_format($price_total, 2, ",", ".") . ' MT' }} </td></tr>
             <tr><td><br/></td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr><td colspan="4">Documento processado por computador (Thimiriza)</td><td></td><td></td><td></td><td><strong></strong></td><td></td></tr>
-            </table>
+            @if($data['company_type'] === 'ISPC')
+                <tr><td colspan="4" style="font-style: italic; font-size: 14px;"><b>Nota: </b>A Empresa está no regime ISPC, não cobra o valor do IVA.</td><td></td><td></td><td></td><td><strong></strong></td><td></td></tr>
+            @endif
+        </table>
     </footer>
 </body>
 </html>

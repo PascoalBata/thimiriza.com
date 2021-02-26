@@ -93,14 +93,14 @@ Route::put('/debit/payment/{id}', 'Invoice\InvoiceController@pay_invoice')->name
 
 //sale
 Route::get('/sales', 'Sale\SaleController@create')->name('view_sale');
-Route::post('/sales', 'Sale\SaleController@store')->name('store_sale');
-Route::put('/sales', 'Sale\SaleController@store')->name('edit_sale');
-Route::put('/sales/update', 'Sale\SaleController@edit_sale_item')->name('edit_sale_item');
+Route::post('/sales', 'Sale\SaleController@add_item')->name('store_sale'); //add item
+Route::put('/sales', 'Sale\SaleController@add_item')->name('edit_sale'); //update item
+Route::put('/sales/update', 'Sale\SaleController@edit_sale_item')->name('edit_sale_item'); //update item
 Route::delete('/sales/remove', 'Sale\SaleController@remove_sale_item')->name('remove_sale_item');
-Route::post('/sales/sell_invoice', 'Sale\SaleController@sell')->name('sell_invoice');
-Route::post('/sales/sell_vd', 'CashSale\CashSaleController@sell')->name('sell_cash_sale');
-Route::post('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
-Route::delete('/sales/clean', 'Sale\SaleController@clean_sale')->name('clean_sale');
+Route::get('/sales/sell_invoice', 'Invoice\InvoiceController@store_invoice')->name('sell_invoice');
+Route::get('/sales/sell_vd', 'CashSale\CashSaleController@store_vd')->name('sell_cash_sale');
+Route::get('/sales/qoute', 'Sale\SaleController@quote')->name('quote');
+Route::get('/sales/clean', 'Sale\SaleController@clean_sale')->name('clean_sale');
 
 
 //invoice_note

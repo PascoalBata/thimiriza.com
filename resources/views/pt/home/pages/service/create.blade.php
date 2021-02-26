@@ -44,15 +44,15 @@
         </div>
             <div class="row">
                 <div class="col s12 m12 l12">
-                    <button type="submit" class="waves-effect waves-light btn-small" style="margin-top: 2px;">
+                    <button type="submit" class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;">
                         {{ __('Salvar') }}
                         <i class="material-icons right">archive</i>
                     </button>
-                    <button type="reset" class="waves-effect waves-light btn-small" style="margin-top: 2px;">
+                    <button type="reset" class="waves-effect waves-light btn-small" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;">
                         {{ __('Limpar') }}
                         <i class="material-icons right"></i>
                     </button>
-                    <a class="waves-effect waves-light btn-small modal-trigger" style="margin-top: 2px;"
+                    <a class="waves-effect waves-light btn-small modal-trigger" style="margin-right: 0.5%; margin-top: 0.5%; min-width: 110px;"
                         href="{{route('index_service')}}">{{ __('Serviços') }}</a>
                 </div>
             </div>

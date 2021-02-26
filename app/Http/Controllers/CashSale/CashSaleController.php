@@ -100,7 +100,7 @@ class CashSaleController extends Controller
         //
     }
 
-    public function sell(Request $request){
+    public function store_vd(){
         if(Auth::check()){
             $pdf_controller = new PDFController;
             $user = Auth::user();
@@ -175,7 +175,6 @@ class CashSaleController extends Controller
         $user = DB::table('users')->find($cash_sale->created_by);
         $company = DB::table('companies')->find($user->id_company);
         $user_name = $user->name . ' ' . $user->surname;
-        $client_type = '';
         $client_name = '';
         $client_email = '';
         $client_nuit = '';
@@ -199,7 +198,7 @@ class CashSaleController extends Controller
         $pdf_controller = new PDFController;
         return $pdf_controller->check_cash_sale([
             'user_id' => $user->id,
-            'client_type' => $client_type,
+            'client_type' => $cash_sale->client_type,
             'client_id' => $cash_sale->id_client,
             'client_name' => $client_name,
             'client_email' => $client_email,
